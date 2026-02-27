@@ -44,6 +44,7 @@
     "next": "15.1.6",
     "next-auth": "^4.24.11",
     "nouislider-react": "^3.4.2",
+    "pg": "^8.19.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
@@ -68,6 +69,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "sass": "1.77.6",
