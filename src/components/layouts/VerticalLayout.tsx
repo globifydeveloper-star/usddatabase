@@ -1,0 +1,26 @@
+import React, { Suspense } from 'react'
+import LeftSideBar from './LeftsideBar'
+import FallbackLoading from '../FallbackLoading'
+import TopBar from './Topbar'
+import Footer from './Footer'
+import { ChildrenType } from '@/types/component-props'
+
+const VerticalLayout = ({ children }: ChildrenType) => {
+  return (
+    <div className="wrapper" id="leftside-menu-container">
+      <Suspense>
+        <LeftSideBar />
+      </Suspense>
+      <div className="color-line" />
+      <Suspense fallback={<FallbackLoading />}>
+        <TopBar />
+      </Suspense>
+      <div className="page-content">
+        <div className="page-container">{children}</div>
+        <Footer />
+      </div>
+    </div>
+  )
+}
+
+export default VerticalLayout

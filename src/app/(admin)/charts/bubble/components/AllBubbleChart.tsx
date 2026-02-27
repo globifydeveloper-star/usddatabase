@@ -1,0 +1,42 @@
+import ComponentContainerCard from '@/components/ComponentContainerCard'
+import React from 'react'
+import { bubble3DChartOpts, simpleBubbleChartOpts } from '../data'
+import { Col, Row } from 'react-bootstrap'
+import ApexChartClient from '@/components/ApexChartClient'
+
+const SimpleBubbleChart = () => {
+  return (
+    <ComponentContainerCard title="Simple Bubble Chart">
+      <div dir="ltr">
+        <ApexChartClient height={380} options={simpleBubbleChartOpts} series={simpleBubbleChartOpts.series} type="bubble" className="apex-charts" />
+      </div>
+    </ComponentContainerCard>
+  )
+}
+
+const Bubble3DChart = () => {
+  return (
+    <ComponentContainerCard title="3D Bubble Chart">
+      <div dir="ltr">
+        <ApexChartClient height={380} options={bubble3DChartOpts} series={bubble3DChartOpts.series} type="bubble" className="apex-charts" />
+      </div>
+    </ComponentContainerCard>
+  )
+}
+
+const AllBubbleChart = () => {
+  return (
+    <>
+      <Row>
+        <Col xl={6}>
+          <SimpleBubbleChart />
+        </Col>
+        <Col xl={6}>
+          <Bubble3DChart />
+        </Col>
+      </Row>
+    </>
+  )
+}
+
+export default AllBubbleChart
