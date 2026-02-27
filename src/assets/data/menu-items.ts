@@ -16,6 +16,64 @@ export const MENU_ITEMS: MenuItemType[] = [
     },
     url: '/dashboard',
   },
+  // administration
+  {
+    key: "admin-section",
+    label: "Administration",
+    icon: "ri:settings-3-line",
+    children: [
+      {
+        key: "users",
+        label: "Users",
+        url: "/administration/users",
+      },
+      {
+        key: "roles",
+        label: "Roles",
+        url: "/administration/roles",
+      },
+      {
+        key: "permissions",
+        label: "Permissions",
+        url: "/administration/permissions",
+      },
+    ],
+  },
+  {
+    key: "schools",
+    label: "Schools",
+    icon: "ri:building-line",
+    url: "/schools",
+  },
+  {
+    key: "students",
+    label:"Students",
+    icon: 'ri:graduation-cap-line',
+    url:"/students"
+  },
+  // outcomes
+  {
+    key: "outcomes",
+    label: "Outcomes",
+    icon: "ri:bar-chart-line",
+    children: [
+      {
+        key: "earnings",
+        label: "Earnings",
+        url: "/outcomes/earnings",
+      },
+      {
+        key: "completion",
+        label: "Completion",
+        url: "/outcomes/completion",
+      },
+      {
+        key: "repayment",
+        label: "Repayment",
+        url: "/outcomes/repayment",
+      },
+    ],
+  },
   {
     key: 'calendar',
     label: 'Calendar',
@@ -130,7 +188,7 @@ export const MENU_ITEMS: MenuItemType[] = [
         url: '/pages/search-results',
         parentKey: 'pages',
       },
-    
+
     ],
   },
   {
@@ -1196,7 +1254,7 @@ export const HORIZONTAL_MENU_ITEM: MenuItemType[] = [
             url: '/ui/progress',
             parentKey: 'base-ui',
           },
-        
+
           {
             key: 'base-ui-spinners',
             label: 'Spinners',

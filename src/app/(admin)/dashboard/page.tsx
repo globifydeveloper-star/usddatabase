@@ -7,22 +7,34 @@ import Transactions from './components/Transactions'
 import NewUsers from './components/NewUsers'
 import TransactionsUses from './components/TransactionsUses'
 import { Alert, Col, Row } from 'react-bootstrap'
+import { getDashboardStats } from "./server-data"   
 
+const Dashboard = async () => {
 
-const Dashboard = () => {
+  const stateData = await getDashboardStats()   // ✅ fetch from server-only file
+
   return (
     <>
-      <Alert className="alert-info d-flex align-items-center d-none d-md-flex" role="alert">
-        <IconifyIcon icon="solar:help-bold-duotone" className="fs-24 me-1" />
-        <div>
-          <strong> Dear Maxine - </strong> We kindly encourage you to review your recent transactions and financial commitments to ensure that your
-          account is in good standing.
-        </div>
-        <a href="#!" className="text-reset text-decoration-underline ms-auto link-offset-2">
-          <b>Action Now</b>
-        </a>
-      </Alert>
-      <State />
+     <Alert 
+  className="alert-info d-flex align-items-center d-none d-md-flex" 
+  role="alert"
+>
+  <IconifyIcon icon="solar:help-bold-duotone" className="fs-24 me-1" />
+  <div>
+    <strong>US Degree Analytics - </strong> 
+    Live statistics from the{" "}
+    <a
+      href="https://collegescorecard.ed.gov"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-decoration-underline fw-semibold"
+    >
+      US Education Database
+    </a>.
+  </div>
+</Alert>
+
+      <State data={stateData} />
 
       <Row>
         <Col xl={6}>

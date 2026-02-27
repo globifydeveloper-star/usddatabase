@@ -1,3 +1,4 @@
+// import { pool } from "@/lib/db";
 import avatar1 from '@/assets/images/users/avatar-1.jpg'
 import avatar2 from '@/assets/images/users/avatar-2.jpg'
 import avatar3 from '@/assets/images/users/avatar-3.jpg'
@@ -33,49 +34,102 @@ type UserType = {
   status_color: string
 }
 
-export const stateData: StateType[] = [
-  {
-    title: 'Total Orders',
-    value: '687.3k',
-    type: 'number',
-    change: 9.19,
-    icon: 'solar:bill-list-bold-duotone',
-    bgColor: 'primary-subtle',
-    textColor: 'primary',
-    description: 'Since last month',
-    isTrue: true,
-  },
-  {
-    title: 'Total Revenue',
-    value: '$5.42M',
-    type: 'currency',
-    change: 4.67,
-    icon: 'solar:wad-of-money-bold-duotone',
-    bgColor: 'success-subtle',
-    textColor: 'success',
-    description: 'Since last month',
-  },
-  {
-    title: 'New Users',
-    value: '45.3k',
-    type: 'number',
-    change: 2.85,
-    icon: 'solar:user-plus-bold-duotone',
-    bgColor: 'warning-subtle',
-    textColor: 'warning',
-    description: 'Since last month',
-  },
-  {
-    title: 'Customer Satisfaction',
-    value: '94.6%',
-    type: 'percentage',
-    change: 1.32,
-    icon: 'solar:sticker-smile-circle-bold-duotone',
-    bgColor: 'info-subtle',
-    textColor: 'info',
-    description: 'Since last month',
-  },
-]
+// export const stateData: StateType[] = [
+//   {
+//     title: 'Total Orders',
+//     value: '687.3k',
+//     type: 'number',
+//     change: 9.19,
+//     icon: 'solar:bill-list-bold-duotone',
+//     bgColor: 'primary-subtle',
+//     textColor: 'primary',
+//     description: 'Since last month',
+//     isTrue: true,
+//   },
+//   {
+//     title: 'Total Revenue',
+//     value: '$5.42M',
+//     type: 'currency',
+//     change: 4.67,
+//     icon: 'solar:wad-of-money-bold-duotone',
+//     bgColor: 'success-subtle',
+//     textColor: 'success',
+//     description: 'Since last month',
+//   },
+//   {
+//     title: 'New Users',
+//     value: '45.3k',
+//     type: 'number',
+//     change: 2.85,
+//     icon: 'solar:user-plus-bold-duotone',
+//     bgColor: 'warning-subtle',
+//     textColor: 'warning',
+//     description: 'Since last month',
+//   },
+//   {
+//     title: 'Customer Satisfaction',
+//     value: '94.6%',
+//     type: 'percentage',
+//     change: 1.32,
+//     icon: 'solar:sticker-smile-circle-bold-duotone',
+//     bgColor: 'info-subtle',
+//     textColor: 'info',
+//     description: 'Since last month',
+//   },
+// ]
+
+
+// export async function getStateData() : Promise<StateType[]> {
+//   const totalSchools = await pool.query(`SELECT COUNT(*) FROM schools`);
+//   const totalPrograms = await pool.query(`SELECT COUNT(*) FROM programs`);
+//   const totalCip = await pool.query(`SELECT COUNT(DISTINCT cip_code) FROM programs`);
+//   const totalStates = await pool.query(`SELECT COUNT(DISTINCT state) FROM schools`);
+
+//   return [
+//     {
+//       title: "Total Schools",
+//       value: Number(totalSchools.rows[0].count).toLocaleString(),
+//       type: "number",
+//       change: 0,
+//       icon: "solar:bill-list-bold-duotone",
+//       bgColor: "primary-subtle",
+//       textColor: "primary",
+//       description: "Live database count",
+//       isTrue: true,
+//     },
+//     {
+//       title: "Total Programs",
+//       value: Number(totalPrograms.rows[0].count).toLocaleString(),
+//       type: "number",
+//       change: 0,
+//       icon: "solar:wad-of-money-bold-duotone",
+//       bgColor: "success-subtle",
+//       textColor: "success",
+//       description: "Live database count",
+//     },
+//     {
+//       title: "Total CIP Codes",
+//       value: Number(totalCip.rows[0].count).toLocaleString(),
+//       type: "number",
+//       change: 0,
+//       icon: "solar:user-plus-bold-duotone",
+//       bgColor: "warning-subtle",
+//       textColor: "warning",
+//       description: "Live database count",
+//     },
+//     {
+//       title: "Total States",
+//       value: Number(totalStates.rows[0].count).toLocaleString(),
+//       type: "number",
+//       change: 0,
+//       icon: "solar:sticker-smile-circle-bold-duotone",
+//       bgColor: "info-subtle",
+//       textColor: "info",
+//       description: "Live database count",
+//     },
+//   ];
+// }
+
 
 export const transactionsData: TransactionType[] = [
   {
