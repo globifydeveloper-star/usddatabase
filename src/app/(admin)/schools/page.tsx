@@ -29,10 +29,15 @@ const SchoolsPage = () => {
                     then: (data) =>
                         data.data.map((row: School) =>
                             schoolsColumns.map((col) => {
-                                if (col.id === 'has_pseo') {
-                                    return row?.has_pseo ? 'Yes' : 'No';
+                                switch (col.id) {
+                                    case 'has_pseo':
+                                        return row.has_pseo ? 'Yes' : 'No';
+                                    case 'action':
+                                        // feed the unitid into the Action column
+                                        return row.unitid;
+                                    default:
+                                        return row[col.id as keyof School];
                                 }
-                                return row[col.id as keyof School];
                             })
                         ),
                     total: (data) => data.total,

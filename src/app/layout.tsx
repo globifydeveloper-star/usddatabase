@@ -1,5 +1,6 @@
 import AppProvidersWrapper from '@/components/wrappers/AppProvidersWrapper'
 import type { Metadata } from 'next'
+import Script from 'next/script' 
 
 import '@/assets/scss/app.scss'
 import 'jsvectormap/dist/css/jsvectormap.min.css'
@@ -22,6 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={``}>
         <AppProvidersWrapper>{children}</AppProvidersWrapper>
+         <Script
+          src="https://code.iconify.design/3/3.1.1/iconify.min.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )
