@@ -81,32 +81,26 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: 'ri:money-dollar-circle-line',
     url:"/aid"
   },
+   {
+    key: "costs",
+    label:"Costs",
+    icon: 'ri:money-dollar-box-line',
+    url:"/costs"
+  },
 
-
-
-  // outcomes
   {
-    key: "outcomes",
-    label: "Outcomes",
-    icon: "ri:bar-chart-line",
-    children: [
-      {
         key: "earnings",
         label: "Earnings",
+        icon: 'ri:money-dollar-box-line',
         url: "/outcomes/earnings",
-      },
-      {
-        key: "completion",
-        label: "Completion",
-        url: "/outcomes/completion",
       },
       {
         key: "repayment",
         label: "Repayment",
+        icon: 'ri:money-dollar-box-line',
         url: "/outcomes/repayment",
       },
-    ],
-  },
+    
   {
     key: 'calendar',
     label: 'Calendar',
