@@ -48,23 +48,30 @@ export const MENU_ITEMS: MenuItemType[] = [
    {
     key: "programs",
     label: "Programs",
-    icon: "ri:building-line",
+    icon: "ri:book-open-line",
     url: "/programs",
   },
   {
     key: "students",
     label:"Students",
-    icon: 'ri:graduation-cap-line',
+    icon: 'ri:group-line',
     url:"/students"
   },
   {
     key: "admissions",
     label:"Admissions",
-    icon: 'ri:graduation-cap-line',
+    icon: 'ri:file-list-3-line',
     url:"/admissions"
   },
+  {
+    key: "completion",
+    label:"Completion",
+    icon: 'ri:graduation-cap-line',
+    url:"/completion"
+  },
 
-  
+
+
   // outcomes
   {
     key: "outcomes",
