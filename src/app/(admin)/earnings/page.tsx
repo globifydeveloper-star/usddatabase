@@ -2,44 +2,38 @@
 
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
-import { studentColumns } from './config/student-column-config';
+import { studentColumns } from './config/earnings-column-config';
 
-interface Student {
-  id: number;
-  unitid: string;
-  size: string | null;
-  grad_students: string | null;
-  enrollment_grad_12_month: string | null;
-  enrollment_undergrad_12_month: string | null;
-  fafsa_applications: string | null;
-  demographics_men: string | null;
-  demographics_women: string | null;
-  faculty_men: string | null;
-  faculty_women: string | null;
-
+interface Earnings {
+  unitid: number;
+  median_1yr: number | null;
+  median_3yr: number | null;
+  median_4yr: number | null;
+  median_5yr: number | null;
+  students_count: number | null;
+ 
 }
 
-const StudentsPage = () => {
+const EarningsPage = () => {
   return (
-    <ComponentContainerCard title="Students List">
+    <ComponentContainerCard title="Earnings List">
       <Grid
         columns={studentColumns}
         server={{
-          url: '/api/students',
+          url: '/api/earnings',
           then: (data) =>
-            data.data.map((row: Student) =>
+            data.data.map((row: Earnings) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.unitid;
                 }
 
-                return row[col.id as keyof Student] ?? '-';
+                return row[col.id as keyof Earnings] ?? '-';
               })
             ),
           total: (data) => data.total,
         }}
         pagination={{
-          limit: 20, // ✅ match API default
+          limit: 20, //  match API default
           server: {
             url: (prev, page, limit) => {
               const url = new URL(prev, window.location.origin);
@@ -64,4 +58,4 @@ const StudentsPage = () => {
   );
 };
 
-export default StudentsPage;
+export default EarningsPage;

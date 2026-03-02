@@ -89,17 +89,17 @@ export const MENU_ITEMS: MenuItemType[] = [
   },
 
   {
-        key: "earnings",
-        label: "Earnings",
-        icon: 'ri:money-dollar-box-line',
-        url: "/outcomes/earnings",
-      },
-      {
-        key: "repayment",
-        label: "Repayment",
-        icon: 'ri:money-dollar-box-line',
-        url: "/outcomes/repayment",
-      },
+   key: "earnings",
+   label: "Earnings",
+   icon: 'ri:line-chart-line',
+   url: "/earnings",
+  },
+  {
+   key: "repayment",
+   label: "Repayment",
+   icon: 'ri:refund-2-line',
+   url: "/repayment",
+ },
     
   {
     key: 'calendar',

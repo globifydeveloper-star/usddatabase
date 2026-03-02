@@ -2,44 +2,39 @@
 
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
-import { studentColumns } from './config/student-column-config';
-
-interface Student {
+import { repaymentColumns } from './config/repayment-column-config';
+interface Repayment {
   id: number;
   unitid: string;
-  size: string | null;
-  grad_students: string | null;
-  enrollment_grad_12_month: string | null;
-  enrollment_undergrad_12_month: string | null;
-  fafsa_applications: string | null;
-  demographics_men: string | null;
-  demographics_women: string | null;
-  faculty_men: string | null;
-  faculty_women: string | null;
-
+  yr1_completers: string | null;
+  yr1_noncompleters: string | null;
+  yr1_overall: string | null;
+  yr3_completers: string | null;
+  yr3_noncompleters: string | null;
+  yr3_overall: string | null;
 }
 
-const StudentsPage = () => {
+const RepaymentPage = () => {
   return (
-    <ComponentContainerCard title="Students List">
+    <ComponentContainerCard title="Repayment List">
       <Grid
-        columns={studentColumns}
+        columns={repaymentColumns}
         server={{
-          url: '/api/students',
+          url: '/api/repayment',
           then: (data) =>
-            data.data.map((row: Student) =>
-              studentColumns.map((col) => {
+            data.data.map((row: Repayment) =>
+              repaymentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.unitid;
+                  return row.unitid; 
                 }
 
-                return row[col.id as keyof Student] ?? '-';
+                return row[col.id as keyof Repayment] ?? '-';
               })
             ),
           total: (data) => data.total,
         }}
         pagination={{
-          limit: 20, // ✅ match API default
+          limit: 10,
           server: {
             url: (prev, page, limit) => {
               const url = new URL(prev, window.location.origin);
@@ -64,4 +59,4 @@ const StudentsPage = () => {
   );
 };
 
-export default StudentsPage;
+export default RepaymentPage;

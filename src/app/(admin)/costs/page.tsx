@@ -35,6 +35,7 @@ const CostsPage = () => {
             data.data.map((row: Costs) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
+                   return row.unitid;
                 }
 
                 return row[col.id as keyof Costs] ?? '-';

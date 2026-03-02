@@ -22,7 +22,7 @@ const AdmissionsPage = () => {
             data.data.map((row: Admission) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.id;
+                  return row.unitid;
                 }
 
                 return row[col.id as keyof Admission] ?? '-';

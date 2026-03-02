@@ -24,7 +24,7 @@ const CompletionPage = () => {
             data.data.map((row: Completion) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.id;
+                  return row.unitid;
                 }
 
                 return row[col.id as keyof Completion] ?? '-';
