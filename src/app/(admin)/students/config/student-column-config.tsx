@@ -11,7 +11,7 @@ function normalizeUrl(url: string | null): string | null {
 export const studentColumns = [
     { id: 'unitid', name: 'Unit ID', sort: true, width: '120px' },
     { id: 'size', name: 'Size', sort: true, width: '80px' },
-    { id: 'grad_students', name: 'Grad Students', sort: true, width: '150px' },
+    { id: 'grad_students', name: 'Grad Students', sort: true, width: '120px' },
     { id: 'enrollment_grad_12_month', name: 'Grad 12 Month', sort: true, width: '150px' },
     { id: 'undergrad_12_month', name: 'Undergrad 12 Month', sort: true, width: '150px' },
     { id: 'fafsa_applications', name: 'FAFSA Applications', sort: true, width: '150px' },
@@ -24,7 +24,7 @@ export const studentColumns = [
   id: "action",
   name: "Action",
   sort: false,
-  width: "120px",
+  width: "80px",
   formatter: (cell: string) => {
     if (!cell) return "-";
 

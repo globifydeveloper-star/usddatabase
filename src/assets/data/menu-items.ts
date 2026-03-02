@@ -69,6 +69,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: 'ri:graduation-cap-line',
     url:"/completion"
   },
+  {
+    key: "academics",
+    label:"Academics",
+    icon: 'ri:book-line',
+    url:"/academics"
+  },
 
 
 

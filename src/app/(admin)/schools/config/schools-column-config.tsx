@@ -12,13 +12,13 @@ function normalizeUrl(url: string | null): string | null {
 }
 
 export const schoolsColumns = [
-    { id: 'unitid', name: 'Unit ID', sort: true, width: '120px' },
+    { id: 'unitid', name: 'Unit ID', sort: true, width: '80px' },
     { id: 'name', name: 'Name', sort: true, width: '250px' },
     { id: 'city', name: 'City', sort: true, width: '150px' },
-    { id: 'state', name: 'State', sort: true, width: '100px' },
+    { id: 'state', name: 'State', sort: true, width: '80px' },
     { id: 'zip', name: 'Zip', sort: true, width: '120px' },
-    { id: 'address', name: 'Address', sort: true, width: '300px' },
-    { id: 'accreditor', name: 'Accreditor', sort: true, width: '300px' },
+    { id: 'address', name: 'Address', sort: true, width: '200px' },
+    { id: 'accreditor', name: 'Accreditor', sort: true, width: '280px' },
     {
         id: 'school_url',
         name: 'Website',
@@ -33,13 +33,13 @@ export const schoolsColumns = [
         },
     },
     { id: 'degrees_awarded', name: 'Degrees', sort: true, width: '120px' },
-    { id: 'has_pseo', name: 'PSEO', sort: true, width: '100px' },
-    { id: 'ope8_id', name: 'OPE8 ID', sort: true, width: '140px' },
+    { id: 'has_pseo', name: 'PSEO', sort: true, width: '80px' },
+    { id: 'ope8_id', name: 'OPE8 ID', sort: true, width: '100px' },
 {
   id: "action",
   name: "Action",
   sort: false,
-  width: "120px",
+  width: "80px",
   formatter: (cell: string) => {
     if (!cell) return "-";
 
