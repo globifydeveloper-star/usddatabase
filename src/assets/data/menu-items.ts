@@ -75,6 +75,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: 'ri:book-line',
     url:"/academics"
   },
+  {
+    key: "aid",
+    label:"Aid for Students",
+    icon: 'ri:money-dollar-circle-line',
+    url:"/aid"
+  },
 
 
 
