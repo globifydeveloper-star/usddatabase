@@ -22,7 +22,7 @@ const Dashboard = async () => {
   <IconifyIcon icon="solar:help-bold-duotone" className="fs-24 me-1" />
   <div>
     <strong>US Degree Analytics - </strong> 
-    Live statistics from the{" "}
+    Statistics Data from the{" "}
     <a
       href="https://collegescorecard.ed.gov"
       target="_blank"

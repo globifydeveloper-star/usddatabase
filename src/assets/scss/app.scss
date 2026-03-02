@@ -113,4 +113,8 @@ File: App Css File
   justify-content: center;
 }
 
+/* Fix Grid.js white pagination button in dark mode */
+.gridjs-pagination button {
+  background: transparent !important;
+}
 

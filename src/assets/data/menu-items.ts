@@ -45,6 +45,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: "ri:building-line",
     url: "/schools",
   },
+   {
+    key: "programs",
+    label: "Programs",
+    icon: "ri:building-line",
+    url: "/programs",
+  },
   {
     key: "students",
     label:"Students",

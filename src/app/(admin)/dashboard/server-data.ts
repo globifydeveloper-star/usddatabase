@@ -18,7 +18,7 @@ export async function getDashboardStats() {
       icon: "solar:bill-list-bold-duotone",
       bgColor: "primary-subtle",
       textColor: "primary",
-      description: "Live database count",
+      description: " Database count",
       isTrue: false,
     },
     {
@@ -29,7 +29,7 @@ export async function getDashboardStats() {
       icon: "solar:wad-of-money-bold-duotone",
       bgColor: "success-subtle",
       textColor: "success",
-      description: "Live database count",
+      description: "Database count",
       isTrue: false,
     },
   ];
