@@ -1,0 +1,63 @@
+import { NextResponse } from "next/server";
+import { pool } from "@/lib/db";
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const userId = Number(params.id);
+
+  try {
+    const body = await request.json();
+
+    const {
+      full_name,
+      email,
+      is_active,
+      role_id
+    } = body;
+
+    const updateQuery = `
+      UPDATE users
+      SET 
+        full_name = $1,
+        email = $2,
+        is_active = $3,
+        role_id = $4,
+        updated_at = NOW()
+      WHERE id = $5
+      RETURNING *
+    `;
+
+    const result = await pool.query(updateQuery, [
+      full_name,
+      email,
+      is_active,
+      role_id,
+      userId,
+    ]);
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows[0],
+    });
+
+  } catch (error: any) {
+  console.error("Update User Error:", error);
+  
+  return NextResponse.json(
+    { 
+      success: false, 
+      message: error.message || "Server Error" 
+    },
+    { status: 500 }
+  );
+}
+}

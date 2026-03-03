@@ -23,10 +23,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={``}>
         <AppProvidersWrapper>{children}</AppProvidersWrapper>
-         <Script
-          src="https://code.iconify.design/3/3.1.1/iconify.min.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   )

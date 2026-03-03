@@ -18,6 +18,7 @@ export async function GET(request: Request) {
         u.email,
         u.is_active,
         u.created_at,
+        u.role_id,
         r.role_name
       FROM users u
       JOIN roles r ON u.role_id = r.id
