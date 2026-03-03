@@ -3,6 +3,8 @@
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
 import { studentColumns } from './config/aid-column-config';
+import { useEffect, useState } from 'react';
+import EditAidModal from './components/EditAidModal';
 
 interface Aid {
   id: number;
@@ -14,9 +16,28 @@ interface Aid {
 }
 
 const AidPage = () => {
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Aid | null>(null);
+  const [gridKey, setGridKey] = useState(0);
+  useEffect(() => {
+    const handleEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<Aid>;
+      setSelectedRow(customEvent.detail);
+      setShowEdit(true);
+    };
+
+    window.addEventListener('openEditModal', handleEdit);
+
+    return () => {
+      window.removeEventListener('openEditModal', handleEdit);
+    };
+  }, []);
+
   return (
+    <>
     <ComponentContainerCard title="Aid List">
       <Grid
+      key={gridKey}
         columns={studentColumns}
         server={{
           url: '/api/aid',
@@ -24,7 +45,7 @@ const AidPage = () => {
             data.data.map((row: Aid) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.unitid;
+                  return row;
                 }
 
                 return row[col.id as keyof Aid] ?? '-';
@@ -55,6 +76,13 @@ const AidPage = () => {
         }}
       />
     </ComponentContainerCard>
+    <EditAidModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+    </>
   );
 };
 
