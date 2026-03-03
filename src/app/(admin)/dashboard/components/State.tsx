@@ -29,7 +29,7 @@ const StateCard = ({
 
             <h3 className="my-2 py-1 fw-bold">{value}</h3>
 
-            <p className="mb-0 text-muted flex-centered">
+            {/* <p className="mb-0 text-muted flex-centered">
               <span className={`${isTrue ? 'text-danger' : 'text-success'} icons-center me-1`}>
                 {isTrue ? (
                   <IconifyIcon icon="ri:arrow-left-down-box-line" />
@@ -40,7 +40,7 @@ const StateCard = ({
               </span>
               &nbsp;
               <span className="text-nowrap">{description}</span>
-            </p>
+            </p> */}
           </div>
 
           <div className="avatar-xl flex-shrink-0">

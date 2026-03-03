@@ -11,13 +11,13 @@ const VerticalLayout = ({ children }: ChildrenType) => {
       <Suspense>
         <LeftSideBar />
       </Suspense>
-      <div className="color-line" />
+      <div/>
       <Suspense fallback={<FallbackLoading />}>
         <TopBar />
       </Suspense>
       <div className="page-content">
         <div className="page-container">{children}</div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   )

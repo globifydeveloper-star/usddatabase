@@ -22,7 +22,7 @@ const HorizontalLayout = ({ children }: ChildrenType) => {
 
   return (
     <div className="wrapper">
-      <div className="color-line" />
+      <div/>
       <Suspense>
         <TopBar />
       </Suspense>
@@ -31,7 +31,7 @@ const HorizontalLayout = ({ children }: ChildrenType) => {
       </Suspense>
       <div className="page-content">
         <div className="page-container">{children}</div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   )

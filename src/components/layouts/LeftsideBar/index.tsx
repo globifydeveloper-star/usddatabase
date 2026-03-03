@@ -10,6 +10,7 @@ import FallbackLoading from '@/components/FallbackLoading'
 import { getMenuItems } from '@/helpers/Menu'
 import HoverMenuToggle from './components/HoverMenuToggle'
 import { useLayoutContext } from '@/context/useLayoutContext'
+import { Icon } from '@iconify/react/dist/iconify.js'
 
 const LeftSideBar = () => {
   const { toggleBackdrop } = useLayoutContext()
@@ -32,9 +33,24 @@ const LeftSideBar = () => {
               type="button"
               aria-haspopup="false"
               aria-expanded="false">
-              <Image src={avatar1} width={42} className="rounded-circle me-2 d-flex" alt="user-image" />
+                <div
+  className="rounded-circle me-2 d-flex align-items-center justify-content-center"
+  style={{
+    width: '42px',
+    height: '42px',
+    backgroundColor: '#f1f3fa'
+  }}
+>
+  <Icon
+    icon="ri:graduation-cap-line"
+    width="22"
+    height="22"
+    style={{ color: '#0d6efd' }}
+  />
+</div>
+              {/* <Image src={avatar1} width={42} className="rounded-circle me-2 d-flex" alt="user-image" /> */}
               <span className="d-flex flex-column gap-1 sidebar-user-name">
-                <h4 className="my-0 fw-bold fs-15">Maxine Kennedy</h4>
+                <h4 className="my-0 fw-bold fs-15">Admin</h4>
                 <h6 className="my-0">Admin Head</h6>
               </span>
               <span>
@@ -49,7 +65,7 @@ const LeftSideBar = () => {
                 <IconifyIcon icon="ri:account-circle-line" className="me-1 fs-16 align-middle" />
                 <span className="align-middle">My Account</span>
               </DropdownItem>
-              <DropdownItem>
+              {/* <DropdownItem>
                 <IconifyIcon icon="ri:wallet-3-line" className="me-1 fs-16 align-middle" />
                 <span className="align-middle">
                   Wallet : <span className="fw-semibold">$89.25k</span>
@@ -63,7 +79,7 @@ const LeftSideBar = () => {
                 <IconifyIcon icon="ri:question-line" className="me-1 fs-16 align-middle" />
                 <span className="align-middle">Support</span>
               </DropdownItem>
-              <div className="dropdown-divider" />
+              <div className="dropdown-divider" /> */}
               <DropdownItem>
                 <IconifyIcon icon="ri:lock-line" className="me-1 fs-16 align-middle" />
                 <span className="align-middle">Lock Screen</span>
@@ -78,13 +94,7 @@ const LeftSideBar = () => {
         <Suspense fallback={<FallbackLoading />}>
           <AppMenu menuItems={menuItems} />
         </Suspense>
-        <div className="help-box text-center">
-          <h5 className="fw-semibold fs-16">Unlimited Access</h5>
-          <p className="mb-3 opacity-75">Upgrade to plan to get access to unlimited reports</p>
-          <a href="" className="btn btn-danger btn-sm">
-            Upgrade
-          </a>
-        </div>
+       
         <div className="clearfix" />
       </SimplebarReactClient>
     </div>

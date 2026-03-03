@@ -8,6 +8,8 @@ import NewUsers from './components/NewUsers'
 import TransactionsUses from './components/TransactionsUses'
 import { Alert, Col, Row } from 'react-bootstrap'
 import { getDashboardStats } from "./server-data"   
+import EarningsPieChart from './components/CostPieChart'
+import CostPieChart from './components/CostPieChart'
 
 const Dashboard = async () => {
 
@@ -41,19 +43,19 @@ const Dashboard = async () => {
           <StatisticsChart />
         </Col>
         <Col xl={6}>
-          <TotalRevenue />
+          <CostPieChart />
         </Col>
       </Row>
 
       <Row>
         <Col xxl={4}>
-          <Transactions />
+          {/* <Transactions /> */}
         </Col>
         <Col xxl={4}>
-          <NewUsers />
+          {/* <NewUsers /> */}
         </Col>
         <Col xxl={4}>
-          <TransactionsUses />
+          {/* <TransactionsUses /> */}
         </Col>
       </Row>
     </>

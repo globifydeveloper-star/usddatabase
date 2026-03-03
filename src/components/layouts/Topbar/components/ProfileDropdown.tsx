@@ -18,9 +18,9 @@ const ProfileDropdown = () => {
           type="button"
           aria-haspopup="false"
           aria-expanded="false">
-          <Image src={avatar1} width={32} className="rounded-circle me-lg-2 d-flex" alt="user-image" />
+          {/* <Image src={avatar1} width={32} className="rounded-circle me-lg-2 d-flex" alt="user-image" /> */}
           <span className="d-lg-flex flex-column gap-1 d-none">
-            <h5 className="my-0">Maxine K.</h5>
+            <h5 className="my-0">Admin</h5>
           </span>
           <IconifyIcon icon="ri:arrow-down-s-line" className="d-none d-lg-block align-middle ms-2" />
         </DropdownToggle>
@@ -32,7 +32,7 @@ const ProfileDropdown = () => {
             <IconifyIcon icon="ri:account-circle-line" className="me-1 fs-17 align-middle" />&nbsp;
             <span className="align-middle">My Account</span>
           </DropdownItem>
-          <DropdownItem>
+          {/* <DropdownItem>
             <IconifyIcon icon="ri:wallet-3-line" className="me-1 fs-17 align-middle" />&nbsp;
             <span className="align-middle">
               Wallet : <span className="fw-semibold">{currency}985.25</span>
@@ -45,7 +45,7 @@ const ProfileDropdown = () => {
           <DropdownItem>
             <IconifyIcon icon="ri:question-line" className="me-1 fs-17 align-middle" />&nbsp;
             <span className="align-middle">Support</span>
-          </DropdownItem>
+          </DropdownItem> */}
           <div className="dropdown-divider" />
           <DropdownItem>
             <IconifyIcon icon="ri:lock-line" className="me-1 fs-17 align-middle" />&nbsp;

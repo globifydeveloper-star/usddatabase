@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_TITLE } from '@/context/constants'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Highdmin NextJs - Responsive Bootstrap 5 Admin Dashboard',
+    template: '%s | US Degree',
     default: DEFAULT_PAGE_TITLE,
   },
   description: 'A fully featured admin theme which can be used to build CRM, CMS, etc.',

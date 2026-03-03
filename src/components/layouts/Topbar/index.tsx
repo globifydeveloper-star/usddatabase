@@ -28,7 +28,7 @@ const TopBar = () => {
     <header className="app-topbar">
       <div className="page-container topbar-menu">
         <div className="d-flex align-items-center gap-2">
-          <LogoBox />
+          {/* <LogoBox /> */}
           <LeftSideBarToggle />
           <div className="topbar-item d-none d-md-flex">
             <div>
@@ -36,7 +36,7 @@ const TopBar = () => {
               {subTitle && (
                 <ol className="breadcrumb m-0 mt-1 py-0">
                   <li className="breadcrumb-item">
-                    <a href="">Highdmin</a>
+                    <a href="">US Degree</a>
                   </li>
                   &nbsp;
                   <IconifyIcon icon="ri:arrow-right-s-line" width={14} height={14} />
@@ -49,9 +49,9 @@ const TopBar = () => {
         </div>
         <div className="d-flex align-items-center gap-2">
           <SearchBox />
-          <Flag />
+          {/* <Flag />
           <Notifications />
-          <Apps />
+          <Apps /> */}
           <ThemeCustomizeToggle />
           <ThemeModeToggle />
           <ProfileDropdown />
