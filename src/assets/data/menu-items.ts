@@ -66,7 +66,7 @@ export const MENU_ITEMS: MenuItemType[] = [
   {
     key: "earnings against courses",
     label:"Earnings against courses",
-    icon: 'ri:file-list-3-line',
+    icon: "ri-money-dollar-circle-line",
     url:"/earningsagainstcourses"
   },
   {

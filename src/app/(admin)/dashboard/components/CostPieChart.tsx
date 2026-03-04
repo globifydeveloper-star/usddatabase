@@ -10,7 +10,7 @@ const CostPieChart = () => {
   const [labels, setLabels] = useState<string[]>([])
 
   useEffect(() => {
-    fetch('/api/cost-pie')   // 🔥 changed API
+    fetch('/api/cost-pie')   //changed API
       .then(res => res.json())
       .then(data => {
         const credentialLabels = data.map(
