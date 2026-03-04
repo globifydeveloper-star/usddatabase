@@ -22,7 +22,7 @@ export const studentColumns = [
   sort: false,
   width: "80px",
    formatter: (cell: any) => {
-              const rowData = cell; // ✅ full row object
+              const rowData = cell; //full row object
   
               return h(
                   'div',

@@ -65,8 +65,8 @@ export const MENU_ITEMS: MenuItemType[] = [
   },
   {
     key: "earnings against courses",
-    label:"Earnings against courses",
-    icon: "ri-money-dollar-circle-line",
+    label:"Earnings Against Courses",
+    icon: "ri:line-chart-line",
     url:"/earningsagainstcourses"
   },
   {
@@ -96,7 +96,7 @@ export const MENU_ITEMS: MenuItemType[] = [
 
   {
    key: "earnings",
-   label: "Earnings",
+   label: "Earnings Against Instituions",
    icon: 'ri:line-chart-line',
    url: "/earnings",
   },

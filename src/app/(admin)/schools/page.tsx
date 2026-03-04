@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
 import { schoolsColumns } from './config/schools-column-config';
+import EditSchoolModal from './components/EditSchoolModal';
 
 interface School {
     unitid: string;
@@ -20,9 +21,29 @@ interface School {
 }
 
 const SchoolsPage = () => {
+const [showEdit, setShowEdit] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<School | null>(null);
+  const [gridKey, setGridKey] = useState(0);
+  useEffect(() => {
+    const handleEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<School>;
+      setSelectedRow(customEvent.detail);
+      setShowEdit(true);
+    };
+
+    window.addEventListener('openEditModal', handleEdit);
+
+    return () => {
+      window.removeEventListener('openEditModal', handleEdit);
+    };
+  }, []);
+
+
     return (
+        <>
         <ComponentContainerCard title="Schools List">
             <Grid
+            key={gridKey}
                 columns={schoolsColumns}
                 server={{
                     url: '/api/schools',
@@ -34,7 +55,7 @@ const SchoolsPage = () => {
                                         return row.has_pseo ? 'Yes' : 'No';
                                     case 'action':
                                         // feed the unitid into the Action column
-                                        return row.unitid;
+                                        return row;
                                     default:
                                         return row[col.id as keyof School];
                                 }
@@ -65,6 +86,13 @@ const SchoolsPage = () => {
                 }}
             />
         </ComponentContainerCard>
+        <EditSchoolModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+    </>
     );
 };
 
