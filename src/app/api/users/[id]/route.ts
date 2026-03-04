@@ -61,3 +61,23 @@ export async function PUT(
   );
 }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await pool.query(
+      "DELETE FROM users WHERE id = $1",
+      [params.id]
+    );
+
+    return NextResponse.json({ message: "Deleted successfully" });
+
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Delete failed" },
+      { status: 500 }
+    );
+  }
+}
