@@ -1,6 +1,6 @@
 'use client';
 
-import { html } from 'gridjs';
+import { h, html } from 'gridjs';
 
 function normalizeUrl(url: string | null): string | null {
     if (!url) return null;
@@ -28,20 +28,52 @@ export const studentColumns = [
   name: "Action",
   sort: false,
   width: "80px",
-  formatter: (cell: string) => {
-    if (!cell) return "-";
+  formatter: (_: any, row: any) => {
+  const rowData = {
+    id: row.cells[0].data,
+    unitid: row.cells[0].data,
+    ope8_id: row.cells[1].data,
+    school_name: row.cells[2].data,
+    cip_code: row.cells[3].data,
+    cip_title: row.cells[4].data,
+    grad_cohort: row.cells[5].data,
+    year_1: row.cells[6].data,
+    year_5: row.cells[7].data,
+    year_10: row.cells[8].data,
+    credential_level: row.cells[9].data,
+    credential_title: row.cells[10].data,
+  };
 
-    return html(`
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <a href="/earningsagainstcourses/edit/${cell}" class="text-reset fs-16 px-1" title="Edit">
-          <span class="iconify" data-icon="tabler:pencil"></span>
-        </a>
-        <a href="/earningsagainstcourses/delete/${cell}" class="text-reset fs-16 px-1" title="Delete">
-          <span class="iconify" data-icon="tabler:trash"></span>
-        </a>
-      </div>
-    `);
-  },
-}  
-];
+  return h(
+    "div",
+    {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "14px",
+      },
+    },
+    [
+      h("svg", {
+        width: "20",
+        height: "20",
+        style: { cursor: "pointer" },
+        onClick: () =>
+          window.dispatchEvent(
+            new CustomEvent("openEditModal", { detail: rowData })
+          ),
+        children: [
+          h("path", { d: "M12 20h9" }),
+          h("path", {
+            d: "M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z",
+          }),
+        ],
+      }),
+    ]
+  );
+}
+ }  
+ ];
+ 
 

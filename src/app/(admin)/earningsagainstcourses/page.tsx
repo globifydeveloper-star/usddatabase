@@ -3,26 +3,49 @@
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
 import { studentColumns } from './config/earningsagainstcourses-column-config';
-
+import EditearningsagainstModal from './components/EditearningsagainstModal'; 
+import { useEffect, useState } from 'react';
 interface EarningsAgainstCourses {
   unitid: number;
-  ope8_id: number | null;
+  ope8_id: string | null;
   school_name: string | null;
   cip_code: string | null;
   cip_title: string | null;
-  grad_cohort: number | null;
+  grad_cohort: string | null;
   year_1: number | null;
   year_5: number | null;
   year_10: number | null;
-  credential_level: string | null;
+  credential_level: number | null;
   credential_title: string | null;
- 
 }
 
 const EarningsagainstcoursesPage = () => {
+
+
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<EarningsAgainstCourses | null>(null);
+  const [gridKey, setGridKey] = useState(0);
+
+
+  useEffect(() => {
+    const handleEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<EarningsAgainstCourses>;
+      setSelectedRow(customEvent.detail);
+      setShowEdit(true);
+    };
+
+    window.addEventListener('openEditModal', handleEdit);
+
+    return () => {
+      window.removeEventListener('openEditModal', handleEdit);
+    };
+  }, []);
+
   return (
+    <>
     <ComponentContainerCard title="Earnings Against Courses List">
       <Grid
+      key={gridKey}
         columns={studentColumns}
         server={{
           url: '/api/earningsagainstcourses',
@@ -60,6 +83,13 @@ const EarningsagainstcoursesPage = () => {
         }}
       />
     </ComponentContainerCard>
+     <EditearningsagainstModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+    </>
   );
 };
 
