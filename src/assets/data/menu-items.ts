@@ -64,6 +64,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     url:"/admissions"
   },
   {
+    key: "earnings against courses",
+    label:"Earnings against courses",
+    icon: 'ri:file-list-3-line',
+    url:"/earningsagainstcourses"
+  },
+  {
     key: "completion",
     label:"Completion",
     icon: 'ri:graduation-cap-line',
