@@ -3,14 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ unitid: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-
-    const { unitid } = await params;
+    const { id } = await params;
     const body = await req.json();
-
-    console.log("BODY:", body);
 
     const parseNumber = (val: any) =>
       val === "-" || val === "" ? null : val;
@@ -29,7 +26,7 @@ export async function PUT(
         year_10 = $8,
         credential_level = $9,
         credential_title = $10
-      WHERE unitid = $11
+      WHERE id = $11
       RETURNING *;
       `,
       [
@@ -43,7 +40,7 @@ export async function PUT(
         parseNumber(body.year_10),
         body.credential_level ?? null,
         body.credential_title ?? null,
-        unitid
+        id
       ]
     );
 

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   try {
  const dataQuery = `
-  SELECT unitid, ope8_id, school_name, cip_code, cip_title, grad_cohort,
+  SELECT id, unitid, ope8_id, school_name, cip_code, cip_title, grad_cohort,
          year_1, year_5, year_10, credential_level, credential_title
         
   FROM earnings_against_courses

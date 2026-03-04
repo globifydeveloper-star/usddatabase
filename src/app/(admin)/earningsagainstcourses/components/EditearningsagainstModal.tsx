@@ -2,21 +2,6 @@
 
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-
-interface EarningsAgainstCourses {
-  unitid: number;
-  ope8_id: string | null;
-  school_name: string | null;
-  cip_code: string | null;
-  cip_title: string | null;
-  grad_cohort: string | null;
-  year_1: number | null;
-  year_5: number | null;
-  year_10: number | null;
-  credential_level: number | null;
-  credential_title: string | null;
-}
-
 interface Props {
     show: boolean;
     onClose: () => void;
@@ -53,7 +38,7 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
         try {
             setLoading(true);
 
-            const response = await fetch(`/api/earningsagainstcourses/${formData.unitid}`, {
+            const response = await fetch(`/api/earningsagainstcourses/${formData.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

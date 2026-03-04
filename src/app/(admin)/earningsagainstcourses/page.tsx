@@ -5,19 +5,6 @@ import { Grid } from 'gridjs-react';
 import { studentColumns } from './config/earningsagainstcourses-column-config';
 import EditearningsagainstModal from './components/EditearningsagainstModal'; 
 import { useEffect, useState } from 'react';
-interface EarningsAgainstCourses {
-  unitid: number;
-  ope8_id: string | null;
-  school_name: string | null;
-  cip_code: string | null;
-  cip_title: string | null;
-  grad_cohort: string | null;
-  year_1: number | null;
-  year_5: number | null;
-  year_10: number | null;
-  credential_level: number | null;
-  credential_title: string | null;
-}
 
 const EarningsagainstcoursesPage = () => {
 
@@ -53,6 +40,7 @@ const EarningsagainstcoursesPage = () => {
             data.data.map((row: EarningsAgainstCourses) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
+                  return row;
                 }
 
                 return row[col.id as keyof EarningsAgainstCourses] ?? '-';

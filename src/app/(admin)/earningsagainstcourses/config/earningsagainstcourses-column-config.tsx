@@ -9,6 +9,7 @@ function normalizeUrl(url: string | null): string | null {
 }
 
 export const studentColumns = [
+  { id: 'id', name: 'ID', hidden: true },
     { id: 'unitid', name: 'Unit ID', sort: true, width: '80px' },
     { id: 'ope8_id', name: 'Ope8_id', sort: true, width: '100px' },
     { id: 'school_name', name: 'School Name', sort: true, width: '120px' },
@@ -28,21 +29,8 @@ export const studentColumns = [
   name: "Action",
   sort: false,
   width: "80px",
-  formatter: (_: any, row: any) => {
-  const rowData = {
-    id: row.cells[0].data,
-    unitid: row.cells[0].data,
-    ope8_id: row.cells[1].data,
-    school_name: row.cells[2].data,
-    cip_code: row.cells[3].data,
-    cip_title: row.cells[4].data,
-    grad_cohort: row.cells[5].data,
-    year_1: row.cells[6].data,
-    year_5: row.cells[7].data,
-    year_10: row.cells[8].data,
-    credential_level: row.cells[9].data,
-    credential_title: row.cells[10].data,
-  };
+  formatter: (cell: any) => {
+ const rowData = cell
 
   return h(
     "div",
