@@ -3,47 +3,59 @@
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
 import { studentColumns } from './config/academics-column-config';
+import EditAcademicsModal from './components/EditAcademicsModal';
 
-interface Academics {
-  unitid: number;
-  assoc: boolean | null;
-  degree: boolean | null;
-  bachelors: boolean | null;
-  certificate_lt_1yr: boolean | null;
-  certificate_lt_2yr: boolean | null;
-  certificate_lt_4yr: boolean | null;
-  degree_or_certificate: boolean | null;
-}
+import { useEffect, useState } from 'react';
+import { Academics } from '@/types/academics';
+
+
 
 const AcademicsPage = () => {
+  const [showEdit, setShowEdit] = useState(false);
+        const [selectedRow, setSelectedRow] = useState<Academics | null>(null);
+        const [gridKey, setGridKey] = useState(0);
+        useEffect(() => {
+          const handleEdit = (event: Event) => {
+            const customEvent = event as CustomEvent<Academics>;
+            setSelectedRow(customEvent.detail);
+            setShowEdit(true);
+          };
+      
+          window.addEventListener('openEditModal', handleEdit);
+      
+          return () => {
+            window.removeEventListener('openEditModal', handleEdit);
+          };
+        }, []);
   return (
+    <>
     <ComponentContainerCard title="Academics List">
      <Grid
+     key={gridKey}
   columns={studentColumns}
   server={{
     url: '/api/academics',
-    then: (data) =>
-      data.data.map((row: Academics) =>
-        studentColumns.map((col: { id: string }) => {
-          if (col.id === 'action') {
-            return row.unitid; // use unitid as unique identifier
-          }
+   then: (data) =>
+  data.data.map((row: Academics) =>
+    studentColumns.map((col: { id: string }) => {
 
-          const value = row[col.id as keyof Academics];
+      if (col.id === 'action') {
+        return row;
+      }
 
-          // Handle null / undefined
-          if (value === null || value === undefined) {
-            return '-';
-          }
+      const value = row[col.id as keyof Academics];
 
-          // Handle boolean fields (VERY IMPORTANT)
-          if (typeof value === 'boolean') {
-            return value ? 'Yes' : 'No';
-          }
+      if (value === null || value === undefined) {
+        return '-';
+      }
 
-          return value;
-        })
-      ),
+      if (typeof value === 'boolean') {
+        return value ? 'Yes' : 'No';
+      }
+
+      return value;
+    })
+  ),
     total: (data) => data.total,
   }}
   pagination={{
@@ -69,6 +81,13 @@ const AcademicsPage = () => {
   }}
 />
     </ComponentContainerCard>
+<EditAcademicsModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+    </>
   );
 };
 
