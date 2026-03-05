@@ -10,9 +10,9 @@ function normalizeUrl(url: string | null): string | null {
 }
 
 export const userColumns = [
-    { id: 'id', name: 'ID', sort: true },
+    { id: 'id', name: 'ID', sort: true, width: '60px' },
     { id: 'full_name', name: 'Full Name', sort: true },
-    { id: 'email', name: 'Email', sort: true, width: '80px' },
+    { id: 'email', name: 'Email', sort: true, width: '140px' },
     { id: 'role_name', name: 'Role', sort: true },
     { id: 'is_active', name: 'Status', sort: true },
     { id: 'last_login', name: 'Last Login', sort: true },

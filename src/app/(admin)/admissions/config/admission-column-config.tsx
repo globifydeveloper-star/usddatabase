@@ -1,6 +1,6 @@
 'use client';
 
-import { html } from 'gridjs';
+import { h , html } from 'gridjs';
 
 function normalizeUrl(url: string | null): string | null {
     if (!url) return null;
@@ -19,19 +19,37 @@ export const studentColumns = [
   name: "Action",
   sort: false,
   width: "120px",
-  formatter: (cell: string) => {
-    if (!cell) return "-";
-
-    return html(`
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <a href="/admissions/edit/${cell}" class="text-reset fs-16 px-1" title="Edit">
-          <span class="iconify" data-icon="tabler:pencil"></span>
-        </a>
-        <a href="/admissions/delete/${cell}" class="text-reset fs-16 px-1" title="Delete">
-          <span class="iconify" data-icon="tabler:trash"></span>
-        </a>
-      </div>
-    `);
-  },
+ formatter: (cell: any) => {
+              const rowData = cell; //full row object
+  
+              return h(
+                  'div',
+                  {
+                      style: {
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '14px',
+                      },
+                  },
+                  [
+                      h('svg', {
+                          width: '20',
+                          height: '20',
+                          style: { cursor: 'pointer' },
+                          onClick: () =>
+                              window.dispatchEvent(
+                                  new CustomEvent('openEditModal', { detail: rowData })
+                              ),
+                          children: [
+                              h('path', { d: 'M12 20h9' }),
+                              h('path', {
+                                  d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z',
+                              }),
+                          ],
+                      }),
+                  ]
+              );
+          },
 }  
 ];
