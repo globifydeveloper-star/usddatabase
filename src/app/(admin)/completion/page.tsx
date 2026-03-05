@@ -2,21 +2,36 @@
 
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
-import { studentColumns } from './config/completion-column-config';
 
-interface Completion {
-  id: number;
-  unitid: string;
-  completed_2yrs: string | null;
-  completed_3yrs: string | null;
-  completed_4yrs: string | null;
-  completed_6yrs: string | null;
-}
+import { studentColumns } from './config/completion-column-config';
+import EditCompletionModal  from './components/EditCompletionModal';
+
+import { useEffect, useState } from 'react';
+import { Completion } from '@/types/completion';
+
 
 const CompletionPage = () => {
+  const [showEdit, setShowEdit] = useState(false);
+      const [selectedRow, setSelectedRow] = useState<Completion | null>(null);
+      const [gridKey, setGridKey] = useState(0);
+      useEffect(() => {
+        const handleEdit = (event: Event) => {
+          const customEvent = event as CustomEvent<Completion>;
+          setSelectedRow(customEvent.detail);
+          setShowEdit(true);
+        };
+    
+        window.addEventListener('openEditModal', handleEdit);
+    
+        return () => {
+          window.removeEventListener('openEditModal', handleEdit);
+        };
+      }, []);
   return (
+    <>
     <ComponentContainerCard title="Completion List">
       <Grid
+      key={gridKey}
         columns={studentColumns}
         server={{
           url: '/api/completion',
@@ -24,10 +39,10 @@ const CompletionPage = () => {
             data.data.map((row: Completion) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                  return row.unitid;
+                  return row;
+                   } else {
+          return row[col.id as keyof Completion];
                 }
-
-                return row[col.id as keyof Completion] ?? '-';
               })
             ),
           total: (data) => data.total,
@@ -55,6 +70,13 @@ const CompletionPage = () => {
         }}
       />
     </ComponentContainerCard>
+     <EditCompletionModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+    </>
   );
 };
 
