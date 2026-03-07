@@ -3,31 +3,34 @@
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
 import { studentColumns } from './config/costs-column-config';
+import { Costs } from '@/types/costs';
+import { useEffect, useState } from 'react';
+import EditCostsModal from './components/EditCostsModal'
 
-interface Costs {
-  unitid: number;
-
-  booksupply: number | null;
-  tuition_in_state: number | null;
-  tuition_out_state: number | null;
-  tuition_program_year: number | null;
-
-  roomboard_oncampus: number | null;
-  roomboard_offcampus: number | null;
-
-  avg_net_price_public: number | null;
-  avg_net_price_private: number | null;
-  avg_net_price_overall: number | null;
-
-  otherexpense_oncampus: number | null;
-  otherexpense_offcampus: number | null;
-  otherexpense_withfamily: number | null;
-}
 
 const CostsPage = () => {
+  const [showEdit, setShowEdit] = useState (false);
+    const [selectedRow, setSelectedRow] = useState<Costs | null>(null);
+    const [gridKey, setGridKey] = useState(0);
+  
+    useEffect(() => {
+      const handleEdit = (event: Event) => {
+        const customEvent = event as CustomEvent<Costs>;
+        setSelectedRow(customEvent.detail);
+        setShowEdit(true);
+      };
+  
+      window.addEventListener('openEditModal', handleEdit);
+  
+      return () => {
+        window.removeEventListener('openEditModal', handleEdit);
+      };
+    }, []);
   return (
+    <>
     <ComponentContainerCard title="Costs List">
       <Grid
+      key={gridKey}
         columns={studentColumns}
         server={{
           url: '/api/costs',
@@ -35,10 +38,10 @@ const CostsPage = () => {
             data.data.map((row: Costs) =>
               studentColumns.map((col) => {
                 if (col.id === 'action') {
-                   return row.unitid;
+                   return row;
+                   } else {
+                   return row[col.id as keyof Costs];
                 }
-
-                return row[col.id as keyof Costs] ?? '-';
               })
             ),
           total: (data) => data.total,
@@ -66,6 +69,14 @@ const CostsPage = () => {
         }}
       />
     </ComponentContainerCard>
+     <EditCostsModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
+      />
+
+    </>
   );
 };
 

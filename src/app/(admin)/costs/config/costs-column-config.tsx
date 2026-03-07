@@ -1,6 +1,6 @@
 'use client';
 
-import { html } from 'gridjs';
+import { h , html } from 'gridjs';
 
 function normalizeUrl(url: string | null): string | null {
     if (!url) return null;
@@ -10,19 +10,19 @@ function normalizeUrl(url: string | null): string | null {
 
 export const studentColumns = [
     { id: 'unitid', name: 'Unit ID', sort: true, width: '80px' },
-    { id: 'booksupply', name: 'Book Supply', sort: true, width: '80px' },
-    { id: 'tuition_in_state', name: 'In state Tuition Fees', sort: true, width: '80px' },
-    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '80px'},
-    { id: 'tuition_program_year', name: 'Program Year of Tuition', sort: true, width: '80px' },
-    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '80px'},
-    { id: 'roomboard_oncampus', name: 'RoomBoard OnCampus', sort: true, width: '80px' },
-    { id: 'roomboard_offcampus', name: 'RoomBoard OffCampus', sort: true, width: '80px' },
-    { id: 'avg_net_price_public', name: 'Avg Net price Public', sort: true, width: '80px'},
-    { id: 'avg_net_price_private', name: 'Avg net price private', sort: true, width: '80px' },
-    { id: 'avg_net_price_overall', name: 'Overall Avg net Price', sort: true, width: '80px' },
-    { id: 'otherexpense_oncampus', name: 'Other Expense OnCampus', sort: true, width: '80px'},
-    { id: 'otherexpense_offcampus', name: 'Other Expense OffCampus', sort: true, width: '80px' },
-    { id: 'otherexpense_withfamily', name: 'Other Expense With family', sort: true, width: '80px' },
+    { id: 'booksupply', name: 'Book Supply', sort: true, width: '120px' },
+    { id: 'tuition_in_state', name: 'In state Tuition Fees', sort: true, width: '150px' },
+    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '150px'},
+    { id: 'tuition_program_year', name: 'Program Year of Tuition', sort: true, width: '120px' },
+    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '150px'},
+    { id: 'roomboard_oncampus', name: 'RoomBoard OnCampus', sort: true, width: '180px' },
+    { id: 'roomboard_offcampus', name: 'RoomBoard OffCampus', sort: true, width: '180px' },
+    { id: 'avg_net_price_public', name: 'Avg Net price Public', sort: true, width: '180px'},
+    { id: 'avg_net_price_private', name: 'Avg net price private', sort: true, width: '180px' },
+    { id: 'avg_net_price_overall', name: 'Overall Avg net Price', sort: true, width: '180px' },
+    { id: 'otherexpense_oncampus', name: 'Other Expense OnCampus', sort: true, width: '180px'},
+    { id: 'otherexpense_offcampus', name: 'Other Expense OffCampus', sort: true, width: '180px' },
+    { id: 'otherexpense_withfamily', name: 'Other Expense With family', sort: true, width: '180px' },
 
 
 {
@@ -30,19 +30,37 @@ export const studentColumns = [
   name: "Action",
   sort: false,
   width: "80px",
-  formatter: (cell: string) => {
-    if (!cell) return "-";
+  formatter: (cell: any) => {
+    const rowData = cell; // full row object
 
-    return html(`
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <a href="/costs/edit/${cell}" class="text-reset fs-16 px-1" title="Edit">
-          <span class="iconify" data-icon="tabler:pencil"></span>
-        </a>
-        <a href="/costs/delete/${cell}" class="text-reset fs-16 px-1" title="Delete">
-          <span class="iconify" data-icon="tabler:trash"></span>
-        </a>
-      </div>
-    `);
+    return h(
+      "div",
+      {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "14px",
+        },
+      },
+      [
+        h("svg", {
+          width: "20",
+          height: "20",
+          style: { cursor: "pointer" },
+          onClick: () =>
+            window.dispatchEvent(
+              new CustomEvent("openEditModal", { detail: rowData })
+            ),
+          children: [
+            h("path", { d: "M12 20h9" }),
+            h("path", {
+              d: "M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z",
+            }),
+          ],
+        }),
+      ]
+    );
   },
-}  
+},
 ];

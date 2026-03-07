@@ -1,0 +1,68 @@
+import { pool } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { unitid: string } }
+) {
+  try {
+    const body = await request.json();
+
+    const result = await pool.query(
+      `
+      UPDATE costs
+      SET 
+        booksupply = $1,
+        tuition_in_state = $2,
+        tuition_out_state = $3,
+        tuition_program_year = $4,
+        roomboard_oncampus = $5,
+        roomboard_offcampus = $6,
+        avg_net_price_public = $7,
+        avg_net_price_private = $8,
+        avg_net_price_overall = $9,
+        otherexpense_oncampus = $10,
+        otherexpense_offcampus = $11,
+        otherexpense_withfamily = $12
+      WHERE unitid = $13
+      RETURNING *;
+      `,
+      [
+        body.booksupply,
+        body.tuition_in_state,
+        body.tuition_out_state,
+        body.tuition_program_year,
+        body.roomboard_oncampus,
+        body.roomboard_offcampus,
+        body.avg_net_price_public,
+        body.avg_net_price_private,
+        body.avg_net_price_overall,
+        body.otherexpense_oncampus,
+        body.otherexpense_offcampus,
+        body.otherexpense_withfamily,
+        params.unitid,
+      ]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Costs record not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Costs updated successfully",
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("PUT Costs Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
