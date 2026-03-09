@@ -26,6 +26,7 @@
     "@types/bootstrap": "^5.2.10",
     "@types/react-flatpickr": "^3.8.11",
     "apexcharts": "^4.4.0",
+    "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.3",
     "choices.js": "^11.0.3",
     "datatables.net": "^2.2.2",
@@ -68,6 +69,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
