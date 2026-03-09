@@ -1,6 +1,6 @@
 'use client';
 
-import { html } from 'gridjs';
+import { h, html } from 'gridjs';
 
 function normalizeUrl(url: string | null): string | null {
     if (!url) return null;
@@ -11,24 +11,56 @@ function normalizeUrl(url: string | null): string | null {
 export const rolesColumns = [
      { id: 'id', name: 'ID', sort: true },
   { id: 'role_name', name: 'Full Name', sort: true },
-{
-  id: "action",
-  name: "Action",
-  sort: false,
-  width: "80px",
-  formatter: (cell: string) => {
-    if (!cell) return "-";
+  {
+    id: 'action',
+    name: 'Action',
+    sort: false,
+    width: '110px',
+    formatter: (cell: any) => {
+      const rowData = cell;
 
-    return html(`
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <a href="/roles/edit/${cell}" class="text-reset fs-16 px-1" title="Edit">
-          <span class="iconify" data-icon="tabler:pencil"></span>
-        </a>
-        <a href="/roles/delete/${cell}" class="text-reset fs-16 px-1" title="Delete">
-          <span class="iconify" data-icon="tabler:trash"></span>
-        </a>
-      </div>
-    `);
-  },
-}  
+      const editIcon = h('span', {
+        style: {
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          color: '#a8e7e7ff',
+        },
+        onClick: () =>
+          window.dispatchEvent(
+            new CustomEvent('openEditModal', { detail: rowData })
+          ),
+        innerHTML:
+          '<iconify-icon icon="ri:edit-line" width="20" height="20"></iconify-icon>',
+      });
+
+      const deleteIcon = h('span', {
+        style: {
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          color: '#ef4444',
+        },
+        onClick: () =>
+          window.dispatchEvent(
+            new CustomEvent('deleteRole', { detail: rowData })
+          ),
+        innerHTML:
+          '<iconify-icon icon="ri:delete-bin-line" width="20" height="20"></iconify-icon>',
+      });
+
+      return h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '14px',
+          },
+        },
+        [editIcon, deleteIcon]
+      );
+    },
+  },  
 ];
