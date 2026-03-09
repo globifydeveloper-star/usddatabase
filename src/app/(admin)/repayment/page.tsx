@@ -2,60 +2,81 @@
 
 import ComponentContainerCard from '@/components/ComponentContainerCard';
 import { Grid } from 'gridjs-react';
-import { repaymentColumns } from './config/repayment-column-config';
-interface Repayment {
-  id: number;
-  unitid: string;
-  yr1_completers: string | null;
-  yr1_noncompleters: string | null;
-  yr1_overall: string | null;
-  yr3_completers: string | null;
-  yr3_noncompleters: string | null;
-  yr3_overall: string | null;
-}
+import { studentColumns } from './config/repayment-column-config';
+import { Repayment } from '@/types/repayment';
+import { useEffect, useState } from 'react';
+import EditRepaymentModal from './components/EditRepaymentModal';
 
 const RepaymentPage = () => {
-  return (
-    <ComponentContainerCard title="Repayment List">
-      <Grid
-        columns={repaymentColumns}
-        server={{
-          url: '/api/repayment',
-          then: (data) =>
-            data.data.map((row: Repayment) =>
-              repaymentColumns.map((col) => {
-                if (col.id === 'action') {
-                  return row.unitid; 
-                }
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Repayment | null>(null);
+  const [gridKey, setGridKey] = useState(0);
 
-                return row[col.id as keyof Repayment] ?? '-';
-              })
-            ),
-          total: (data) => data.total,
-        }}
-        pagination={{
-          limit: 10,
-          server: {
-            url: (prev, page, limit) => {
-              const url = new URL(prev, window.location.origin);
-              url.searchParams.set('page', String(page + 1));
-              url.searchParams.set('limit', String(limit));
-              return url.pathname + '?' + url.searchParams.toString();
+  useEffect(() => {
+    const handleEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<Repayment>;
+      setSelectedRow(customEvent.detail);
+      setShowEdit(true);
+    };
+
+    window.addEventListener('openEditModal', handleEdit);
+
+    return () => {
+      window.removeEventListener('openEditModal', handleEdit);
+    };
+  }, []);
+
+  return (
+    <>
+      <ComponentContainerCard title="Repayment List">
+        <Grid
+          key={gridKey}
+          columns={studentColumns}
+          server={{
+            url: '/api/repayment',
+            then: (data) =>
+              data.data.map((row: Repayment) =>
+                studentColumns.map((col) => {
+                  if (col.id === 'action') {
+                    return row;
+                  } else {
+                    return row[col.id as keyof Repayment];
+                  }
+                })
+              ),
+            total: (data) => data.total,
+          }}
+          pagination={{
+            limit: 10,
+            server: {
+              url: (prev, page, limit) => {
+                const url = new URL(prev, window.location.origin);
+                url.searchParams.set('page', String(page + 1));
+                url.searchParams.set('limit', String(limit));
+                return url.pathname + '?' + url.searchParams.toString();
+              },
             },
-          },
-        }}
-        search={{
-          server: {
-            url: (prev, keyword) => {
-              const url = new URL(prev, window.location.origin);
-              url.searchParams.set('search', keyword);
-              url.searchParams.set('page', '1');
-              return url.pathname + '?' + url.searchParams.toString();
+          }}
+          search={{
+            server: {
+              url: (prev, keyword) => {
+                const url = new URL(prev, window.location.origin);
+                url.searchParams.set('search', keyword);
+                url.searchParams.set('page', '1');
+                return url.pathname + '?' + url.searchParams.toString();
+              },
             },
-          },
-        }}
+          }}
+        />
+      </ComponentContainerCard>
+
+      <EditRepaymentModal
+        show={showEdit}
+        onClose={() => setShowEdit(false)}
+        data={selectedRow}
+        onSuccess={() => setGridKey((prev) => prev + 1)}
       />
-    </ComponentContainerCard>
+    </>
   );
 };
 
