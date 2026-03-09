@@ -80,6 +80,17 @@ useEffect(() => {
   return (
     <>
       <ComponentContainerCard title="User List">
+    <div className="grid-toolbar">
+  <button
+    className="btn btn-primary"
+    onClick={() => {
+      setSelectedRow(null);
+      setShowEdit(true);
+    }}
+  >
+    Add New User
+  </button>
+</div>
         <Grid
           key={gridKey}
           columns={userColumns}

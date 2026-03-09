@@ -142,3 +142,33 @@ File: App Css File
   opacity: 1;
   transform: scale(1.1);
 }
+// .gridjs-head {
+//   display: flex !important;
+//   align-items: center;
+//   justify-content: space-between;
+// }
+
+// .gridjs-search {
+//   order: 1;
+// }
+
+// .gridjs-header-actions {
+//   order: 2;
+// }
+
+// .gridjs-header-actions button {
+//   margin-left: auto;
+// }
+
+.gridjs-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid-toolbar {
+  position: absolute;
+  right: 20px;
+  top: 80px;
+  z-index: 10;
+}

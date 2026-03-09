@@ -2,31 +2,42 @@
 
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-import { User } from '@/types/user';
-
-interface Role {
-    id: number;
-    role_name: string;
-}
-
+import { User, Role, UserFormData } from '@/types/user';
+import { Icon } from '@iconify/react';
 interface Props {
     show: boolean;
     onClose: () => void;
     data: User | null;
     onSuccess: () => void;
 }
-
+const emptyUser: UserFormData = {
+    full_name: '',
+    email: '',
+    role_id: 1,
+    is_active: true,
+    password: '',
+};
 const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
-    const [formData, setFormData] = useState<User | null>(null);
+    const [formData, setFormData] = useState<UserFormData>(emptyUser);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loadingRoles, setLoadingRoles] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // Set selected user data
     useEffect(() => {
         if (data) {
-            setFormData(data);
+            //add
+            setFormData({
+                id: data.id,
+                full_name: data.full_name,
+                email: data.email,
+                role_id: data.role_id,
+                is_active: data.is_active ?? true,
+            });
+        } else {
+            setFormData(emptyUser); //edit
         }
-    }, [data]);
+    }, [data, show]);
 
     // Fetch roles when modal opens
     useEffect(() => {
@@ -43,7 +54,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                     setRoles(result.data);
                 }
             } catch (error) {
-                console.error("Roles fetch error:", error);
+                console.error('Roles fetch error:', error);
             } finally {
                 setLoadingRoles(false);
             }
@@ -52,7 +63,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
         fetchRoles();
     }, [show]);
 
-    const handleChange = (key: keyof User, value: any) => {
+    const handleChange = (key: keyof UserFormData, value: any) => {
         if (!formData) return;
 
         setFormData({
@@ -62,11 +73,14 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
     };
 
     const handleSave = async () => {
-        if (!formData) return;
-
         try {
-            const response = await fetch(`/api/users/${formData.id}`, {
-                method: 'PUT',
+            const isEdit = !!data;
+
+            const url = isEdit ? `/api/users/${data?.id}` : `/api/users`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -79,7 +93,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                 onSuccess();
                 onClose();
             } else {
-                alert(result.message || 'Update failed');
+                alert(result.message || 'Save failed');
             }
         } catch (error) {
             console.error(error);
@@ -87,12 +101,10 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
         }
     };
 
-    if (!formData) return null;
-
     return (
         <Modal show={show} onHide={onClose} centered size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>Edit User</Modal.Title>
+                <Modal.Title>{data ? 'Edit User' : 'Add New User'}</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
@@ -103,9 +115,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                         <Form.Control
                             type="text"
                             value={formData.full_name}
-                            onChange={(e) =>
-                                handleChange('full_name', e.target.value)
-                            }
+                            onChange={(e) => handleChange('full_name', e.target.value)}
                         />
                     </Form.Group>
 
@@ -115,9 +125,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                         <Form.Control
                             type="email"
                             value={formData.email}
-                            onChange={(e) =>
-                                handleChange('email', e.target.value)
-                            }
+                            onChange={(e) => handleChange('email', e.target.value)}
                         />
                     </Form.Group>
 
@@ -126,9 +134,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                         <Form.Label>Role</Form.Label>
                         <Form.Select
                             value={formData.role_id}
-                            onChange={(e) =>
-                                handleChange('role_id', Number(e.target.value))
-                            }
+                            onChange={(e) => handleChange('role_id', Number(e.target.value))}
                             disabled={loadingRoles}
                         >
                             <option value="">Select Role</option>
@@ -146,11 +152,47 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                             type="switch"
                             label="Active"
                             checked={formData.is_active ?? false}
-                            onChange={(e) =>
-                                handleChange('is_active', e.target.checked)
-                            }
+                            onChange={(e) => handleChange('is_active', e.target.checked)}
                         />
                     </Form.Group>
+                    {/*Password*/}
+                    {!data && (
+                        <Form.Group className="mb-3">
+                            <Form.Label>Password</Form.Label>
+
+                            <div className="position-relative">
+                                <Form.Control
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={formData.password || ''}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            password: e.target.value,
+                                        })
+                                    }
+                                    placeholder="Enter password"
+                                />
+
+                                <span
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '12px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        cursor: 'pointer',
+                                        fontSize: '20px',
+                                        color: '#6c757d',
+                                    }}
+                                >
+                                    <Icon
+                                        icon={showPassword ? 'ri:eye-off-line' : 'ri:eye-line'}
+                                        width="20"
+                                    />
+                                </span>
+                            </div>
+                        </Form.Group>
+                    )}
                 </Form>
             </Modal.Body>
 
@@ -159,7 +201,7 @@ const EditUserModal = ({ show, onClose, data, onSuccess }: Props) => {
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSave}>
-                    Save Changes
+                    {data ? 'Update User' : 'Create User'}
                 </Button>
             </Modal.Footer>
         </Modal>
