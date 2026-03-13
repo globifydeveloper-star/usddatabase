@@ -1,6 +1,7 @@
 import { pool } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
+/* UPDATE SCHOOL  */
 export async function PUT(
   request: NextRequest,
   { params }: { params: { unitid: string } }
@@ -58,6 +59,41 @@ export async function PUT(
 
     return NextResponse.json(
       { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
+
+
+/* DELETE SCHOOL */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { unitid: string } }
+) {
+  try {
+    const result = await pool.query(
+      `DELETE FROM schools WHERE unitid = $1 RETURNING *`,
+      [params.unitid]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "School not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "School deleted successfully",
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("DELETE School Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Delete failed" },
       { status: 500 }
     );
   }
