@@ -36,3 +36,95 @@ const countQuery = `
     return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const {
+      unitid,
+      assoc,
+      degree,
+      bachelors,
+      certificate_lt_1yr,
+      certificate_lt_2yr,
+      certificate_lt_4yr,
+      degree_or_certificate
+    } = body;
+
+    /* ---------- SCHOOL EXIST CHECK ---------- */
+
+    const schoolCheck = await pool.query(
+      `SELECT unitid FROM schools WHERE unitid = $1`,
+      [unitid]
+    );
+
+    if (schoolCheck.rowCount === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unit ID not present in schools table",
+        },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- DUPLICATE CHECK ---------- */
+
+    const academicsCheck = await pool.query(
+      `SELECT unitid FROM academics WHERE unitid = $1`,
+      [unitid]
+    );
+
+    if (academicsCheck.rowCount !== 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Academics data already exists for this Unit ID",
+        },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- INSERT ---------- */
+
+    const insertQuery = `
+      INSERT INTO academics (
+        unitid,
+        assoc,
+        degree,
+        bachelors,
+        certificate_lt_1yr,
+        certificate_lt_2yr,
+        certificate_lt_4yr,
+        degree_or_certificate
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      RETURNING *
+    `;
+
+    const result = await pool.query(insertQuery, [
+      unitid,
+      assoc,
+      degree,
+      bachelors,
+      certificate_lt_1yr,
+      certificate_lt_2yr,
+      certificate_lt_4yr,
+      degree_or_certificate
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("Create Academics Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Insert failed" },
+      { status: 500 }
+    );
+  }
+}

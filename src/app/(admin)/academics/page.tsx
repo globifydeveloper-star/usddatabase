@@ -7,6 +7,8 @@ import EditAcademicsModal from './components/EditAcademicsModal';
 
 import { useEffect, useState } from 'react';
 import { Academics } from '@/types/academics';
+import Swal from 'sweetalert2';
+
 
 
 
@@ -14,6 +16,7 @@ const AcademicsPage = () => {
   const [showEdit, setShowEdit] = useState(false);
         const [selectedRow, setSelectedRow] = useState<Academics | null>(null);
         const [gridKey, setGridKey] = useState(0);
+          /* ---------- EDIT ---------- */
         useEffect(() => {
           const handleEdit = (event: Event) => {
             const customEvent = event as CustomEvent<Academics>;
@@ -27,9 +30,70 @@ const AcademicsPage = () => {
             window.removeEventListener('openEditModal', handleEdit);
           };
         }, []);
+
+          /* ---------- DELETE ---------- */
+        
+               useEffect(() => {
+                  const handleDeleteAcademics = async (event: any) => {
+                    const academics = event.detail;
+              
+                    const result = await Swal.fire({
+                      html: `Delete Academics record for <b><i>${academics.unitid}</i></b>?`,
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#ef4444',
+                      cancelButtonColor: '#6b7280',
+                      confirmButtonText: 'Yes, delete it!',
+                    });
+              
+                    if (!result.isConfirmed) return;
+              
+                    try {
+                      const res = await fetch(`/api/academics/${academics.unitid}`, {
+                        method: 'DELETE',
+                      });
+              
+                      if (!res.ok) throw new Error('Delete failed');
+              
+                      await Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Academics record deleted.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                      });
+              
+                      setGridKey((prev) => prev + 1);
+                    } catch (error) {
+                      Swal.fire({
+                        title: 'Error',
+                        text: 'Something went wrong',
+                        icon: 'error',
+                      });
+                    }
+                  };
+              
+                  window.addEventListener('deleteAcademics', handleDeleteAcademics);
+              
+                  return () => {
+                    window.removeEventListener('deleteAcademics', handleDeleteAcademics);
+                  };
+                }, []);
   return (
     <>
     <ComponentContainerCard title="Academics List">
+       {/* TOOLBAR */}
+        <div className="grid-toolbar">
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setSelectedRow(null);
+              setShowEdit(true);
+            }}
+          >
+            Add New Academics Data
+          </button>
+        </div>
      <Grid
      key={gridKey}
   columns={studentColumns}

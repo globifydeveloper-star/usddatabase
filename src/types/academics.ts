@@ -1,5 +1,5 @@
 export interface Academics {
-  unitid: number;
+  unitid: number | null;
   assoc: boolean | null;
   degree: boolean | null;
   bachelors: boolean | null;
