@@ -6,13 +6,14 @@ import { studentColumns } from './config/costs-column-config';
 import { Costs } from '@/types/costs';
 import { useEffect, useState } from 'react';
 import EditCostsModal from './components/EditCostsModal'
-
+import Swal from 'sweetalert2';
 
 const CostsPage = () => {
   const [showEdit, setShowEdit] = useState (false);
     const [selectedRow, setSelectedRow] = useState<Costs | null>(null);
     const [gridKey, setGridKey] = useState(0);
   
+     /* ---------- EDIT ---------- */
     useEffect(() => {
       const handleEdit = (event: Event) => {
         const customEvent = event as CustomEvent<Costs>;
@@ -26,9 +27,67 @@ const CostsPage = () => {
         window.removeEventListener('openEditModal', handleEdit);
       };
     }, []);
+    useEffect(() => {
+              const handleDeleteCost = async (event: any) => {
+                const cost = event.detail;
+          
+                const result = await Swal.fire({
+                  html: `Delete costs record for <b><i>${cost.unitid}</i></b>?`,
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#ef4444',
+                  cancelButtonColor: '#6b7280',
+                  confirmButtonText: 'Yes, delete it!',
+                });
+          
+                if (!result.isConfirmed) return;
+          
+                try {
+                  const res = await fetch(`/api/costs/${cost.unitid}`, {
+                    method: 'DELETE',
+                  });
+          
+                  if (!res.ok) throw new Error('Delete failed');
+          
+                  await Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Costs record deleted.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                  });
+          
+                  setGridKey((prev) => prev + 1);
+                } catch (error) {
+                  Swal.fire({
+                    title: 'Error',
+                    text: 'Something went wrong',
+                    icon: 'error',
+                  });
+                }
+              };
+          
+              window.addEventListener('deleteCost', handleDeleteCost);
+          
+              return () => {
+                window.removeEventListener('deleteCost', handleDeleteCost);
+              };
+            }, []);
   return (
     <>
     <ComponentContainerCard title="Costs List">
+       {/* TOOLBAR */}
+        <div className="grid-toolbar">
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setSelectedRow(null);
+              setShowEdit(true);
+            }}
+          >
+            Add New Costs Data
+          </button>
+        </div>
       <Grid
       key={gridKey}
         columns={studentColumns}

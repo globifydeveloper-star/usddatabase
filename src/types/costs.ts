@@ -1,5 +1,5 @@
 export interface Costs {
-  unitid: number;
+  unitid: string;
 
   booksupply: number | null;
   tuition_in_state: number | null;

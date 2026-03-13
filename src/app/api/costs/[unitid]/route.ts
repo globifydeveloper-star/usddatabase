@@ -66,3 +66,37 @@ export async function PUT(
     );
   }
 }
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { unitid: string } }
+) {
+  try {
+    const { unitid } = params;
+
+    const result = await pool.query(
+      `DELETE FROM costs WHERE unitid = $1 RETURNING *`,
+      [unitid]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Costs data not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Costs data deleted successfully",
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("DELETE Costs Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Delete failed" },
+      { status: 500 }
+    );
+  }
+}
