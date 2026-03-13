@@ -178,7 +178,10 @@ const EditStudentsModal = ({ show, onClose, data, onSuccess }: Props) => {
   {/* -------- BASIC NUMBERS -------- */}
 
   <Form.Group className="mb-3">
-    <Form.Label>Size</Form.Label>
+    <Form.Label>
+      Size
+      <span className="text-danger">*</span>
+      </Form.Label>
     <Form.Control
       type="number"
       min={0}

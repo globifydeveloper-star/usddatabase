@@ -192,7 +192,9 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
 
           {/* ADMISSION RATE */}
           <Form.Group className="mb-3">
-            <Form.Label>Admission Rate</Form.Label>
+            <Form.Label>
+              Admission Rate <span className="text-danger">*</span>
+              </Form.Label>
             <Form.Control
               type="number"
               step="0.01"

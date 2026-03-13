@@ -163,7 +163,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Book Supply</Form.Label>
+            <Form.Label>
+              Book Supply<span className="text-danger">*</span>
+              </Form.Label>
             <Form.Control
               type="number"
               value={formData.booksupply ?? ''}
@@ -174,7 +176,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Tuition (In State)</Form.Label>
+            <Form.Label>
+              Tuition (In State)<span className="text-danger">*</span>
+              </Form.Label>
             <Form.Control
               type="number"
               value={formData.tuition_in_state ?? ''}
@@ -185,7 +189,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Tuition (Out of State)</Form.Label>
+            <Form.Label>
+              Tuition (Out of State)<span className="text-danger">*</span>
+              </Form.Label>
             <Form.Control
               type="number"
               value={formData.tuition_out_state ?? ''}
@@ -207,7 +213,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Room & Board (On Campus)</Form.Label>
+            <Form.Label>Room & Board (On Campus)
+              <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               value={formData.roomboard_oncampus ?? ''}
@@ -218,7 +226,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Room & Board (Off Campus)</Form.Label>
+            <Form.Label>Room & Board (Off Campus)
+              <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               value={formData.roomboard_offcampus ?? ''}
@@ -262,7 +272,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Other Expense (On Campus)</Form.Label>
+            <Form.Label>Other Expense (On Campus)
+              <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               value={formData.otherexpense_oncampus ?? ''}
@@ -273,7 +285,9 @@ const EditCostsModal = ({ show, onClose, data, onSuccess }: Props) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Other Expense (Off Campus)</Form.Label>
+            <Form.Label>Other Expense (Off Campus)
+              <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               value={formData.otherexpense_offcampus ?? ''}

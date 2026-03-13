@@ -17,13 +17,22 @@ export async function GET(request: Request) {
              credential_level, credential_title,
              school_name, school_type
       FROM programs
-      WHERE title ILIKE $1
+      WHERE title ILIKE $1 OR
+      unitid::text ILIKE $1 OR
+    cip_code::text ILIKE $1 OR
+    school_name ILIKE $1 OR
+    credential_title ILIKE $1
       LIMIT $2 OFFSET $3
     `;
 
     const countQuery = `
       SELECT COUNT(*) FROM programs
-      WHERE title ILIKE $1
+      WHERE 
+    title ILIKE $1 OR
+    unitid::text ILIKE $1 OR
+    cip_code::text ILIKE $1 OR
+    school_name ILIKE $1 OR
+    credential_title ILIKE $1
     `;
 
     const dataResult = await pool.query(dataQuery, [`%${search}%`, limit, offset]);
