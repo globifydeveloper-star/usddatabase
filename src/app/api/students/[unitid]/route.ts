@@ -1,8 +1,12 @@
 import { pool } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-
-export async function PUT(request: NextRequest, { params }: { params: { unitid: string } }) {
+{/* UPDATE Student  */}
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ unitid: string }> }
+) {
     try {
+        const { unitid } = await params;
         const body = await request.json();
 
        const result = await pool.query(
@@ -31,25 +35,61 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
     body.demographics_women,
     body.faculty_men,
     body.faculty_women,
-    params.unitid
+    unitid
   ]
 );
 
         if (result.rowCount === 0) {
             return NextResponse.json(
-                { success: false, message: 'data not found' },
+                { success: false, message: 'Student not found' },
                 { status: 404 }
             );
         }
 
         return NextResponse.json({
             success: true,
-            message: 'data updated successfully',
+            message: 'Student updated successfully',
             data: result.rows[0],
         });
     } catch (error) {
-        console.error('PUT admissions Error:', error);
+        console.error('PUT Student Error:', error);
 
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
+}
+
+/*  DELETE Student  */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ unitid: string }> }
+) {
+  try {
+    const { unitid } = await params;
+
+    const result = await pool.query(
+      `DELETE FROM students WHERE unitid = $1 RETURNING *`,
+      [unitid]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: 'Student not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Student deleted successfully',
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error('DELETE Student Error:', error);
+
+    return NextResponse.json(
+      { success: false, message: 'Delete failed' },
+      { status: 500 }
+    );
+  }
 }
