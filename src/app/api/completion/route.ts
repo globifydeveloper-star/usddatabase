@@ -37,3 +37,77 @@ const countQuery = `
     return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const {
+      unitid,
+      completed_2yrs,
+      completed_3yrs,
+      completed_4yrs,
+      completed_6yrs
+    } = body;
+
+    /* ---------- SCHOOL EXIST CHECK ---------- */
+
+    const schoolCheck = await pool.query(
+      `SELECT unitid FROM schools WHERE unitid = $1`,
+      [unitid]
+    );
+
+    /* ---------- DUPLICATE CHECK ---------- */
+
+    const completionCheck = await pool.query(
+      `SELECT unitid FROM completion WHERE unitid = $1`,
+      [unitid]
+    );
+
+    if (completionCheck.rowCount !== 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Completion data already exists for this Unit ID",
+        },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- INSERT ---------- */
+
+    const insertQuery = `
+      INSERT INTO completion (
+        unitid,
+        completed_2yrs,
+        completed_3yrs,
+        completed_4yrs,
+        completed_6yrs
+      )
+      
+      VALUES ($1,$2,$3,$4,$5)
+      RETURNING *
+    `;
+
+    const result = await pool.query(insertQuery, [
+      unitid,
+      completed_2yrs,
+      completed_3yrs,
+      completed_4yrs,
+      completed_6yrs
+    ]);
+      
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("Create Completion Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Insert failed" },
+      { status: 500 }
+    );
+  }
+}

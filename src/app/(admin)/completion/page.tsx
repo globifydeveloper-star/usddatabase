@@ -8,12 +8,13 @@ import EditCompletionModal  from './components/EditCompletionModal';
 
 import { useEffect, useState } from 'react';
 import { Completion } from '@/types/completion';
-
+import Swal from 'sweetalert2';
 
 const CompletionPage = () => {
   const [showEdit, setShowEdit] = useState(false);
       const [selectedRow, setSelectedRow] = useState<Completion | null>(null);
       const [gridKey, setGridKey] = useState(0);
+       /* ---------- EDIT ---------- */
       useEffect(() => {
         const handleEdit = (event: Event) => {
           const customEvent = event as CustomEvent<Completion>;
@@ -27,9 +28,70 @@ const CompletionPage = () => {
           window.removeEventListener('openEditModal', handleEdit);
         };
       }, []);
+      /* ---------- DELETE ---------- */
+
+       useEffect(() => {
+          const handleDeleteCompletion = async (event: any) => {
+            const completion = event.detail;
+      
+            const result = await Swal.fire({
+              html: `Delete completion record for <b><i>${completion.unitid}</i></b>?`,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#ef4444',
+              cancelButtonColor: '#6b7280',
+              confirmButtonText: 'Yes, delete it!',
+            });
+      
+            if (!result.isConfirmed) return;
+      
+            try {
+              const res = await fetch(`/api/completion/${completion.unitid}`, {
+                method: 'DELETE',
+              });
+      
+              if (!res.ok) throw new Error('Delete failed');
+      
+              await Swal.fire({
+                title: 'Deleted!',
+                text: 'Completion record deleted.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+              });
+      
+              setGridKey((prev) => prev + 1);
+            } catch (error) {
+              Swal.fire({
+                title: 'Error',
+                text: 'Something went wrong',
+                icon: 'error',
+              });
+            }
+          };
+      
+          window.addEventListener('deleteCompletion', handleDeleteCompletion);
+      
+          return () => {
+            window.removeEventListener('deleteCompletion', handleDeleteCompletion);
+          };
+        }, []);
+
   return (
     <>
     <ComponentContainerCard title="Completion List">
+        {/* TOOLBAR */}
+        <div className="grid-toolbar">
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setSelectedRow(null);
+              setShowEdit(true);
+            }}
+          >
+            Add New Completion Data
+          </button>
+        </div>
       <Grid
       key={gridKey}
         columns={studentColumns}

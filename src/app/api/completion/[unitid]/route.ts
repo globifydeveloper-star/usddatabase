@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ unit: string }> }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   try {
-    const { unit } = await params;
+    const { unitid } = await params;
     const body = await request.json();
 
     const result = await pool.query(
@@ -25,7 +25,7 @@ export async function PUT(
         body.completed_3yrs || null,
         body.completed_4yrs || null,
         body.completed_6yrs || null,
-        unit
+        unitid
       ]
     );
 
@@ -47,6 +47,41 @@ export async function PUT(
 
     return NextResponse.json(
       { success: false, message: 'Server error' },
+      { status: 500 }
+    );
+  }
+}
+/*  DELETE Completion  */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { unitid: string } }
+) {
+  try {
+    const { unitid } = params;
+
+    const result = await pool.query(
+      `DELETE FROM completion WHERE unitid = $1 RETURNING *`,
+      [unitid]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Completion data not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Completion data deleted successfully",
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("DELETE Completion Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Delete failed" },
       { status: 500 }
     );
   }
