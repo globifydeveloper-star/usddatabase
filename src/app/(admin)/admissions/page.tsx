@@ -43,7 +43,7 @@ const AdmissionsPage = () => {
       if (!result.isConfirmed) return;
 
       try {
-        const res = await fetch(`/api/admissions/${admission.id}`, {
+        const res = await fetch(`/api/admissions/${admission.unitid}`, {
           method: "DELETE",
         });
 
@@ -87,7 +87,7 @@ const AdmissionsPage = () => {
               setShowEdit(true);
             }}
           >
-            Add New User
+            Add New Admission Data
           </button>
         </div>
 
