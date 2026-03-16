@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const result = await pool.query(
       `
-      SELECT unitid, name
+      SELECT unitid, name, ope8_id
       FROM schools
       WHERE unitid::text ILIKE $1
       OR name ILIKE $1

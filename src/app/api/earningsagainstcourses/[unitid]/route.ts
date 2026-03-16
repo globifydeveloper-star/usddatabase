@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { unitid } = await params;
     const body = await req.json();
 
     const parseNumber = (val: any) =>
@@ -26,7 +26,7 @@ export async function PUT(
         year_10 = $8,
         credential_level = $9,
         credential_title = $10
-      WHERE id = $11
+      WHERE unitid = $11
       RETURNING *;
       `,
       [
@@ -40,7 +40,7 @@ export async function PUT(
         parseNumber(body.year_10),
         body.credential_level ?? null,
         body.credential_title ?? null,
-        id
+        unitid
       ]
     );
 
@@ -62,6 +62,40 @@ export async function PUT(
 
     return NextResponse.json(
       { success: false, message: "Server error" },
+      { status: 500 }
+    );
+  }
+}
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params:  Promise< { unitid: string } > }
+) {
+  try {
+    const { unitid } = await params;
+
+    const result = await pool.query(
+      `DELETE FROM earnings_against_courses WHERE unitid = $1 RETURNING *`,
+      [unitid]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Earnings data not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Earnings data deleted successfully",
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("DELETE Earnings Data Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Delete failed" },
       { status: 500 }
     );
   }

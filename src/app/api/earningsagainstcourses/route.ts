@@ -17,13 +17,13 @@ export async function GET(request: Request) {
          year_1, year_5, year_10, credential_level, credential_title
         
   FROM earnings_against_courses
-  WHERE unitid::text ILIKE $1
+  WHERE unitid::text ILIKE $1 OR school_name ILIKE $1
   LIMIT $2 OFFSET $3
 `;
 
 const countQuery = `
   SELECT COUNT(*) FROM earnings_against_courses
-  WHERE unitid::text ILIKE $1
+  WHERE unitid::text ILIKE $1 OR school_name ILIKE $1
 `;
 
     const dataResult = await pool.query(dataQuery, [`%${search}%`, limit, offset]);
@@ -36,5 +36,99 @@ const countQuery = `
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Server Error' }, { status: 500 });
+  }
+}
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const {
+      unitid,
+      ope8_id,
+      school_name,
+      cip_code,
+      cip_title,
+      grad_cohort,
+      year_1,
+      year_5,
+      year_10,
+      credential_level,
+      credential_title
+    } = body;
+
+    /* ---------- SCHOOL EXIST CHECK ---------- */
+
+    const schoolCheck = await pool.query(
+      `SELECT unitid FROM schools WHERE unitid = $1`,
+      [unitid]
+    );
+
+    /* ---------- DUPLICATE CHECK ---------- */
+
+  /* ---------- DUPLICATE CHECK ---------- */
+const EarningsCheck = await pool.query(
+    `SELECT unitid FROM earnings_against_courses 
+     WHERE unitid = $1 AND cip_code = $2 AND credential_level = $3`,
+    [unitid, cip_code, credential_level]
+);
+
+if (EarningsCheck.rowCount !== 0) {
+    return NextResponse.json(
+        {
+            success: false,
+            message: "Earnings data already exists for this Unit ID, CIP Code and Credential Level combination",
+        },
+        { status: 400 }
+    );
+}
+
+    /* ---------- INSERT ---------- */
+
+    const insertQuery = `
+      INSERT INTO earnings_against_courses (
+        unitid,
+        ope8_id,
+        school_name,
+        cip_code,
+        cip_title,
+        grad_cohort,
+        year_1,
+        year_5,
+        year_10,
+        credential_level,
+        credential_title
+      )
+      
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      RETURNING *
+    `;
+
+    const result = await pool.query(insertQuery, [
+      unitid,
+      ope8_id,
+      school_name,
+      cip_code,
+      cip_title,
+      grad_cohort,
+      year_1,
+      year_5,
+      year_10,
+      credential_level,
+      credential_title
+    ]);
+      
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("Create Earnings Data Error:", error);
+
+    return NextResponse.json(
+      { success: false, message: "Insert failed" },
+      { status: 500 }
+    );
   }
 }

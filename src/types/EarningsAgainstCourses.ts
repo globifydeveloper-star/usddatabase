@@ -1,6 +1,6 @@
-interface EarningsAgainstCourses {
-  id: number;
-  unitid: number;
+export interface EarningsAgainstCourses {
+  id: 0;
+  unitid: number | null;
   ope8_id: string | null;
   school_name: string | null;
   cip_code: string | null;
