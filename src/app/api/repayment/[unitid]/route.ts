@@ -1,12 +1,12 @@
-import { pool } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import { pool } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(request: NextRequest, { params }: { params: { unitid: string } }) {
-  try {
-    const body = await request.json();
+    try {
+        const body = await request.json();
 
-    const result = await pool.query(
-      `
+        const result = await pool.query(
+            `
       UPDATE repayment
       SET 
         yr1_completers = $1,
@@ -18,35 +18,58 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
       WHERE unitid = $7
       RETURNING *;
       `,
-      [
-        body.yr1_completers,
-        body.yr1_noncompleters,
-        body.yr1_overall,
-        body.yr3_completers,
-        body.yr3_noncompleters,
-        body.yr3_overall,
-        params.unitid, // ✅ use awaited value
-      ]
-    );
+            [
+                body.yr1_completers,
+                body.yr1_noncompleters,
+                body.yr1_overall,
+                body.yr3_completers,
+                body.yr3_noncompleters,
+                body.yr3_overall,
+                params.unitid, // ✅ use awaited value
+            ]
+        );
 
-    if (result.rowCount === 0) {
-      return NextResponse.json(
-        { success: false, message: "Repayment not found" },
-        { status: 404 }
-      );
+        if (result.rowCount === 0) {
+            return NextResponse.json(
+                { success: false, message: 'Repayment not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Repayment updated successfully',
+            data: result.rows[0],
+        });
+    } catch (error) {
+        console.error('PUT Repayment Error:', error);
+
+        return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
+}
+export async function DELETE(request: NextRequest, { params }: { params: { unitid: string } }) {
+    try {
+        const { unitid } = params;
 
-    return NextResponse.json({
-      success: true,
-      message: "Repayment updated successfully",
-      data: result.rows[0],
-    });
-  } catch (error) {
-    console.error("PUT Repayment Error:", error);
+        const result = await pool.query(`DELETE FROM repayment WHERE unitid = $1 RETURNING *`, [
+            unitid,
+        ]);
 
-    return NextResponse.json(
-      { success: false, message: "Server error" },
-      { status: 500 }
-    );
-  }
+        if (result.rowCount === 0) {
+            return NextResponse.json(
+                { success: false, message: 'Repayment data not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Repayment data deleted successfully',
+            data: result.rows[0],
+        });
+    } catch (error) {
+        console.error('DELETE Repayment Error:', error);
+
+        return NextResponse.json({ success: false, message: 'Delete failed' }, { status: 500 });
+    }
 }
