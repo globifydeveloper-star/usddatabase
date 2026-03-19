@@ -6,171 +6,186 @@ Email: support@coderthemes.com
 File: App Css File
 */
 
-
 // Core files
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
 
-@import "variables";
-@import "variables-dark";
+@import 'variables';
+@import 'variables-dark';
 
-@import "variables-custom";
-@import "theme-mode";
+@import 'variables-custom';
+@import 'theme-mode';
 
-@import "bootstrap/scss/bootstrap";
+@import 'bootstrap/scss/bootstrap';
 
-
-@import "nouislider/distribute/nouislider.css";
+@import 'nouislider/distribute/nouislider.css';
 @import 'gridjs/dist/theme/mermaid.css';
 @import 'leaflet/dist/leaflet.css';
 
 // Structure
-@import "structure/topbar";
-@import "structure/sidenav";
-@import "structure/horizontal";
-@import "structure/layout";
-@import "structure/footer";
-@import "structure/customizer";
-
+@import 'structure/topbar';
+@import 'structure/sidenav';
+@import 'structure/horizontal';
+@import 'structure/layout';
+@import 'structure/footer';
+@import 'structure/customizer';
 
 // Components
-@import "components/utilities";
-@import "components/background";
-@import "components/accordions";
-@import "components/alert";
-@import "components/avatar";
-@import "components/breadcrumb";
-@import "components/buttons";
-@import "components/badge";
-@import "components/card";
-@import "components/dropdown";
-@import "components/forms";
-@import "components/modal";
-@import "components/nav";
-@import "components/pagination";
-@import "components/popover";
-@import "components/print";
-@import "components/progress";
-@import "components/reboot";
-@import "components/ribbons";
-@import "components/switch";
-@import "components/tables";
-@import "components/tooltip";
-@import "components/steps";
-@import "components/preloader";
-@import "components/widgets";
+@import 'components/utilities';
+@import 'components/background';
+@import 'components/accordions';
+@import 'components/alert';
+@import 'components/avatar';
+@import 'components/breadcrumb';
+@import 'components/buttons';
+@import 'components/badge';
+@import 'components/card';
+@import 'components/dropdown';
+@import 'components/forms';
+@import 'components/modal';
+@import 'components/nav';
+@import 'components/pagination';
+@import 'components/popover';
+@import 'components/print';
+@import 'components/progress';
+@import 'components/reboot';
+@import 'components/ribbons';
+@import 'components/switch';
+@import 'components/tables';
+@import 'components/tooltip';
+@import 'components/steps';
+@import 'components/preloader';
+@import 'components/widgets';
 
 // Pages
-@import "pages/file-manager";
-@import "pages/kanban";
-@import "pages/authentication";
-@import "pages/error";
-@import "pages/faq";
-@import "pages/maintenance";
-@import "pages/email";
-@import "pages/timeline";
-@import "pages/components-demo";
-@import "pages/search-results";
+@import 'pages/file-manager';
+@import 'pages/kanban';
+@import 'pages/authentication';
+@import 'pages/error';
+@import 'pages/faq';
+@import 'pages/maintenance';
+@import 'pages/email';
+@import 'pages/timeline';
+@import 'pages/components-demo';
+@import 'pages/search-results';
 
 // Plugins
-@import "plugins/apexcharts";
-@import "plugins/datatable";
-@import "plugins/calendar";
-@import "plugins/choice";
-@import "plugins/gridjs";
-@import "plugins/daterange";
-@import "plugins/flatpickr";
-@import "plugins/dragula";
-@import "plugins/dropzone";
-@import "plugins/form-wizard";
-@import "plugins/maps";
-@import "plugins/quill-editor";
-@import "plugins/select2";
-@import "plugins/simplebar";
-@import "plugins/leaflet-maps";
-@import "plugins/sweetalert2";
-@import "plugins/rangeslider";
-
+@import 'plugins/apexcharts';
+@import 'plugins/datatable';
+@import 'plugins/calendar';
+@import 'plugins/choice';
+@import 'plugins/gridjs';
+@import 'plugins/daterange';
+@import 'plugins/flatpickr';
+@import 'plugins/dragula';
+@import 'plugins/dropzone';
+@import 'plugins/form-wizard';
+@import 'plugins/maps';
+@import 'plugins/quill-editor';
+@import 'plugins/select2';
+@import 'plugins/simplebar';
+@import 'plugins/leaflet-maps';
+@import 'plugins/sweetalert2';
+@import 'plugins/rangeslider';
 
 .content-none {
-  &:after {
-    display: none !important;
-  }
+    &:after {
+        display: none !important;
+    }
 
-  &:before {
-    display: none !important;
-  }
+    &:before {
+        display: none !important;
+    }
 }
 
 .icons-center {
-  display: inline-flex;
-  align-items: center;
+    display: inline-flex;
+    align-items: center;
 }
 
-.flex-centered{
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.flex-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Fix Grid.js white pagination button in dark mode */
 .gridjs-pagination button {
-  background: transparent !important;
+    background: transparent !important;
 }
 
 /* GridJS row hover highlight */
 .gridjs-table tbody tr:hover {
-  background-color: rgba(59, 130, 246, 0.08);
-  cursor: pointer;
+    background-color: rgba(59, 130, 246, 0.08);
+    cursor: pointer;
 }
 
 /* left indicator */
 .gridjs-table tbody tr:hover td:first-child {
-  border-left: 2px solid #dcdee3;
+    border-left: 2px solid #dcdee3;
 }
 .gridjs-table tbody tr:hover td:last-child {
-  border-right: 2px solid #dcdee3;
+    border-right: 2px solid #dcdee3;
 }
 
 /* edit icon highlight */
 .gridjs-table tbody tr svg {
-  opacity: 0.5;
-  transition: all 0.2s ease;
+    opacity: 0.5;
+    transition: all 0.2s ease;
 }
 
 .gridjs-table tbody tr:hover svg {
-  opacity: 1;
-  transform: scale(1.1);
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .gridjs-header-custom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .grid-toolbar {
-  position: absolute;
-  right: 20px;
-  top: 80px;
-  z-index: 10;
+    position: absolute;
+    right: 20px;
+    top: 80px;
+    z-index: 10;
 }
 .autocomplete-box {
-  position: absolute;
-  width: 100%;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  max-height: 180px;
-  overflow-y: auto;
-  z-index: 1000;
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 1000;
 }
 
 .autocomplete-item {
-  padding: 8px 12px;
-  cursor: pointer;
+    padding: 8px 12px;
+    cursor: pointer;
 }
 
 .autocomplete-item:hover {
-  background: #f3f4f6;
+    background: #f3f4f6;
+}
+.search-dropdown {
+    background: #1e293b; /* dark slate */
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    backdrop-filter: blur(6px);
+}
+.search-result-item {
+    padding: 10px 14px;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    color: #cbd5e1; /* slate-300 */
+}
+
+.search-result-item:hover {
+    background-color: rgba(59, 130, 246, 0.08);
+    border-left: 2px solid #dcdee3;
+    border-right: 2px solid #dcdee3;
+    color: white;
 }
