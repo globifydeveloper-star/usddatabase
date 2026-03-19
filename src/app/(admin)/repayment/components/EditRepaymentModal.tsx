@@ -128,7 +128,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
                     {/* Unit ID (Primary Key - Disabled) */}
                     {/* UNITID SEARCH */}
                     <Form.Group className="mb-4 position-relative">
-                        <Form.Label className="fw-semibold">Unit ID</Form.Label>
+                        <Form.Label className="fw-semibold">
+                            Unit ID
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={unitidInput}
@@ -154,7 +157,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* yr1_completers*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>yr1_completers</Form.Label>
+                        <Form.Label>
+                            yr1_completers
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_completers ?? ''}
@@ -164,7 +170,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* yr1_noncompleters*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>yr1_noncompleters</Form.Label>
+                        <Form.Label>
+                            yr1_noncompleters
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_noncompleters ?? ''}
@@ -173,7 +182,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
                     {/* yr1_overall */}
                     <Form.Group className="mb-3">
-                        <Form.Label>yr1_overall</Form.Label>
+                        <Form.Label>
+                            yr1_overall
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_overall ?? ''}
@@ -182,7 +194,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
                     {/* yr3_completers */}
                     <Form.Group className="mb-3">
-                        <Form.Label>yr3_completers</Form.Label>
+                        <Form.Label>
+                            yr3_completers
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_completers ?? ''}
@@ -192,7 +207,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* yr3_noncompleters*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>yr3_noncompleters</Form.Label>
+                        <Form.Label>
+                            yr3_noncompleters
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_noncompleters ?? ''}
@@ -203,7 +221,10 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
                     {/* yr3_overall */}
 
                     <Form.Group className="mb-3">
-                        <Form.Label>yr3_overall</Form.Label>
+                        <Form.Label>
+                            yr3_overall
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_overall ?? ''}

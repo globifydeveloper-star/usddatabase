@@ -129,7 +129,10 @@ const EditAidModal = ({ show, onClose, data, onSuccess }: Props) => {
                 <Form>
                     {/* UNITID SEARCH */}
                     <Form.Group className="mb-4 position-relative">
-                        <Form.Label className="fw-semibold">Unit ID</Form.Label>
+                        <Form.Label className="fw-semibold">
+                            Unit ID
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={unitidInput}
@@ -154,7 +157,10 @@ const EditAidModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Loan Principal</Form.Label>
+                        <Form.Label>
+                            Loan Principal
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.loan_principal ?? ''}
@@ -168,7 +174,10 @@ const EditAidModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Pell Grant Rate</Form.Label>
+                        <Form.Label>
+                            Pell Grant Rate
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             step="0.0001"
@@ -183,7 +192,10 @@ const EditAidModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Federal Loan Rate</Form.Label>
+                        <Form.Label>
+                            Federal Loan Rate
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             step="0.0001"
@@ -198,7 +210,10 @@ const EditAidModal = ({ show, onClose, data, onSuccess }: Props) => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Students With Any Loan</Form.Label>
+                        <Form.Label>
+                            Students With Any Loan
+                            <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             step="0.0001"
