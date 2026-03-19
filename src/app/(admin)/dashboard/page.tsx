@@ -10,6 +10,7 @@ import { Alert, Col, Row } from 'react-bootstrap';
 import { getDashboardStats } from './server-data';
 import EarningsPieChart from './components/CostPieChart';
 import CostPieChart from './components/CostPieChart';
+import RepaymentOverallChart from './components/RepaymentOverallChart';
 
 const Dashboard = async () => {
     const stateData = await getDashboardStats(); //fetch from server-only file
@@ -42,10 +43,13 @@ const Dashboard = async () => {
                 <Col xl={6}>
                     <CostPieChart />
                 </Col>
+                <Col xl={6}>
+                    <RepaymentOverallChart />
+                </Col>
             </Row>
 
             <Row>
-                <Col xxl={4}>{/* <Transactions /> */}</Col>
+                <Col xxl={4}>{}</Col>
                 <Col xxl={4}>{/* <NewUsers /> */}</Col>
                 <Col xxl={4}>{/* <TransactionsUses /> */}</Col>
             </Row>
