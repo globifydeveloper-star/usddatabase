@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-    async redirects() {
+  async redirects() {
     return [
       {
         source: '/',
@@ -10,6 +9,17 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
     ];
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        tls: false,
+        net: false,
+        fs: false,
+      };
+    }
+    return config;
   },
 };
 
