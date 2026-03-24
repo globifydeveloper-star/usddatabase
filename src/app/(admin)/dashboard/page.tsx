@@ -42,13 +42,13 @@ const Dashboard = async () => {
                 <Col xl={6}>
                     <ProgramOverallChart />
                 </Col>
-                 <Col xl={6}>
+                <Col xl={6}>
                     <CollegeAndProgramChart />
                 </Col>
                 <Col xl={6}>
                     <StatisticsChart />
                 </Col>
-               
+
                 {/* <Col xl={6}>
                     <CostPieChart />
                 </Col> */}
