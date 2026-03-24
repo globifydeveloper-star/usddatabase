@@ -11,6 +11,7 @@ import { getDashboardStats } from './server-data';
 import EarningsPieChart from './components/CostPieChart';
 import CostPieChart from './components/CostPieChart';
 import RepaymentOverallChart from './components/RepaymentOverallChart';
+import ProgramOverallChart from './components/ProgramOverallChart';
 
 const Dashboard = async () => {
     const stateData = await getDashboardStats(); //fetch from server-only file
@@ -37,12 +38,15 @@ const Dashboard = async () => {
             <State data={stateData} />
 
             <Row>
-                <Col xl={6}>
+                <Col xl={4}>
+                    <ProgramOverallChart />
+                </Col>
+                <Col xl={4}>
                     <StatisticsChart />
                 </Col>
-                <Col xl={6}>
+                {/* <Col xl={6}>
                     <CostPieChart />
-                </Col>
+                </Col> */}
                 <Col xl={6}>
                     <RepaymentOverallChart />
                 </Col>
