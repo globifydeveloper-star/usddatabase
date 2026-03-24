@@ -12,6 +12,7 @@ import EarningsPieChart from './components/CostPieChart';
 import CostPieChart from './components/CostPieChart';
 import RepaymentOverallChart from './components/RepaymentOverallChart';
 import ProgramOverallChart from './components/ProgramOverallChart';
+import CollegeAndProgramChart from './components/CollegeAndprogramChart';
 
 const Dashboard = async () => {
     const stateData = await getDashboardStats(); //fetch from server-only file
@@ -38,12 +39,16 @@ const Dashboard = async () => {
             <State data={stateData} />
 
             <Row>
-                <Col xl={4}>
+                <Col xl={6}>
                     <ProgramOverallChart />
                 </Col>
-                <Col xl={4}>
+                 <Col xl={6}>
+                    <CollegeAndProgramChart />
+                </Col>
+                <Col xl={6}>
                     <StatisticsChart />
                 </Col>
+               
                 {/* <Col xl={6}>
                     <CostPieChart />
                 </Col> */}

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
+import { Card, CardBody } from 'react-bootstrap';
+import ApexChartClient from '@/components/ApexChartClient';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -54,10 +56,20 @@ export default function ProgramOverallChart() {
     };
 
     return (
-        <div style={{ minHeight: 400 }}>
-            {series.length > 0 && (
-                <Chart options={options} series={series} type="polarArea" height={380} />
-            )}
-        </div>
+        <Card>
+            <div className="card-header">
+                <h4 className="header-title mb-1">Program Overall Count Comparison</h4>
+
+                <p className="text-muted mb-0" style={{ fontSize: '13px' }}>
+                    Overall distribution of credentials across all available programs.
+                </p>
+            </div>
+
+            <CardBody>
+                {series.length > 0 && (
+                    <Chart options={options} series={series} type="polarArea" height={380} />
+                )}
+            </CardBody>
+        </Card>
     );
 }
