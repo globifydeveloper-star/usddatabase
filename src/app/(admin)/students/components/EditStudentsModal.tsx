@@ -24,6 +24,8 @@ const emptyStudent: Student = {
     demographics_women: null,
     faculty_men: null,
     faculty_women: null,
+    student_faculty_ratio: null,
+
 };
 
 const EditStudentsModal = ({ show, onClose, data, onSuccess }: Props) => {
@@ -321,6 +323,23 @@ const EditStudentsModal = ({ show, onClose, data, onSuccess }: Props) => {
                             onChange={(e) =>
                                 handleChange(
                                     'faculty_women',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                     <Form.Group className="mb-3">
+                        <Form.Label>Student-Faculty Ratio
+                            <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            min={0}
+                            max={1}
+                            value={formData.student_faculty_ratio ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'student_faculty_ratio',
                                     e.target.value === '' ? null : Number(e.target.value)
                                 )
                             }

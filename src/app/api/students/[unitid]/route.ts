@@ -21,8 +21,9 @@ export async function PUT(
     demographics_men = $6,
     demographics_women = $7,
     faculty_men = $8,
-    faculty_women = $9
-  WHERE unitid = $10
+    faculty_women = $9,
+    student_faculty_ratio = $10
+  WHERE unitid = $11
   RETURNING *;
   `,
   [
@@ -35,6 +36,7 @@ export async function PUT(
     body.demographics_women,
     body.faculty_men,
     body.faculty_women,
+    body.student_faculty_ratio,
     unitid
   ]
 );

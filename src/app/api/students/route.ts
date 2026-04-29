@@ -16,7 +16,8 @@ export async function GET(request: Request) {
   SELECT unitid, size, grad_students,
          fafsa_applications, demographics_men,
          demographics_women, faculty_men, faculty_women,
-         enrollment_grad_12_month, enrollment_undergrad_12_month
+         enrollment_grad_12_month, enrollment_undergrad_12_month,
+         student_faculty_ratio
   FROM students
   WHERE unitid::text ILIKE $1
   LIMIT $2 OFFSET $3
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
       demographics_women,
       faculty_men,
       faculty_women,
+      student_faculty_ratio
     } = body;
 
     /* ---------- SCHOOL EXIST CHECK ---------- */
@@ -103,9 +105,10 @@ export async function POST(request: Request) {
         demographics_men,
         demographics_women,
         faculty_men,
-        faculty_women
+        faculty_women,
+        student_faculty_ratio
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       RETURNING *
     `;
 
@@ -120,6 +123,7 @@ export async function POST(request: Request) {
       demographics_women,
       faculty_men,
       faculty_women,
+      student_faculty_ratio
     ]);
 
     return NextResponse.json({

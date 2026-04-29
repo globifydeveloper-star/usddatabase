@@ -10,5 +10,6 @@ export interface Student {
   demographics_women: string | null;
   faculty_men: string | null;
   faculty_women: string | null;
+  student_faculty_ratio: string | null
 
 }

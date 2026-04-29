@@ -61,7 +61,12 @@ export const studentColumns = [
     width: '120px',
     
   },
-
+  {
+    id: 'student_faculty_ratio',
+    name: 'Student-Faculty Ratio',
+    sort: true,
+    width: '180px',
+  },
   {
     id: 'action',
     name: 'Action',
