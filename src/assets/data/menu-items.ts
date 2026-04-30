@@ -93,7 +93,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: 'ri:money-dollar-box-line',
     url:"/costs"
   },
-
+  {
+    key: "debt-income-ratio",
+    label: "Debt income ratio",
+    icon: 'ri:bar-chart-line',
+    url: "/debt-income-ratio",
+  },
   {
    key: "earnings",
    label: "Earnings Against Instituions",
