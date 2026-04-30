@@ -10,8 +10,22 @@ function normalizeUrl(url: string | null): string | null {
 
 export const studentColumns = [
   { id: 'unitid', name: 'Unit ID', sort: true, width: '120px' },
-  { id: 'test_requirements', name: 'Test Requirements', sort: true, width: '120px' },
+  { id: 'test_requirements', name: 'Test Requirements', sort: true, width: '120px', height: '100px' },
   { id: 'admission_rate', name: 'Admission Rate', sort: true, width: '120px' },
+  { id: 'sat_avg_overall', name: 'SAT Avg Overall', sort: true, width: '120px' },
+  { id: 'sat_mid_math', name: 'SAT Mid Math', sort: true, width: '120px' },
+  { id: 'sat_mid_reading', name: 'SAT Mid Reading', sort: true, width: '120px' },
+  { id: 'sat_p25_reading', name: 'SAT P25 Reading', sort: true, width: '120px' },
+  { id: 'sat_p25_math', name: 'SAT P25 Math', sort: true, width: '120px' },
+  { id: 'sat_p25_writing', name: 'SAT P25 Writing', sort: true, width: '120px' },
+  { id: 'sat_p75_reading', name: 'SAT P75 Reading', sort: true, width: '120px' },
+  { id: 'sat_p75_math', name: 'SAT P75 Math', sort: true, width: '120px' },
+  { id: 'sat_p75_writing', name: 'SAT P75 Writing', sort: true, width: '120px' },
+  { id: 'sat_rw_min', name: 'SAT RW Min', sort: true, width: '120px' },
+  { id: 'sat_rw_max', name: 'SAT RW Max', sort: true, width: '120px' },
+  { id: 'sat_math_min', name: 'SAT Math Min', sort: true, width: '120px' },
+  { id: 'sat_math_max', name: 'SAT Math Max', sort: true, width: '120px' },
+
 
   {
     id: 'action',

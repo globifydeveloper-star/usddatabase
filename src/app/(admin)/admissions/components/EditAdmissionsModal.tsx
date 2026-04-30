@@ -16,6 +16,19 @@ const emptyAdmission: Admissions = {
     unitid: '',
     test_requirements: null,
     admission_rate: null,
+    sat_avg_overall: null,
+    sat_mid_math: null,
+    sat_mid_reading: null,
+    sat_p25_reading: null,
+    sat_p25_math: null,
+    sat_p25_writing: null,
+    sat_p75_reading: null,
+    sat_p75_math: null,
+    sat_p75_writing: null,
+    sat_rw_min: null,
+    sat_rw_max: null,
+    sat_math_min: null,
+    sat_math_max: null,
 };
 
 const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
@@ -31,6 +44,19 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                 unitid: data.unitid,
                 test_requirements: data.test_requirements,
                 admission_rate: data.admission_rate,
+                sat_avg_overall: data.sat_avg_overall,
+                sat_mid_math: data.sat_mid_math,
+                sat_mid_reading: data.sat_mid_reading,
+                sat_p25_reading: data.sat_p25_reading,
+                sat_p25_math: data.sat_p25_math,
+                sat_p25_writing: data.sat_p25_writing,
+                sat_p75_reading: data.sat_p75_reading,
+                sat_p75_math: data.sat_p75_math,
+                sat_p75_writing: data.sat_p75_writing,
+                sat_rw_min: data.sat_rw_min,
+                sat_rw_max: data.sat_rw_max,
+                sat_math_min: data.sat_math_min,
+                sat_math_max: data.sat_math_max,
             });
         } else {
             setFormData({ ...emptyAdmission });
@@ -201,6 +227,227 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                             onChange={(e) =>
                                 handleChange(
                                     'admission_rate',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT AVERAGE OVERALL */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat Average Overall <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_avg_overall ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_avg_overall',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/*SAT MID-MATH */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat Mid Math <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_mid_math ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_mid_math',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+
+                    {/* SAT MID READING */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat Mid Reading <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_mid_reading ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_mid_reading',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P25 READING */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P25 Reading <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p25_reading ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p25_reading',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P25 MATH */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P25 Math <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p25_math ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p25_math',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P25 WRITING */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P25 Writing <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p25_writing ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p25_writing',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P75 READING */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P75 Reading <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p75_reading ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p75_reading',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P75 MATH */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P75 Math <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p75_math ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p75_math',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT P75 WRITING */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat P75 Writing <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_p75_writing ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_p75_writing',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat RW Min <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_rw_min ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_rw_min',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT RW MAX */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat RW Max <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_rw_max ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_rw_max',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT MATH MIN */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat Math Min <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_math_min ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_math_min',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* SAT MATH MAX */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Sat Math Max <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            value={formData.sat_math_max ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'sat_math_max',
                                     e.target.value === '' ? null : Number(e.target.value)
                                 )
                             }

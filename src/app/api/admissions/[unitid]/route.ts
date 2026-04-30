@@ -15,11 +15,41 @@ export async function PUT(
       UPDATE admissions
       SET
         test_requirements = $1,
-        admission_rate = $2
-      WHERE unitid = $3
+        admission_rate = $2,
+        sat_avg_overall = $3,
+        sat_mid_math = $4,
+        sat_mid_reading = $5,
+        sat_p25_reading = $6,
+        sat_p25_math = $7,
+        sat_p25_writing = $8,
+        sat_p75_reading = $9,
+        sat_p75_math = $10,
+        sat_p75_writing= $11,
+        sat_rw_min = $12,
+        sat_rw_max = $13,
+        sat_math_min = $14,
+        sat_math_max = $15
+      WHERE unitid = $16
       RETURNING *;
       `,
-      [body.test_requirements, body.admission_rate, unitid]
+      [
+        body.test_requirements,
+        body.admission_rate,
+        body.sat_avg_overall,
+        body.sat_mid_math,
+        body.sat_mid_reading,
+        body.sat_p25_reading,
+        body.sat_p25_math,
+        body.sat_p25_writing,
+        body.sat_p75_reading,
+        body.sat_p75_math,
+        body.sat_p75_writing,
+        body.sat_rw_min,
+        body.sat_rw_max,
+        body.sat_math_min,
+        body.sat_math_max,
+        unitid
+      ]
     );
 
     if (result.rowCount === 0) {
