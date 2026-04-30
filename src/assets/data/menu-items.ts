@@ -106,6 +106,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     url: "/net-price-private-income",
   },
   {
+    key: "net-price-public-income",
+    label: "Net price public colleges income",
+    icon: 'ri:pie-chart-2-line',
+    url: "/net-price-public-income",
+  },
+  {
    key: "earnings",
    label: "Earnings Against Instituions",
    icon: 'ri:line-chart-line',
