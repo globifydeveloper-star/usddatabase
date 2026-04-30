@@ -18,6 +18,8 @@ const emptyCompletion: Completion = {
     completed_3yrs: null,
     completed_4yrs: null,
     completed_6yrs: null,
+    emp_factor: null,
+    completion_rate: null,
     id: 0,
 };
 
@@ -235,6 +237,47 @@ const EditCompletionModal = ({ show, onClose, data, onSuccess }: Props) => {
                             onChange={(e) =>
                                 handleChange(
                                     'completed_6yrs',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+                    {/* -------- emp factor -------- */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Emp Factor
+                            <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.0001"
+                            min={0}
+                            max={1}
+                            value={formData.emp_factor ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'emp_factor',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+
+                    {/* -------- completion rate -------- */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Completion Rate
+                            <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            step="0.0001"
+                            min={0}
+                            max={1}
+                            value={formData.completion_rate ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'completion_rate',
                                     e.target.value === '' ? null : Number(e.target.value)
                                 )
                             }

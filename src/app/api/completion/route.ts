@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
  const dataQuery = `
   SELECT unitid, completed_2yrs, completed_3yrs,
-         completed_4yrs, completed_6yrs
+         completed_4yrs, completed_6yrs, emp_factor, completion_rate
   FROM completion
   WHERE unitid::text ILIKE $1
   LIMIT $2 OFFSET $3
@@ -46,7 +46,9 @@ export async function POST(request: Request) {
       completed_2yrs,
       completed_3yrs,
       completed_4yrs,
-      completed_6yrs
+      completed_6yrs,
+      emp_factor,
+      completion_rate
     } = body;
 
     /* ---------- SCHOOL EXIST CHECK ---------- */
@@ -81,10 +83,12 @@ export async function POST(request: Request) {
         completed_2yrs,
         completed_3yrs,
         completed_4yrs,
-        completed_6yrs
+        completed_6yrs,
+        emp_factor,
+        completion_rate
       )
       
-      VALUES ($1,$2,$3,$4,$5)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
       RETURNING *
     `;
 
@@ -93,7 +97,9 @@ export async function POST(request: Request) {
       completed_2yrs,
       completed_3yrs,
       completed_4yrs,
-      completed_6yrs
+      completed_6yrs,
+      emp_factor,
+      completion_rate,
     ]);
       
 

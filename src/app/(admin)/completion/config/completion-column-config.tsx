@@ -14,6 +14,9 @@ export const studentColumns = [
     { id: 'completed_3yrs', name: 'Completed 3 Yrs', sort: true, width: '80px' },
     { id: 'completed_4yrs', name: 'Completed 4 Yrs', sort: true, width: '80px' },
     { id: 'completed_6yrs', name: 'Completed 6 Yrs', sort: true, width: '80px' },
+    { id: 'emp_factor', name: 'Emp Factor', sort: true, width: '80px' },
+    { id: 'completion_rate', name: 'Completion Rate', sort: true, width: '120px' },
+
 
     {
         id: 'action',
