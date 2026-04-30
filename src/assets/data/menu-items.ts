@@ -100,6 +100,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     url: "/debt-income-ratio",
   },
   {
+    key: "net-price-private-income",
+    label: "Net price private colleges income",
+    icon: 'ri:pie-chart-line',
+    url: "/net-price-private-income",
+  },
+  {
    key: "earnings",
    label: "Earnings Against Instituions",
    icon: 'ri:line-chart-line',
