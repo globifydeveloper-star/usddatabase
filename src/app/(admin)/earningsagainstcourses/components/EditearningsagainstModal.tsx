@@ -25,6 +25,7 @@ const emptyEarningsAgainstCourses: EarningsAgainstCourses = {
     year_10: null,
     credential_level: null,
     credential_title: null,
+    avg_salary: null,
 };
 
 const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => {
@@ -59,9 +60,9 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
             setUnitidInput(String(data.unitid ?? ''));
             setSchoolSelected(false);
             //fetch CIP options so dropdown is populated in edit mode
-             if (data.unitid) {
-            fetchCipOptions(Number(data.unitid));
-        }
+            if (data.unitid) {
+                fetchCipOptions(Number(data.unitid));
+            }
         } else {
             setFormData({ ...emptyEarningsAgainstCourses });
             setUnitidInput('');
@@ -185,7 +186,8 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
                 <Form>
                     {/* Unit ID with school search (only in add mode) */}
                     <Form.Group className="mb-4 position-relative">
-                        <Form.Label className="fw-semibold">Unit ID
+                        <Form.Label className="fw-semibold">
+                            Unit ID
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control
@@ -213,7 +215,8 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
 
                     {/* OPE8 ID — auto-filled & locked after school selected */}
                     <Form.Group className="mb-3">
-                        <Form.Label>OPE8 ID
+                        <Form.Label>
+                            OPE8 ID
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control
@@ -226,7 +229,8 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
 
                     {/* School Name — auto-filled & locked after school selected */}
                     <Form.Group className="mb-3">
-                        <Form.Label>School Name
+                        <Form.Label>
+                            School Name
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control
@@ -239,42 +243,60 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
 
                     {/* CIP Code */}
                     <Form.Group className="mb-3">
-                        <Form.Label>CIP Code
+                        <Form.Label>
+                            CIP Code
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Select
-                            value={formData.cip_code && formData.credential_level ? `${formData.cip_code}__${formData.credential_level}` : ''}
+                            value={
+                                formData.cip_code && formData.credential_level
+                                    ? `${formData.cip_code}__${formData.credential_level}`
+                                    : ''
+                            }
                             disabled={!schoolSelected && !isEdit}
                             onChange={(e) => {
                                 const [cip_code, credential_level] = e.target.value.split('__');
                                 const selected = cipOptions.find(
-                                    (c) => c.cip_code === cip_code && String(c.credential_level) === credential_level
+                                    (c) =>
+                                        c.cip_code === cip_code &&
+                                        String(c.credential_level) === credential_level
                                 );
                                 handleChange('cip_code', cip_code || null);
                                 handleChange('cip_title', selected?.cip_title ?? null);
-                                handleChange('credential_level', selected?.credential_level ?? null );
-                                handleChange('credential_title', selected?.credential_title ?? null );
+                                handleChange(
+                                    'credential_level',
+                                    selected?.credential_level ?? null
+                                );
+                                handleChange(
+                                    'credential_title',
+                                    selected?.credential_title ?? null
+                                );
                             }}
                         >
                             <option value="">-- Select CIP Code --</option>
                             {cipOptions.map((c) => (
-                               <option key={`${c.cip_code}-${c.credential_level}`} value={`${c.cip_code}__${c.credential_level}`}>
-            {c.cip_code} — {c.cip_title} ({c.credential_title})
-        </option>
+                                <option
+                                    key={`${c.cip_code}-${c.credential_level}`}
+                                    value={`${c.cip_code}__${c.credential_level}`}
+                                >
+                                    {c.cip_code} — {c.cip_title} ({c.credential_title})
+                                </option>
                             ))}
                         </Form.Select>
                     </Form.Group>
 
                     {/* CIP Title — auto-filled */}
                     <Form.Group className="mb-3">
-                        <Form.Label>CIP Title
+                        <Form.Label>
+                            CIP Title
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control type="text" value={formData.cip_title ?? ''} disabled />
                     </Form.Group>
                     {/* Credential Level — auto-filled */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Credential Level
+                        <Form.Label>
+                            Credential Level
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control
@@ -285,7 +307,8 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
                     </Form.Group>
                     {/* Credential Title — auto-filled */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Credential Title
+                        <Form.Label>
+                            Credential Title
                             <span className="text-danger">*</span>
                         </Form.Label>
                         <Form.Control
@@ -344,6 +367,21 @@ const EditearningsagainstModal = ({ show, onClose, data, onSuccess }: Props) => 
                             onChange={(e) =>
                                 handleChange(
                                     'year_10',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                    </Form.Group>
+
+                    {/* Average Salary */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>Average Salary</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.avg_salary ?? ''}
+                            onChange={(e) =>
+                                handleChange(
+                                    'avg_salary',
                                     e.target.value === '' ? null : Number(e.target.value)
                                 )
                             }

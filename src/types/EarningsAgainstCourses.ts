@@ -11,4 +11,5 @@ export interface EarningsAgainstCourses {
   year_10: number | null;
   credential_level: number | null;
   credential_title: string | null;
+  avg_salary: number | null;
 }

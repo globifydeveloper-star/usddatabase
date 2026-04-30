@@ -21,6 +21,7 @@ export const studentColumns = [
     { id: 'year_10', name: '10th Year', sort: true, width: '120px' },
     { id: 'credential_level', name: 'Credential Level', sort: true, width: '120px' },
     { id: 'credential_title', name: 'Credential Title', sort: true, width: '120px' },
+    { id: 'avg_salary', name: 'Avg Salary', sort: true, width: '120px' },
 
     {
         id: 'action',
@@ -50,7 +51,9 @@ export const studentColumns = [
                     color: '#ef4444',
                 },
                 onClick: () =>
-                    window.dispatchEvent(new CustomEvent('deleteEarningsAgainstCourses', { detail: rowData })),
+                    window.dispatchEvent(
+                        new CustomEvent('deleteEarningsAgainstCourses', { detail: rowData })
+                    ),
                 innerHTML:
                     '<iconify-icon icon="ri:delete-bin-line" width="20" height="20"></iconify-icon>',
             });
