@@ -16,4 +16,6 @@ export interface Costs {
   otherexpense_oncampus: number | null;
   otherexpense_offcampus: number | null;
   otherexpense_withfamily: number | null;
+
+  for_roi_data: number | null;
 }
