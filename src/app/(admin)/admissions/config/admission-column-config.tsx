@@ -1,82 +1,18 @@
-'use client';
-
-import { h } from 'gridjs';
-
-function normalizeUrl(url: string | null): string | null {
-  if (!url) return null;
-  if (/^https?:\/\//i.test(url)) return url;
-  return `https://${url}`;
-}
-
-export const studentColumns = [
-  { id: 'unitid', name: 'Unit ID', sort: true, width: '120px' },
-  { id: 'test_requirements', name: 'Test Requirements', sort: true, width: '120px', height: '100px' },
-  { id: 'admission_rate', name: 'Admission Rate', sort: true, width: '120px' },
-  { id: 'sat_avg_overall', name: 'SAT Avg Overall', sort: true, width: '120px' },
-  { id: 'sat_mid_math', name: 'SAT Mid Math', sort: true, width: '120px' },
-  { id: 'sat_mid_reading', name: 'SAT Mid Reading', sort: true, width: '120px' },
-  { id: 'sat_p25_reading', name: 'SAT P25 Reading', sort: true, width: '120px' },
-  { id: 'sat_p25_math', name: 'SAT P25 Math', sort: true, width: '120px' },
-  { id: 'sat_p25_writing', name: 'SAT P25 Writing', sort: true, width: '120px' },
-  { id: 'sat_p75_reading', name: 'SAT P75 Reading', sort: true, width: '120px' },
-  { id: 'sat_p75_math', name: 'SAT P75 Math', sort: true, width: '120px' },
-  { id: 'sat_p75_writing', name: 'SAT P75 Writing', sort: true, width: '120px' },
-  { id: 'sat_rw_min', name: 'SAT RW Min', sort: true, width: '120px' },
-  { id: 'sat_rw_max', name: 'SAT RW Max', sort: true, width: '120px' },
-  { id: 'sat_math_min', name: 'SAT Math Min', sort: true, width: '120px' },
-  { id: 'sat_math_max', name: 'SAT Math Max', sort: true, width: '120px' },
-
-
-  {
-    id: 'action',
-    name: 'Action',
-    sort: false,
-    width: '120px',
-    formatter: (cell: any) => {
-      const rowData = cell; // full row object
-
-      const editIcon = h('span', {
-        style: {
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          color: '#a8e7e7ff',
-        },
-        onClick: () =>
-          window.dispatchEvent(
-            new CustomEvent('openEditModal', { detail: rowData })
-          ),
-        innerHTML:
-          '<iconify-icon icon="ri:edit-line" width="20" height="20"></iconify-icon>',
-      });
-
-      const deleteIcon = h('span', {
-        style: {
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          color: '#ef4444',
-        },
-        onClick: () =>
-          window.dispatchEvent(
-            new CustomEvent('deleteAdmission', { detail: rowData })
-          ),
-        innerHTML:
-          '<iconify-icon icon="ri:delete-bin-line" width="20" height="20"></iconify-icon>',
-      });
-
-      return h(
-        'div',
-        {
-          style: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '14px',
-          },
-        },
-        [editIcon, deleteIcon]
-      );
-    },
-  },
+export const admissionColumns = [
+  { id: 'unitid',            name: 'Unit ID',          sort: true, width: '120px' },
+  { id: 'test_requirements', name: 'Test Requirements', sort: true, width: '120px' },
+  { id: 'admission_rate',    name: 'Admission Rate',    sort: true, width: '120px' },
+  { id: 'sat_avg_overall',   name: 'SAT Avg Overall',   sort: true, width: '120px' },
+  { id: 'sat_mid_math',      name: 'SAT Mid Math',      sort: true, width: '120px' },
+  { id: 'sat_mid_reading',   name: 'SAT Mid Reading',   sort: true, width: '120px' },
+  { id: 'sat_p25_reading',   name: 'SAT P25 Reading',   sort: true, width: '120px' },
+  { id: 'sat_p25_math',      name: 'SAT P25 Math',      sort: true, width: '120px' },
+  { id: 'sat_p25_writing',   name: 'SAT P25 Writing',   sort: true, width: '120px' },
+  { id: 'sat_p75_reading',   name: 'SAT P75 Reading',   sort: true, width: '120px' },
+  { id: 'sat_p75_math',      name: 'SAT P75 Math',      sort: true, width: '120px' },
+  { id: 'sat_p75_writing',   name: 'SAT P75 Writing',   sort: true, width: '120px' },
+  { id: 'sat_rw_min',        name: 'SAT RW Min',        sort: true, width: '120px' },
+  { id: 'sat_rw_max',        name: 'SAT RW Max',        sort: true, width: '120px' },
+  { id: 'sat_math_min',      name: 'SAT Math Min',      sort: true, width: '120px' },
+  { id: 'sat_math_max',      name: 'SAT Math Max',      sort: true, width: '120px' },
 ];
