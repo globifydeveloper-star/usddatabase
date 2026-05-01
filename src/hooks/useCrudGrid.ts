@@ -22,11 +22,11 @@ export interface CrudConfig<T> {
     title: string;
     deleteConfirm: string;
   };
+  showAddButton?: boolean;  // ← new, defaults to true
+  showActions?: boolean;    // ← new, defaults to true
 }
 
-export function useCrudGrid<T extends {
-  unitid: any; id: any 
-}>(config: CrudConfig<T>) {
+export function useCrudGrid<T extends { unitid: any; id: any }>(config: CrudConfig<T>) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
   const [key, setKey] = useState(0);
@@ -50,7 +50,7 @@ export function useCrudGrid<T extends {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`${config.apiEndpoint}/${item.unitid}`, {
+      const res = await fetch(`${config.apiEndpoint}/${item.unitid ?? item.id}`, {
         method: "DELETE",
       });
 

@@ -123,6 +123,12 @@ export const MENU_ITEMS: MenuItemType[] = [
    icon: 'ri:refund-2-line',
    url: "/repayment",
  },
+  {
+    key: "program-distribution",
+    label: "Program Distribution",
+    icon: 'ri:pie-chart-box-line',
+    url: "/program_distribution",
+  },
     
   {
     key: 'calendar',
