@@ -1,123 +1,189 @@
 'use client';
 
-import React from "react";
-import { Grid } from "gridjs-react";
-import { useCrudGrid, CrudConfig } from "@/hooks/useCrudGrid";
+import React, { useEffect } from 'react';
+import { Grid } from 'gridjs-react';
+import { h } from 'gridjs';
+import { useCrudGrid, CrudConfig } from '@/hooks/useCrudGrid';
+import ComponentContainerCard from './ComponentContainerCard';
 
 interface CrudGridPageProps<T> {
-  config: CrudConfig<T>;
+    config: CrudConfig<T>;
 }
 
-export function CrudGridPage<T extends { id: any }>({
-  config,
-}: CrudGridPageProps<T>) {
-  const {
-    modalOpen,
-    selectedItem,
-    key,
-    handleEdit,
-    handleDelete,
-    handleSave,
-    setModalOpen,
-    setSelectedItem,
-  } = useCrudGrid(config);
+export function CrudGridPage<T extends { id: any }>({ config }: CrudGridPageProps<T>) {
+    const {
+        modalOpen,
+        selectedItem,
+        key,
+        handleEdit,
+        handleDelete,
+        handleSave,
+        setModalOpen,
+        setSelectedItem,
+    } = useCrudGrid(config as any);
 
-  const columns = [
-    ...config.columns.map((col) => ({
-      name: col.name,
-      id: col.id as string,
-    })),
-    {
-      name: "Actions",
-      id: "action",
-      formatter: (_: any, row: any) => {
-        const item = row._cells?.[0]?.data || row;
+    useEffect(() => {
+        const onEdit = (e: Event) => handleEdit((e as CustomEvent).detail);
+        const onDelete = (e: Event) => handleDelete((e as CustomEvent).detail);
 
-        return (
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleEdit(item)}
-              className="btn btn-sm btn-primary"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDelete(item)}
-              className="btn btn-sm btn-danger"
-            >
-              Delete
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
+        window.addEventListener('gridEdit', onEdit);
+        window.addEventListener('gridDelete', onDelete);
 
-  return (
-    <div key={key}>
-      <h2 className="mb-3">{config.labels.title}</h2>
+        return () => {
+            window.removeEventListener('gridEdit', onEdit);
+            window.removeEventListener('gridDelete', onDelete);
+        };
+    }, [handleEdit, handleDelete]);
 
-      <div className="grid-toolbar mb-3">
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            setSelectedItem(null);
-            setModalOpen(true);
-          }}
-        >
-          Add New
-        </button>
-      </div>
+    const columns = [
+        ...config.columns.map((col) => ({
+            name: col.name,
+            id: col.id as string,
+            sort: col.sort ?? true,
+            width: col.width,
+        })),
+        {
+            name: 'Actions',
+            id: 'action',
+            sort: false,
+            width: '100px',
+            formatter: (cell: any) => {
+                const rowData = cell;
 
-      <Grid
-        columns={columns}
-        server={{
-          url: config.apiEndpoint,
-          then: (data: any) =>
-            data.data.map((row: T) => [
-              ...config.columns.map((col) => {
-                const value = row[col.id];
+                return h(
+                    'div',
+                    {
+                        style: {
+                            display: 'flex',
+                            gap: '12px',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        },
+                    },
+                    [
+                        // Edit icon
+                        h(
+                            'svg',
+                            {
+                                xmlns: 'http://www.w3.org/2000/svg',
+                                width: '18',
+                                height: '18',
+                                viewBox: '0 0 24 24',
+                                fill: 'none',
+                                stroke: '#3b82f6',
+                                strokeWidth: '2',
+                                strokeLinecap: 'round',
+                                strokeLinejoin: 'round',
+                                style: { cursor: 'pointer' },
+                                onClick: () =>
+                                    window.dispatchEvent(
+                                        new CustomEvent('gridEdit', { detail: rowData })
+                                    ),
+                            },
+                            [
+                                h('path', { d: 'M12 20h9' }),
+                                h('path', {
+                                    d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z',
+                                }),
+                            ]
+                        ),
 
-                if (value === null || value === undefined) return "-";
-
-                if (typeof value === "boolean")
-                  return value ? "Yes" : "No";
-
-                return value;
-              }),
-              row, // pass full row for actions
-            ]),
-          total: (data: any) => data.total,
-        }}
-        pagination={{
-          limit: 10,
-          server: {
-            url: (prev, page, limit) => {
-              const url = new URL(prev, window.location.origin);
-              url.searchParams.set("page", String(page + 1));
-              url.searchParams.set("limit", String(limit));
-              return url.pathname + "?" + url.searchParams.toString();
+                        // Delete icon
+                        h(
+                            'svg',
+                            {
+                                xmlns: 'http://www.w3.org/2000/svg',
+                                width: '18',
+                                height: '18',
+                                viewBox: '0 0 24 24',
+                                fill: 'none',
+                                stroke: '#ef4444',
+                                strokeWidth: '2',
+                                strokeLinecap: 'round',
+                                strokeLinejoin: 'round',
+                                style: { cursor: 'pointer' },
+                                onClick: () =>
+                                    window.dispatchEvent(
+                                        new CustomEvent('gridDelete', { detail: rowData })
+                                    ),
+                            },
+                            [
+                                h('polyline', { points: '3 6 5 6 21 6' }),
+                                h('path', { d: 'M19 6l-1 14H6L5 6' }),
+                                h('path', { d: 'M10 11v6' }),
+                                h('path', { d: 'M14 11v6' }),
+                                h('path', { d: 'M9 6V4h6v2' }),
+                            ]
+                        ),
+                    ]
+                );
             },
-          },
-        }}
-        search={{
-          server: {
-            url: (prev, keyword) => {
-              const url = new URL(prev, window.location.origin);
-              url.searchParams.set("search", keyword);
-              url.searchParams.set("page", "1");
-              return url.pathname + "?" + url.searchParams.toString();
-            },
-          },
-        }}
-      />
+        },
+    ];
 
-      <config.modalComponent
-        show={modalOpen}
-        onClose={() => setModalOpen(false)}
-        data={selectedItem}
-        onSuccess={handleSave}
-      />
-    </div>
-  );
+    return (
+        <div key={key}>
+          <ComponentContainerCard title={config.labels.title}>
+            
+
+            <div className="grid-toolbar">
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        setSelectedItem(null);
+                        setModalOpen(true);
+                    }}
+                >
+                    Add New {config.labels.title}
+                </button>
+            </div>
+
+            <Grid
+                columns={columns}
+                server={{
+                    url: config.apiEndpoint,
+                    then: (data: any) =>
+                        data.data.map((row: T) => [
+                            ...config.columns.map((col) => {
+                                const value = row[col.id];
+                                if (value === null || value === undefined) return '-';
+                                if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+                                return value;
+                            }),
+                            JSON.parse(JSON.stringify(row)),
+                        ]),
+                    total: (data: any) => data.total,
+                }}
+                pagination={{
+                    limit: 10,
+                    server: {
+                        url: (prev, page, limit) => {
+                            const url = new URL(prev, window.location.origin);
+                            url.searchParams.set('page', String(page + 1));
+                            url.searchParams.set('limit', String(limit));
+                            return url.pathname + '?' + url.searchParams.toString();
+                        },
+                    },
+                }}
+                search={{
+                    server: {
+                        url: (prev, keyword) => {
+                            const url = new URL(prev, window.location.origin);
+                            url.searchParams.set('search', keyword);
+                            url.searchParams.set('page', '1');
+                            return url.pathname + '?' + url.searchParams.toString();
+                        },
+                    },
+                }}
+            />
+            </ComponentContainerCard>
+
+            <config.modalComponent
+                show={modalOpen}
+                onClose={() => setModalOpen(false)}
+                data={selectedItem as any}
+                onSuccess={handleSave}
+            />
+        </div>
+    );
 }

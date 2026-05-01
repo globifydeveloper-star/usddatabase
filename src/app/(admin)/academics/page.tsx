@@ -15,7 +15,7 @@ const academicsConfig: CrudConfig<Academics> = {
     title: 'Academics Management',
     deleteConfirm: 'Are you sure you want to delete this academic record?',
   },
-  
+   
 };
 
 export default function AcademicsPage() {

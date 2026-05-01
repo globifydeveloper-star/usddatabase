@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
 import { toast } from "@/utils/toast";
 
 export type ColumnConfig<T> = {
   id: keyof T;
   name: string;
+  sort?: boolean;
+  width?: string;
 };
 
 export interface CrudConfig<T> {
@@ -22,17 +24,19 @@ export interface CrudConfig<T> {
   };
 }
 
-export function useCrudGrid<T extends { id: any }>(config: CrudConfig<T>) {
+export function useCrudGrid<T extends {
+  unitid: any; id: any 
+}>(config: CrudConfig<T>) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
   const [key, setKey] = useState(0);
 
-  const handleEdit = (item: T) => {
+  const handleEdit = useCallback((item: T) => {
     setSelectedItem(item);
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleDelete = async (item: T) => {
+  const handleDelete = useCallback(async (item: T) => {
     const result = await Swal.fire({
       title: "Are you sure?",
       text: config.labels.deleteConfirm,
@@ -46,7 +50,7 @@ export function useCrudGrid<T extends { id: any }>(config: CrudConfig<T>) {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`${config.apiEndpoint}/${item.id}`, {
+      const res = await fetch(`${config.apiEndpoint}/${item.unitid}`, {
         method: "DELETE",
       });
 
@@ -54,17 +58,17 @@ export function useCrudGrid<T extends { id: any }>(config: CrudConfig<T>) {
 
       toast.success("Deleted successfully");
       setKey((prev) => prev + 1);
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong");
     }
-  };
+  }, [config]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     setModalOpen(false);
     setSelectedItem(null);
     setKey((prev) => prev + 1);
     toast.success("Saved successfully");
-  };
+  }, []);
 
   return {
     modalOpen,
