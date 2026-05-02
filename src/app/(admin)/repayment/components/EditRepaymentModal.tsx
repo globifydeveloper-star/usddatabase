@@ -18,6 +18,10 @@ const emptyRepayment: Repayment = {
     yr1_noncompleters: null,
     yr3_completers: null,
     yr3_noncompleters: null,
+    all_borrowers_3yr: null,
+    graduates_3yr: null,
+    non_completers_3yr: null,
+    repayment_success: null,
     yr3_overall: null,
 };
 
@@ -45,6 +49,9 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
             [key]: value,
         }));
     };
+
+    const parseNumber = (value: string) =>
+        value === '' ? null : Number(value);
 
     /* -------- SCHOOL SEARCH -------- */
 
@@ -157,78 +164,92 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* yr1_completers*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr1_completers
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>1-YR Completers</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_completers ?? ''}
-                            onChange={(e) => handleChange('yr1_completers', e.target.value)}
+                            onChange={(e) => handleChange('yr1_completers', parseNumber(e.target.value))}
                         />
                     </Form.Group>
 
-                    {/* yr1_noncompleters*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr1_noncompleters
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>1-YR Non-Completers</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_noncompleters ?? ''}
-                            onChange={(e) => handleChange('yr1_noncompleters', e.target.value)}
+                            onChange={(e) => handleChange('yr1_noncompleters', parseNumber(e.target.value))}
                         />
                     </Form.Group>
-                    {/* yr1_overall */}
+
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr1_overall
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>1-YR Overall</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr1_overall ?? ''}
-                            onChange={(e) => handleChange('yr1_overall', e.target.value)}
+                            onChange={(e) => handleChange('yr1_overall', parseNumber(e.target.value))}
                         />
                     </Form.Group>
-                    {/* yr3_completers */}
+
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr3_completers
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>3-YR Completers</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_completers ?? ''}
-                            onChange={(e) => handleChange('yr3_completers', e.target.value)}
+                            onChange={(e) => handleChange('yr3_completers', parseNumber(e.target.value))}
                         />
                     </Form.Group>
 
-                    {/* yr3_noncompleters*/}
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr3_noncompleters
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>3-YR Non-Completers</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_noncompleters ?? ''}
-                            onChange={(e) => handleChange('yr3_noncompleters', e.target.value)}
+                            onChange={(e) => handleChange('yr3_noncompleters', parseNumber(e.target.value))}
                         />
                     </Form.Group>
 
-                    {/* yr3_overall */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>All Borrowers 3-YR</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.all_borrowers_3yr ?? ''}
+                            onChange={(e) => handleChange('all_borrowers_3yr', parseNumber(e.target.value))}
+                        />
+                    </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>
-                            yr3_overall
-                            <span className="text-danger">*</span>
-                        </Form.Label>
+                        <Form.Label>Graduates 3-YR</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.graduates_3yr ?? ''}
+                            onChange={(e) => handleChange('graduates_3yr', parseNumber(e.target.value))}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Non-Completers 3-YR</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.non_completers_3yr ?? ''}
+                            onChange={(e) => handleChange('non_completers_3yr', parseNumber(e.target.value))}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Repayment Success</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.repayment_success ?? ''}
+                            onChange={(e) => handleChange('repayment_success', parseNumber(e.target.value))}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>3-YR Overall</Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.yr3_overall ?? ''}
-                            onChange={(e) => handleChange('yr3_overall', e.target.value)}
+                            onChange={(e) => handleChange('yr3_overall', parseNumber(e.target.value))}
                         />
                     </Form.Group>
                 </Form>
@@ -239,7 +260,7 @@ const EditRepaymentModal = ({ show, onClose, data, onSuccess }: Props) => {
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSave} disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Changes'}
+                    {loading ? 'Saving...' : data ? 'Update Repayment' : 'Create Repayment'}
                 </Button>
             </Modal.Footer>
             <style jsx>{`

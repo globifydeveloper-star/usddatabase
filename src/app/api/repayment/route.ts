@@ -14,7 +14,9 @@ export async function GET(request: Request) {
         const dataQuery = `
   SELECT unitid, yr1_overall, yr1_completers,
          yr1_noncompleters, yr3_completers,
-         yr3_noncompleters, yr3_overall
+         yr3_noncompleters, all_borrowers_3yr,
+         graduates_3yr, non_completers_3yr,
+         repayment_success, yr3_overall
   FROM repayment
   WHERE unitid::text ILIKE $1
   LIMIT $2 OFFSET $3
@@ -49,6 +51,10 @@ export async function POST(request: Request) {
             yr1_noncompleters,
             yr3_completers,
             yr3_noncompleters,
+            all_borrowers_3yr,
+            graduates_3yr,
+            non_completers_3yr,
+            repayment_success,
             yr3_overall,
         } = body;
 
@@ -84,10 +90,14 @@ export async function POST(request: Request) {
         yr1_noncompleters,
         yr3_completers,
         yr3_noncompleters,
+        all_borrowers_3yr,
+        graduates_3yr,
+        non_completers_3yr,
+        repayment_success,
         yr3_overall
       )
       
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       RETURNING *
     `;
 
@@ -98,6 +108,10 @@ export async function POST(request: Request) {
             yr1_noncompleters,
             yr3_completers,
             yr3_noncompleters,
+            all_borrowers_3yr,
+            graduates_3yr,
+            non_completers_3yr,
+            repayment_success,
             yr3_overall,
         ]);
 

@@ -4,13 +4,14 @@ import React from 'react';
 import { CrudGridPage } from '@/components/CrudGridPage';
 import { CrudConfig } from '@/hooks/useCrudGrid';
 import { Repayment } from '@/types/repayment';
-import { studentColumns } from './config/repayment-column-config';
+import { repaymentColumns } from './config/repayment-column-config';
 import EditRepaymentModal from './components/EditRepaymentModal';
 
 const repaymentConfig: CrudConfig<Repayment> = {
   apiEndpoint: '/api/repayment',
-  columns: studentColumns as any,
+  columns: repaymentColumns as any,
   modalComponent: EditRepaymentModal,
+  showAddButton: true,
   labels: {
     title: 'Repayment Management',
     deleteConfirm: 'Are you sure you want to delete this repayment record?',

@@ -14,8 +14,12 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
         yr1_overall = $3,
         yr3_completers = $4,
         yr3_noncompleters = $5,
-        yr3_overall = $6
-      WHERE unitid = $7
+        all_borrowers_3yr = $6,
+        graduates_3yr = $7,
+        non_completers_3yr = $8,
+        repayment_success = $9,
+        yr3_overall = $10
+      WHERE unitid = $11
       RETURNING *;
       `,
             [
@@ -24,8 +28,12 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
                 body.yr1_overall,
                 body.yr3_completers,
                 body.yr3_noncompleters,
+                body.all_borrowers_3yr,
+                body.graduates_3yr,
+                body.non_completers_3yr,
+                body.repayment_success,
                 body.yr3_overall,
-                params.unitid, // ✅ use awaited value
+                params.unitid, 
             ]
         );
 
