@@ -49,4 +49,9 @@ export const TABLE_SEARCH = [
         keywords: ['repayment', 'loan repayment', 'emi'],
         route: '/repayment',
     },
+    {
+        name: 'ROI',
+        keywords: ['roi', 'return on investment', 'salary', 'cost'],
+        route: '/roi',
+    },
 ];

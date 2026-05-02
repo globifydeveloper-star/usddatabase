@@ -123,6 +123,12 @@ export const MENU_ITEMS: MenuItemType[] = [
    icon: 'ri:refund-2-line',
    url: "/repayment",
  },
+ {
+   key: "roi",
+   label: "ROI",
+   icon: 'ri:calculator-line',
+   url: "/roi",
+ },
   {
     key: "program-distribution",
     label: "Program Distribution",
