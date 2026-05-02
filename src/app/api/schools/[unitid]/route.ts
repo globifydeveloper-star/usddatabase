@@ -22,8 +22,9 @@ export async function PUT(
         school_url = $7,
         degrees_awarded = $8,
         has_pseo = $9,
-        ope8_id = $10
-      WHERE unitid = $11
+        ope8_id = $10,
+        program_count = $11
+      WHERE unitid = $12
       RETURNING *;
       `,
       [
@@ -37,6 +38,7 @@ export async function PUT(
         body.degrees_awarded,
         body.has_pseo,
         body.ope8_id,
+        body.program_count,
         params.unitid,
       ]
     );

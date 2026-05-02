@@ -10,4 +10,5 @@ export interface School {
     degrees_awarded: number | null;
     has_pseo: boolean;
     ope8_id: string | null;
+    program_count: number | null;
 }

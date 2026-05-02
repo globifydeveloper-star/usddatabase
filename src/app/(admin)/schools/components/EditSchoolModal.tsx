@@ -24,6 +24,7 @@ const emptySchool: School = {
     degrees_awarded: null,
     has_pseo: false,
     ope8_id: null,
+    program_count: null,
 };
 
 const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
@@ -144,12 +145,14 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
                 <Form>
                     {/* Unit ID */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Unit ID <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            Unit ID <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.unitid}
                             disabled={!!data}
-                             isInvalid={!!errors.unitid}
+                            isInvalid={!!errors.unitid}
                             onChange={(e) =>
                                 handleChange('unitid', e.target.value.replace(/\D/g, ''))
                             }
@@ -162,7 +165,9 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* Name */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Name <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            Name <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={formData.name ?? ''}
@@ -174,7 +179,9 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* City */}
                     <Form.Group className="mb-3">
-                        <Form.Label>City <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            City <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={formData.city ?? ''}
@@ -186,7 +193,9 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* State */}
                     <Form.Group className="mb-3">
-                        <Form.Label>State <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            State <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={formData.state ?? ''}
@@ -210,7 +219,9 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* Address */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Address <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            Address <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="text"
                             value={formData.address ?? ''}
@@ -271,7 +282,9 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* PSEO */}
                     <Form.Group className="mb-3">
-                        <Form.Label>PSEO <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            PSEO <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Select
                             value={formData.has_pseo ? 'true' : 'false'}
                             onChange={(e) => handleChange('has_pseo', e.target.value === 'true')}
@@ -287,15 +300,38 @@ const EditSchoolModal = ({ show, onClose, data, onSuccess }: Props) => {
 
                     {/* OPE8 ID */}
                     <Form.Group className="mb-3">
-                        <Form.Label>OPE8 ID <span className="text-danger">*</span></Form.Label>
+                        <Form.Label>
+                            OPE8 ID <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             type="number"
                             value={formData.ope8_id ?? ''}
-                             isInvalid={!!errors.ope8_id}
+                            isInvalid={!!errors.ope8_id}
                             onChange={(e) => handleChange('ope8_id', e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.ope8_id}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Program Count */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Program Count <span className="text-danger">*</span>
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={formData.program_count ?? ''}
+                            isInvalid={!!errors.program_count}
+                            onChange={(e) =>
+                                handleChange(
+                                    'program_count',
+                                    e.target.value === '' ? null : Number(e.target.value)
+                                )
+                            }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.program_count}
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Form>

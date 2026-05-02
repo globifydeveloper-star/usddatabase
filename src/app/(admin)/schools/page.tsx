@@ -8,15 +8,15 @@ import { schoolsColumns } from './config/schools-column-config';
 import EditSchoolModal from './components/EditSchoolModal';
 
 const schoolsConfig: CrudConfig<School> = {
-  apiEndpoint: '/api/schools',
-  columns: schoolsColumns as any,
-  modalComponent: EditSchoolModal,
-  labels: {
-    title: 'Schools Management',
-    deleteConfirm: 'Are you sure you want to delete this school?',
-  },
+    apiEndpoint: '/api/schools',
+    columns: schoolsColumns as any,
+    modalComponent: EditSchoolModal,
+    labels: {
+        title: 'Schools Management',
+        deleteConfirm: 'Are you sure you want to delete this school?',
+    },
 };
 
 export default function SchoolsPage() {
-  return <CrudGridPage config={schoolsConfig as any} />;
+    return <CrudGridPage config={schoolsConfig as any} />;
 }

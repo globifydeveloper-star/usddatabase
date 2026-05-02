@@ -17,6 +17,7 @@ const ALLOWED_SORT_COLUMNS = [
   'degrees_awarded',
   'has_pseo',
   'ope8_id',
+  'program_count',
 ];
 
 export async function GET(req: NextRequest) {
