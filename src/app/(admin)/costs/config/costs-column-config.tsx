@@ -11,10 +11,10 @@ function normalizeUrl(url: string | null): string | null {
 export const studentColumns = [
     { id: 'unitid', name: 'Unit ID', sort: true, width: '80px' },
     { id: 'booksupply', name: 'Book Supply', sort: true, width: '120px' },
-    { id: 'tuition_in_state', name: 'In state Tuition Fees', sort: true, width: '150px' },
-    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '150px' },
+    { id: 'tuition_in_state', name: 'In state Tuition', sort: true, width: '150px' },
+    { id: 'tuition_out_state', name: 'Out state Tuition', sort: true, width: '150px' },
     { id: 'tuition_program_year', name: 'Program Year of Tuition', sort: true, width: '120px' },
-    { id: 'tuition_out_state', name: 'Out state Tuition Fees', sort: true, width: '150px' },
+    { id: 'tuition_out_state', name: 'Out state Tuition', sort: true, width: '150px' },
     { id: 'roomboard_oncampus', name: 'RoomBoard OnCampus', sort: true, width: '180px' },
     { id: 'roomboard_offcampus', name: 'RoomBoard OffCampus', sort: true, width: '180px' },
     { id: 'avg_net_price_public', name: 'Avg Net price Public', sort: true, width: '180px' },
