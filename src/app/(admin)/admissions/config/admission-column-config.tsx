@@ -2,6 +2,8 @@ export const admissionColumns = [
   { id: 'unitid',            name: 'Unit ID',          sort: true, width: '120px' },
   { id: 'test_requirements', name: 'Test Requirements', sort: true, width: '160px' },
   { id: 'admission_rate',    name: 'Admission Rate',    sort: true, width: '160px' },
+  { id: 'school_min_range',  name: 'School Min Range (SAT-Min)',  sort: true, width: '220px' },
+  { id: 'school_max_range',  name: 'School Max Range (SAT-Max)',  sort: true, width: '240px' },
   { id: 'sat_avg_overall',   name: 'SAT Avg Overall',   sort: true, width: '160px' },
   { id: 'sat_mid_math',      name: 'SAT Mid Math',      sort: true, width: '160px' },
   { id: 'sat_mid_reading',   name: 'SAT Mid Reading',   sort: true, width: '160px' },

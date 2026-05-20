@@ -16,6 +16,8 @@ const emptyAdmission: Admissions = {
     unitid: '',
     test_requirements: null,
     admission_rate: null,
+   school_min_range: null,
+   school_max_range: null,
     sat_avg_overall: null,
     sat_mid_math: null,
     sat_mid_reading: null,
@@ -44,6 +46,8 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                 unitid: data.unitid,
                 test_requirements: data.test_requirements,
                 admission_rate: data.admission_rate,
+                school_min_range: data.school_min_range,
+                school_max_range: data.school_max_range,
                 sat_avg_overall: data.sat_avg_overall,
                 sat_mid_math: data.sat_mid_math,
                 sat_mid_reading: data.sat_mid_reading,
@@ -63,7 +67,7 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
         }
     }, [data, show]);
 
-    const handleChange = (key: keyof Admissions, value: string | number | null) => {
+    const handleChange = (key: keyof Admissions, value: any) => {
         setFormData({
             ...formData,
             [key]: value,
@@ -232,6 +236,7 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                             }
                         />
                     </Form.Group>
+
                     {/* SAT AVERAGE OVERALL */}
                     <Form.Group className="mb-3">
                         <Form.Label>

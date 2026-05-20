@@ -16,25 +16,29 @@ export async function PUT(
       SET
         test_requirements = $1,
         admission_rate = $2,
-        sat_avg_overall = $3,
-        sat_mid_math = $4,
-        sat_mid_reading = $5,
-        sat_p25_reading = $6,
-        sat_p25_math = $7,
-        sat_p25_writing = $8,
-        sat_p75_reading = $9,
-        sat_p75_math = $10,
-        sat_p75_writing= $11,
-        sat_rw_min = $12,
-        sat_rw_max = $13,
-        sat_math_min = $14,
-        sat_math_max = $15
-      WHERE unitid = $16
+        school_min_range = $3,
+        school_max_range = $4,
+        sat_avg_overall = $5,
+        sat_mid_math = $6,
+        sat_mid_reading = $7,
+        sat_p25_reading = $8,
+        sat_p25_math = $9,
+        sat_p25_writing = $10,
+        sat_p75_reading = $11,
+        sat_p75_math = $12,
+        sat_p75_writing= $13,
+        sat_rw_min = $14,
+        sat_rw_max = $15,
+        sat_math_min = $16,
+        sat_math_max = $17
+      WHERE unitid = $18
       RETURNING *;
       `,
       [
         body.test_requirements,
         body.admission_rate,
+        body.school_min_range,
+        body.school_max_range,
         body.sat_avg_overall,
         body.sat_mid_math,
         body.sat_mid_reading,

@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     try {
         const dataQuery = `
-      SELECT unitid, test_requirements, admission_rate , sat_avg_overall, sat_mid_math, sat_mid_reading, sat_p25_reading, sat_p25_math, sat_p25_writing, sat_p75_reading, sat_p75_math, sat_p75_writing, sat_rw_min, sat_rw_max, sat_math_min, sat_math_max
+      SELECT unitid, test_requirements, admission_rate ,school_min_range, school_max_range, sat_avg_overall, sat_mid_math, sat_mid_reading, sat_p25_reading, sat_p25_math, sat_p25_writing, sat_p75_reading, sat_p75_math, sat_p75_writing, sat_rw_min, sat_rw_max, sat_math_min, sat_math_max
       FROM admissions
       WHERE unitid::text ILIKE $1
       LIMIT $2 OFFSET $3
@@ -46,6 +46,8 @@ export async function POST(request: Request) {
             unitid,
             test_requirements,
             admission_rate,
+            school_min_range,
+            school_max_range,
             sat_avg_overall,
             sat_mid_math,
             sat_mid_reading,
@@ -97,6 +99,8 @@ export async function POST(request: Request) {
         unitid,
         test_requirements,
         admission_rate,
+        school_min_range,
+        school_max_range,
         sat_avg_overall,
         sat_mid_math,
         sat_mid_reading,
@@ -119,6 +123,8 @@ export async function POST(request: Request) {
             unitid,
             test_requirements,
             admission_rate,
+            school_min_range,
+            school_max_range,
             sat_avg_overall,
             sat_mid_math,
             sat_mid_reading,
