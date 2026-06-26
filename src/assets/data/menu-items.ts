@@ -135,7 +135,70 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: 'ri:pie-chart-box-line',
     url: "/program_distribution",
   },
-    
+  {
+    key: 'athletics-section',
+    label: 'Athletics',
+    icon: 'ri:basketball-line',
+    children: [
+      { key: 'athletic-content-blocks', label: 'Athletic Content Blocks', url: '/athletic-content-blocks', parentKey: 'athletics-section' },
+      { key: 'athletic-sports', label: 'Athletic Sports', url: '/athletic-sports', parentKey: 'athletics-section' },
+      { key: 'athletic-summary', label: 'Athletic Summary', url: '/athletic-summary', parentKey: 'athletics-section' },
+    ],
+  },
+  {
+    key: 'pseo-section',
+    label: 'PSEO',
+    icon: 'ri:bar-chart-box-line',
+    children: [
+      { key: 'pseo-entities', label: 'Pseo Entities', url: '/pseo-entities', parentKey: 'pseo-section' },
+      { key: 'pseo-institute-level', label: 'Pseo Institute Level', url: '/pseo-institute-level', parentKey: 'pseo-section' },
+      { key: 'pseo-state-level', label: 'Pseo State Level', url: '/pseo-state-level', parentKey: 'pseo-section' },
+    ],
+  },
+  {
+    key: 'app-users-section',
+    label: 'App Users',
+    icon: 'ri:user-3-line',
+    children: [
+      { key: 'usdusers', label: 'Usdusers', url: '/usdusers', parentKey: 'app-users-section' },
+      { key: 'user-saved-colleges', label: 'User Saved Colleges', url: '/user-saved-colleges', parentKey: 'app-users-section' },
+      { key: 'user-saved-programs', label: 'User Saved Programs', url: '/user-saved-programs', parentKey: 'app-users-section' },
+      { key: 'user-compare-history', label: 'User Compare History', url: '/user-compare-history', parentKey: 'app-users-section' },
+      { key: 'usduser-deactivations', label: 'Usduser Deactivations', url: '/usduser-deactivations', parentKey: 'app-users-section' },
+      { key: 'usduser-preferred-states', label: 'Usduser Preferred States', url: '/usduser-preferred-states', parentKey: 'app-users-section' },
+      { key: 'usduser-preferred-programs', label: 'Usduser Preferred Programs', url: '/usduser-preferred-programs', parentKey: 'app-users-section' },
+      { key: 'usdusers-preferred-states', label: 'Usdusers Preferred States', url: '/usdusers-preferred-states', parentKey: 'app-users-section' },
+      { key: 'usdusers-preferred-programs', label: 'Usdusers Preferred Programs', url: '/usdusers-preferred-programs', parentKey: 'app-users-section' },
+    ],
+  },
+  {
+    key: 'content-section',
+    label: 'Content',
+    icon: 'ri:file-list-2-line',
+    children: [
+      { key: 'program-debt', label: 'Program Debt', url: '/program-debt', parentKey: 'content-section' },
+      { key: 'program-descriptions', label: 'Program Descriptions', url: '/program-descriptions', parentKey: 'content-section' },
+      { key: 'school-descriptions', label: 'School Descriptions', url: '/school-descriptions', parentKey: 'content-section' },
+      { key: 'generated-missing-earnings', label: 'Generated Missing Earnings', url: '/generated-missing-earnings', parentKey: 'content-section' },
+      { key: 'cip-mapping', label: 'Cip Mapping', url: '/cip-mapping', parentKey: 'content-section' },
+      { key: 'states', label: 'States', url: '/states', parentKey: 'content-section' },
+    ],
+  },
+  {
+    key: 'system-section',
+    label: 'System',
+    icon: 'ri:settings-4-line',
+    children: [
+      { key: 'admin', label: 'Admin', url: '/admin', parentKey: 'system-section' },
+      { key: 'authentication', label: 'Authentication', url: '/authentication', parentKey: 'system-section' },
+      { key: 'audit-logs', label: 'Audit Logs', url: '/audit-logs', parentKey: 'system-section' },
+      { key: 'costs-fetched', label: 'Costs Fetched', url: '/costs-fetched', parentKey: 'system-section' },
+      { key: 'faculty-import', label: 'Faculty Import', url: '/faculty-import', parentKey: 'system-section' },
+      { key: 'temp-sat', label: 'Temp Sat', url: '/temp-sat', parentKey: 'system-section' },
+      { key: 'prompt', label: 'Prompt', url: '/prompt', parentKey: 'system-section' },
+    ],
+  },
+
   {
     key: 'calendar',
     label: 'Calendar',

@@ -1,0 +1,187 @@
+import 'server-only';
+import { NextRequest, NextResponse } from 'next/server';
+import { pool } from './db';
+
+/**
+ * Reusable, config-driven CRUD route factory.
+ *
+ * Centralises the list/create/update/delete SQL so each table only declares a
+ * small config object instead of repeating near-identical handlers. Mirrors the
+ * response shapes already used across the project:
+ *   list   -> { data, total }
+ *   mutate -> { success, message, data }
+ */
+
+export interface CrudTableConfig {
+  table: string;
+  /** primary key column(s) */
+  pk: string[];
+  /** columns that can be inserted/updated (exclude auto id / created_at) */
+  columns: string[];
+  /** text-ish columns used for ILIKE search */
+  searchColumns: string[];
+  /** extra select expressions from joins, e.g. `, s.name AS school_name` */
+  selectExtra?: string;
+  /** join clause, e.g. `LEFT JOIN schools s ON s.unitid = t.unitid` */
+  joins?: string;
+  /** set updated_at = now() on update */
+  autoUpdatedAt?: boolean;
+}
+
+// jsonb / array params must be serialized for node-pg
+const norm = (v: any) =>
+  v !== null && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : v;
+
+function buildSearchClause(cfg: CrudTableConfig, paramIndex: number) {
+  const cols = cfg.searchColumns.length
+    ? cfg.searchColumns.map((c) => `t.${c}::text`)
+    : cfg.pk.map((c) => `t.${c}::text`);
+  return cols.map((c) => `${c} ILIKE $${paramIndex}`).join(' OR ');
+}
+
+export function makeList(cfg: CrudTableConfig) {
+  return async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get('page') || 1);
+    const limit = Number(searchParams.get('limit') || 20);
+    const search = searchParams.get('search') || '';
+    const offset = (page - 1) * limit;
+
+    try {
+      const where = `WHERE ${buildSearchClause(cfg, 1)}`;
+      const dataQuery = `
+        SELECT t.*${cfg.selectExtra || ''}
+        FROM ${cfg.table} t
+        ${cfg.joins || ''}
+        ${where}
+        ORDER BY ${cfg.pk.map((c) => `t.${c}`).join(', ')}
+        LIMIT $2 OFFSET $3
+      `;
+      const countQuery = `SELECT COUNT(*) FROM ${cfg.table} t ${cfg.joins || ''} ${where}`;
+
+      const dataResult = await pool.query(dataQuery, [`%${search}%`, limit, offset]);
+      const countResult = await pool.query(countQuery, [`%${search}%`]);
+
+      return NextResponse.json({
+        data: dataResult.rows,
+        total: Number(countResult.rows[0].count),
+      });
+    } catch (error) {
+      console.error(`GET ${cfg.table} Error:`, error);
+      return NextResponse.json({ error: 'Server Error' }, { status: 500 });
+    }
+  };
+}
+
+export function makeCreate(cfg: CrudTableConfig) {
+  return async function POST(request: Request) {
+    try {
+      const body = await request.json();
+      const cols = cfg.columns.filter((c) => body[c] !== undefined);
+
+      if (cols.length === 0) {
+        return NextResponse.json(
+          { success: false, message: 'No data provided' },
+          { status: 400 }
+        );
+      }
+
+      const values = cols.map((c) => norm(body[c]));
+      const placeholders = cols.map((_, i) => `$${i + 1}`).join(', ');
+
+      const result = await pool.query(
+        `INSERT INTO ${cfg.table} (${cols.join(', ')}) VALUES (${placeholders}) RETURNING *`,
+        values
+      );
+
+      return NextResponse.json({ success: true, data: result.rows[0] });
+    } catch (error: any) {
+      console.error(`Create ${cfg.table} Error:`, error);
+      return NextResponse.json(
+        { success: false, message: error?.detail || 'Insert failed' },
+        { status: 500 }
+      );
+    }
+  };
+}
+
+// Decodes the `[key]` path segment back into ordered PK values ('~' separated)
+function decodeKey(key: string): string[] {
+  return decodeURIComponent(key)
+    .split('~')
+    .map((v) => decodeURIComponent(v));
+}
+
+export function makeUpdate(cfg: CrudTableConfig) {
+  return async function PUT(request: NextRequest, { params }: { params: { key: string } }) {
+    try {
+      const body = await request.json();
+      const keyValues = decodeKey(params.key);
+
+      const cols = cfg.columns.filter((c) => body[c] !== undefined && !cfg.pk.includes(c));
+      if (cols.length === 0) {
+        return NextResponse.json(
+          { success: false, message: 'No data provided' },
+          { status: 400 }
+        );
+      }
+
+      const setParts = cols.map((c, i) => `${c} = $${i + 1}`);
+      if (cfg.autoUpdatedAt) setParts.push(`updated_at = now()`);
+
+      const whereParts = cfg.pk.map((c, i) => `${c} = $${cols.length + i + 1}`);
+      const values = [...cols.map((c) => norm(body[c])), ...keyValues];
+
+      const result = await pool.query(
+        `UPDATE ${cfg.table} SET ${setParts.join(', ')} WHERE ${whereParts.join(' AND ')} RETURNING *`,
+        values
+      );
+
+      if (result.rowCount === 0) {
+        return NextResponse.json({ success: false, message: 'Record not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Updated successfully',
+        data: result.rows[0],
+      });
+    } catch (error: any) {
+      console.error(`Update ${cfg.table} Error:`, error);
+      return NextResponse.json(
+        { success: false, message: error?.detail || 'Server error' },
+        { status: 500 }
+      );
+    }
+  };
+}
+
+export function makeRemove(cfg: CrudTableConfig) {
+  return async function DELETE(_request: NextRequest, { params }: { params: { key: string } }) {
+    try {
+      const keyValues = decodeKey(params.key);
+      const whereParts = cfg.pk.map((c, i) => `${c} = $${i + 1}`);
+
+      const result = await pool.query(
+        `DELETE FROM ${cfg.table} WHERE ${whereParts.join(' AND ')} RETURNING *`,
+        keyValues
+      );
+
+      if (result.rowCount === 0) {
+        return NextResponse.json({ success: false, message: 'Record not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Deleted successfully',
+        data: result.rows[0],
+      });
+    } catch (error: any) {
+      console.error(`Delete ${cfg.table} Error:`, error);
+      return NextResponse.json(
+        { success: false, message: error?.detail || 'Delete failed' },
+        { status: 500 }
+      );
+    }
+  };
+}

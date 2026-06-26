@@ -24,6 +24,14 @@ export interface CrudConfig<T> {
   };
   showAddButton?: boolean;  // ← new, defaults to true
   showActions?: boolean;    // ← new, defaults to true
+  // Builds the path segment used for PUT/DELETE on a single row.
+  // Defaults to `item.unitid ?? item.id`. Override for tables whose primary
+  // key is neither `id` nor `unitid` (e.g. cip_prefix) or is composite.
+  buildItemPath?: (item: T) => string;
+}
+
+export function defaultItemPath(item: any): string {
+  return String(item?.unitid ?? item?.id ?? "");
 }
 
 export function useCrudGrid<T extends { unitid: any; id: any }>(config: CrudConfig<T>) {
@@ -50,7 +58,10 @@ export function useCrudGrid<T extends { unitid: any; id: any }>(config: CrudConf
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`${config.apiEndpoint}/${item.unitid ?? item.id}`, {
+      const path = config.buildItemPath
+        ? config.buildItemPath(item)
+        : defaultItemPath(item);
+      const res = await fetch(`${config.apiEndpoint}/${path}`, {
         method: "DELETE",
       });
 
