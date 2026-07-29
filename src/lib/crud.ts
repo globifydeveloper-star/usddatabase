@@ -26,6 +26,8 @@ export interface CrudTableConfig {
   joins?: string;
   /** set updated_at = now() on update */
   autoUpdatedAt?: boolean;
+  /** override columns selected for the list query (defaults to `t.*`) — use to exclude large/blob columns */
+  listColumns?: string[];
 }
 
 // jsonb / array params must be serialized for node-pg
@@ -49,8 +51,11 @@ export function makeList(cfg: CrudTableConfig) {
 
     try {
       const where = `WHERE ${buildSearchClause(cfg, 1)}`;
+      const selectCols = cfg.listColumns
+        ? cfg.listColumns.map((c) => `t.${c}`).join(', ')
+        : 't.*';
       const dataQuery = `
-        SELECT t.*${cfg.selectExtra || ''}
+        SELECT ${selectCols}${cfg.selectExtra || ''}
         FROM ${cfg.table} t
         ${cfg.joins || ''}
         ${where}

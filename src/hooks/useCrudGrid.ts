@@ -24,10 +24,16 @@ export interface CrudConfig<T> {
   };
   showAddButton?: boolean;  // ← new, defaults to true
   showActions?: boolean;    // ← new, defaults to true
+  showEditAction?: boolean; // defaults to true; set false to hide only the row Edit icon
+  showDeleteAction?: boolean; // defaults to true; set false to hide only the row Delete icon
   // Builds the path segment used for PUT/DELETE on a single row.
   // Defaults to `item.unitid ?? item.id`. Override for tables whose primary
   // key is neither `id` nor `unitid` (e.g. cip_prefix) or is composite.
   buildItemPath?: (item: T) => string;
+  // When set, adds a Download action to each row that opens the given URL.
+  downloadAction?: {
+    getUrl: (item: T) => string;
+  };
 }
 
 export function defaultItemPath(item: any): string {

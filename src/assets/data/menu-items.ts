@@ -10,10 +10,6 @@ export const MENU_ITEMS: MenuItemType[] = [
     key: 'dashboard',
     label: 'Dashboard',
     icon: 'ri:dashboard-3-line',
-    badge: {
-      text: '5',
-      variant: 'danger',
-    },
     url: '/dashboard',
   },
   // administration
@@ -40,16 +36,24 @@ export const MENU_ITEMS: MenuItemType[] = [
     ],
   },
   {
-    key: "schools",
-    label: "Schools",
-    icon: "ri:building-line",
-    url: "/schools",
+    key: 'schools-section',
+    label: 'Schools',
+    icon: 'ri:building-line',
+    children: [
+      { key: 'schools', label: 'Schools', url: '/schools', parentKey: 'schools-section' },
+      { key: 'school-descriptions', label: 'School Descriptions', url: '/school-descriptions', parentKey: 'schools-section' },
+    ],
   },
-   {
-    key: "programs",
-    label: "Programs",
-    icon: "ri:book-open-line",
-    url: "/programs",
+  {
+    key: 'programs-section',
+    label: 'Programs',
+    icon: 'ri:book-open-line',
+    children: [
+      { key: 'programs', label: 'Programs', url: '/programs', parentKey: 'programs-section' },
+      { key: 'program-debt', label: 'Program Debt', url: '/program-debt', parentKey: 'programs-section' },
+      { key: 'program-descriptions', label: 'Program Descriptions', url: '/program-descriptions', parentKey: 'programs-section' },
+      { key: 'cip-mapping', label: 'Cip Mapping', url: '/cip-mapping', parentKey: 'programs-section' },
+    ],
   },
   {
     key: "students",
@@ -58,16 +62,15 @@ export const MENU_ITEMS: MenuItemType[] = [
     url:"/students"
   },
   {
-    key: "admissions",
-    label:"Admissions",
+    key: 'admission-data-section',
+    label: 'Admission Data',
     icon: 'ri:file-list-3-line',
-    url:"/admissions"
-  },
-  {
-    key: "earnings against courses",
-    label:"Earnings Against Courses",
-    icon: "ri:line-chart-line",
-    url:"/earningsagainstcourses"
+    children: [
+      { key: 'admissions', label: 'Admissions', url: '/admissions', parentKey: 'admission-data-section' },
+      { key: 'admission-disclosure-categories', label: 'Admission Disclosure Categories', url: '/admission-disclosure-categories', parentKey: 'admission-data-section' },
+      { key: 'admissions-sat-ui', label: 'Admissions SAT UI', url: '/admissions-sat-ui', parentKey: 'admission-data-section' },
+      { key: 'staging-admissions-categories', label: 'Staging Admissions Categories', url: '/staging-admissions-categories', parentKey: 'admission-data-section' },
+    ],
   },
   {
     key: "completion",
@@ -112,12 +115,6 @@ export const MENU_ITEMS: MenuItemType[] = [
     url: "/net-price-public-income",
   },
   {
-   key: "earnings",
-   label: "Earnings Against Instituions",
-   icon: 'ri:line-chart-line',
-   url: "/earnings",
-  },
-  {
    key: "repayment",
    label: "Repayment",
    icon: 'ri:refund-2-line',
@@ -136,6 +133,12 @@ export const MENU_ITEMS: MenuItemType[] = [
     url: "/program_distribution",
   },
   {
+    key: "earnings-against-courses-merged",
+    label: "Earnings Against Courses Merged",
+    icon: 'ri:line-chart-fill',
+    url: "/earnings-against-courses-merged",
+  },
+  {
     key: 'athletics-section',
     label: 'Athletics',
     icon: 'ri:basketball-line',
@@ -143,6 +146,7 @@ export const MENU_ITEMS: MenuItemType[] = [
       { key: 'athletic-content-blocks', label: 'Athletic Content Blocks', url: '/athletic-content-blocks', parentKey: 'athletics-section' },
       { key: 'athletic-sports', label: 'Athletic Sports', url: '/athletic-sports', parentKey: 'athletics-section' },
       { key: 'athletic-summary', label: 'Athletic Summary', url: '/athletic-summary', parentKey: 'athletics-section' },
+      { key: 'athletic-division-benchmarks', label: 'Athletic Division Benchmarks', url: '/athletic-division-benchmarks', parentKey: 'athletics-section' },
     ],
   },
   {
@@ -165,10 +169,17 @@ export const MENU_ITEMS: MenuItemType[] = [
       { key: 'user-saved-programs', label: 'User Saved Programs', url: '/user-saved-programs', parentKey: 'app-users-section' },
       { key: 'user-compare-history', label: 'User Compare History', url: '/user-compare-history', parentKey: 'app-users-section' },
       { key: 'usduser-deactivations', label: 'Usduser Deactivations', url: '/usduser-deactivations', parentKey: 'app-users-section' },
-      { key: 'usduser-preferred-states', label: 'Usduser Preferred States', url: '/usduser-preferred-states', parentKey: 'app-users-section' },
-      { key: 'usduser-preferred-programs', label: 'Usduser Preferred Programs', url: '/usduser-preferred-programs', parentKey: 'app-users-section' },
       { key: 'usdusers-preferred-states', label: 'Usdusers Preferred States', url: '/usdusers-preferred-states', parentKey: 'app-users-section' },
       { key: 'usdusers-preferred-programs', label: 'Usdusers Preferred Programs', url: '/usdusers-preferred-programs', parentKey: 'app-users-section' },
+    ],
+  },
+  {
+    key: 'reports-section',
+    label: 'Reports',
+    icon: 'ri:file-chart-line',
+    children: [
+      { key: 'usdreports', label: 'Usdreports', url: '/usdreports', parentKey: 'reports-section' },
+      { key: 'usdreport-colleges', label: 'Usdreport Colleges', url: '/usdreport-colleges', parentKey: 'reports-section' },
     ],
   },
   {
@@ -176,11 +187,7 @@ export const MENU_ITEMS: MenuItemType[] = [
     label: 'Content',
     icon: 'ri:file-list-2-line',
     children: [
-      { key: 'program-debt', label: 'Program Debt', url: '/program-debt', parentKey: 'content-section' },
-      { key: 'program-descriptions', label: 'Program Descriptions', url: '/program-descriptions', parentKey: 'content-section' },
-      { key: 'school-descriptions', label: 'School Descriptions', url: '/school-descriptions', parentKey: 'content-section' },
       { key: 'generated-missing-earnings', label: 'Generated Missing Earnings', url: '/generated-missing-earnings', parentKey: 'content-section' },
-      { key: 'cip-mapping', label: 'Cip Mapping', url: '/cip-mapping', parentKey: 'content-section' },
       { key: 'states', label: 'States', url: '/states', parentKey: 'content-section' },
     ],
   },
@@ -195,7 +202,6 @@ export const MENU_ITEMS: MenuItemType[] = [
       { key: 'costs-fetched', label: 'Costs Fetched', url: '/costs-fetched', parentKey: 'system-section' },
       { key: 'faculty-import', label: 'Faculty Import', url: '/faculty-import', parentKey: 'system-section' },
       { key: 'temp-sat', label: 'Temp Sat', url: '/temp-sat', parentKey: 'system-section' },
-      { key: 'prompt', label: 'Prompt', url: '/prompt', parentKey: 'system-section' },
     ],
   },
 

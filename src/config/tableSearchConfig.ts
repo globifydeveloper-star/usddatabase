@@ -20,9 +20,9 @@ export const TABLE_SEARCH = [
         route: '/admissions',
     },
     {
-        name: 'Earnings Against Courses',
+        name: 'Earnings Against Courses Merged',
         keywords: ['earnings', 'salary', 'income', 'roi', 'course earnings'],
-        route: '/earningsagainstcourses',
+        route: '/earnings-against-courses-merged',
     },
     {
         name: 'Completion',
