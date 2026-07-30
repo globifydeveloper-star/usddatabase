@@ -36,6 +36,23 @@ export const MENU_ITEMS: MenuItemType[] = [
     ],
   },
   {
+    key: "security-section",
+    label: "Security",
+    icon: "ri:shield-keyhole-line",
+    children: [
+      {
+        key: "login-history",
+        label: "Login History",
+        url: "/login-history",
+      },
+      {
+        key: "cms-audit-logs",
+        label: "Audit Logs",
+        url: "/cms-audit-logs",
+      },
+    ],
+  },
+  {
     key: 'schools-section',
     label: 'Schools',
     icon: 'ri:building-line',

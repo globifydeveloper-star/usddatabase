@@ -2,6 +2,7 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from './db';
 import { getAuthContext, assertTableWritable } from './auth';
+import { logAudit } from './audit';
 
 /**
  * Reusable, config-driven CRUD route factory.
@@ -47,7 +48,7 @@ export function makeList(cfg: CrudTableConfig) {
     // Belt-and-suspenders alongside middleware.ts, which already blocks
     // unauthenticated requests to /api/* — reads are open to any
     // authenticated role (superadmin/editor/viewer).
-    if (!getAuthContext(request)) {
+    if (!(await getAuthContext(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -88,7 +89,7 @@ export function makeList(cfg: CrudTableConfig) {
 
 export function makeCreate(cfg: CrudTableConfig) {
   return async function POST(request: Request) {
-    const auth = getAuthContext(request);
+    const auth = await getAuthContext(request);
     if (!auth) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -115,6 +116,12 @@ export function makeCreate(cfg: CrudTableConfig) {
         values
       );
 
+      await logAudit(auth, {
+        table_name: cfg.table,
+        action: 'create',
+        record_id: recordIdFrom(cfg, result.rows[0]),
+      });
+
       return NextResponse.json({ success: true, data: result.rows[0] });
     } catch (error: any) {
       console.error(`Create ${cfg.table} Error:`, error);
@@ -133,9 +140,13 @@ function decodeKey(key: string): string[] {
     .map((v) => decodeURIComponent(v));
 }
 
+function recordIdFrom(cfg: CrudTableConfig, row: any): string {
+  return cfg.pk.map((c) => row[c]).join('~');
+}
+
 export function makeUpdate(cfg: CrudTableConfig) {
   return async function PUT(request: NextRequest, { params }: { params: { key: string } }) {
-    const auth = getAuthContext(request);
+    const auth = await getAuthContext(request);
     if (!auth) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -170,6 +181,12 @@ export function makeUpdate(cfg: CrudTableConfig) {
         return NextResponse.json({ success: false, message: 'Record not found' }, { status: 404 });
       }
 
+      await logAudit(auth, {
+        table_name: cfg.table,
+        action: 'update',
+        record_id: recordIdFrom(cfg, result.rows[0]),
+      });
+
       return NextResponse.json({
         success: true,
         message: 'Updated successfully',
@@ -187,7 +204,7 @@ export function makeUpdate(cfg: CrudTableConfig) {
 
 export function makeRemove(cfg: CrudTableConfig) {
   return async function DELETE(request: NextRequest, { params }: { params: { key: string } }) {
-    const auth = getAuthContext(request);
+    const auth = await getAuthContext(request);
     if (!auth) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
@@ -207,6 +224,12 @@ export function makeRemove(cfg: CrudTableConfig) {
       if (result.rowCount === 0) {
         return NextResponse.json({ success: false, message: 'Record not found' }, { status: 404 });
       }
+
+      await logAudit(auth, {
+        table_name: cfg.table,
+        action: 'delete',
+        record_id: recordIdFrom(cfg, result.rows[0]),
+      });
 
       return NextResponse.json({
         success: true,

@@ -13,6 +13,7 @@ import CostPieChart from './components/CostPieChart';
 import RepaymentOverallChart from './components/RepaymentOverallChart';
 import ProgramOverallChart from './components/ProgramOverallChart';
 import CollegeAndProgramChart from './components/CollegeAndprogramChart';
+import RecentAuditLogs from './components/RecentAuditLogs';
 
 const Dashboard = async () => {
     const stateData = await getDashboardStats(); //fetch from server-only file
@@ -36,7 +37,14 @@ const Dashboard = async () => {
                 </div>
             </Alert>
 
-            <State data={stateData} />
+            <Row>
+                <Col md={12} xl={6}>
+                    <State data={stateData} />
+                </Col>
+                <Col md={12} xl={6}>
+                    <RecentAuditLogs />
+                </Col>
+            </Row>
 
             <Row>
                 <Col xl={6}>

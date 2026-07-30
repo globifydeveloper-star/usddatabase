@@ -39,7 +39,7 @@ const countQuery = `
   }
 }
 export async function POST(request: Request) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }

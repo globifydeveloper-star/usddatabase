@@ -49,7 +49,7 @@ export async function GET(request: Request) {
   }
 }
 export async function POST(req: Request) {
-  const auth = getAuthContext(req);
+  const auth = await getAuthContext(req);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }

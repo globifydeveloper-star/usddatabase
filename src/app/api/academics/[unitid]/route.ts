@@ -6,7 +6,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ unitid: string }> }
 ) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
@@ -72,7 +72,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { unitid: string } }
 ) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }

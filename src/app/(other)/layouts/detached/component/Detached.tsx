@@ -1,19 +1,16 @@
 'use client'
-import Dashboard from '@/app/(admin)/dashboard/page'
-import VerticalLayout from '@/components/layouts/VerticalLayout'
 import { useLayoutContext } from '@/context/useLayoutContext'
-import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const Detached = () => {
+  const router = useRouter()
   const { changeLayoutMode } = useLayoutContext()
   useEffect(() => {
     changeLayoutMode('detached')
+    router.push('/dashboard')
   }, [])
-  return (
-    <VerticalLayout>
-      <Dashboard />
-    </VerticalLayout>
-  )
+  return <></>
 }
 
 export default Detached

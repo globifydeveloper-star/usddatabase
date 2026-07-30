@@ -3,6 +3,8 @@
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export interface CmsUser {
   id: number;
@@ -22,6 +24,7 @@ interface Props {
 
 const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
   const isEdit = !!data;
+  const currentUser = useCurrentUser();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +33,11 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
   const [availableTables, setAvailableTables] = useState<string[]>([]);
   const [grantedTables, setGrantedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [forceLogoutLoading, setForceLogoutLoading] = useState(false);
+
+  // Non-superadmins (i.e. editors/"Admins") reach this modal only via the
+  // Add button, and may only ever create viewer accounts.
+  const isRestrictedActor = currentUser != null && currentUser.role !== 'superadmin';
 
   // UI-only for now — not persisted or enforced anywhere yet.
   const [userManagementPerms, setUserManagementPerms] = useState<string[]>([]);
@@ -43,7 +51,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     if (!show) return;
     setEmail(data?.email ?? '');
     setPassword('');
-    setRole(data?.role ?? 'viewer');
+    setRole(isRestrictedActor ? 'viewer' : (data?.role ?? 'viewer'));
     setIsActive(data?.is_active ?? true);
     setGrantedTables([]);
     setUserManagementPerms([]);
@@ -60,12 +68,50 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
         .then((res) => setGrantedTables(res.tableNames ?? []))
         .catch(() => setGrantedTables([]));
     }
-  }, [show, data]);
+  }, [show, data, isRestrictedActor]);
 
   const toggleTable = (table: string) => {
     setGrantedTables((prev) =>
       prev.includes(table) ? prev.filter((t) => t !== table) : [...prev, table]
     );
+  };
+
+  const handleForceLogout = async () => {
+    if (!data) return;
+
+    const confirmResult = await Swal.fire({
+      title: 'Force logout this user?',
+      text: `${data.email} will be signed out and must log in again. This doesn't affect their account or data.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f59e0b',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, force logout',
+    });
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+      setForceLogoutLoading(true);
+      const res = await fetch(`/api/cms-users/${data.id}/force-logout`, { method: 'POST' });
+      const result = await res.json();
+
+      if (!result.success) {
+        await Swal.fire({
+          title: 'Cannot Force Logout',
+          text: result.message || 'Something went wrong',
+          icon: 'warning',
+          confirmButtonColor: '#f59e0b',
+          confirmButtonText: 'Ok, got it!',
+        });
+        return;
+      }
+      toast.success(result.message || 'User has been logged out');
+    } catch (err) {
+      console.error(err);
+      toast.error('Something went wrong');
+    } finally {
+      setForceLogoutLoading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -162,11 +208,18 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
-                <Form.Select value={role} onChange={(e) => setRole(e.target.value as any)}>
-                  <option value="superadmin">Superadmin</option>
-                  <option value="editor">Admin</option>
-                  <option value="viewer">Viewer</option>
-                </Form.Select>
+                {isRestrictedActor ? (
+                  <>
+                    <Form.Control value="Viewer" disabled />
+                    <div className="text-muted small mt-1">Admins can only create viewer accounts.</div>
+                  </>
+                ) : (
+                  <Form.Select value={role} onChange={(e) => setRole(e.target.value as any)}>
+                    <option value="superadmin">Superadmin</option>
+                    <option value="editor">Admin</option>
+                    <option value="viewer">Viewer</option>
+                  </Form.Select>
+                )}
               </Form.Group>
             </Col>
             <Col md={6}>
@@ -291,6 +344,16 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       </Modal.Body>
 
       <Modal.Footer>
+        {isEdit && currentUser?.role === 'superadmin' && (
+          <Button
+            variant="outline-warning"
+            className="me-auto"
+            onClick={handleForceLogout}
+            disabled={forceLogoutLoading}
+          >
+            {forceLogoutLoading ? 'Logging out...' : 'Force Logout'}
+          </Button>
+        )}
         <Button variant="secondary" onClick={onClose} disabled={loading}>
           Close
         </Button>

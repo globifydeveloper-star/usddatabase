@@ -11,6 +11,8 @@ export interface AuthTokenPayload {
   userId: number;
   email: string;
   role: CmsRole;
+  /** Seconds-since-epoch the token was issued — only present on verified tokens. */
+  iat?: number;
 }
 
 function secretKey() {
@@ -30,12 +32,12 @@ export async function signAuthToken(payload: AuthTokenPayload): Promise<string> 
 export async function verifyAuthToken(token: string): Promise<AuthTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey(), { algorithms: ['HS256'] });
-    const { userId, email, role } = payload as Record<string, unknown>;
+    const { userId, email, role, iat } = payload as Record<string, unknown>;
     if (typeof userId !== 'number' || typeof email !== 'string' || typeof role !== 'string') {
       return null;
     }
     if (role !== 'superadmin' && role !== 'editor' && role !== 'viewer') return null;
-    return { userId, email, role };
+    return { userId, email, role, iat: typeof iat === 'number' ? iat : undefined };
   } catch {
     return null;
   }

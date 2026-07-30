@@ -2,9 +2,10 @@ import 'server-only';
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { getAuthContext } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 export async function GET(request: Request) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
@@ -53,6 +54,14 @@ export async function PUT(request: Request) {
     }
 
     await client.query('COMMIT');
+
+    await logAudit(auth, {
+      table_name: 'cms_editor_table_permissions',
+      action: 'permission_change',
+      record_id: editor_user_id,
+      changed_permissions: { editor_user_id, tableNames },
+    });
+
     return NextResponse.json({ success: true, tableNames });
   } catch (error: any) {
     await client.query('ROLLBACK');

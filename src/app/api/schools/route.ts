@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = getAuthContext(req);
+  const auth = await getAuthContext(req);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const auth = getAuthContext(req);
+  const auth = await getAuthContext(req);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }

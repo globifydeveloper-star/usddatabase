@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
 import { toast } from "@/utils/toast";
+import type { CmsRole } from "./useCurrentUser";
 
 export type ColumnConfig<T> = {
   id: keyof T;
@@ -30,6 +31,8 @@ export interface CrudConfig<T> {
   // Defaults to `item.unitid ?? item.id`. Override for tables whose primary
   // key is neither `id` nor `unitid` (e.g. cip_prefix) or is composite.
   buildItemPath?: (item: T) => string;
+  // Optional identifier accessor for pages that provide a custom id field.
+  getId?: (item: T) => string | number;
   // When set, adds a Download action to each row that opens the given URL.
   downloadAction?: {
     getUrl: (item: T) => string;
@@ -37,6 +40,11 @@ export interface CrudConfig<T> {
   // Overrides the derived DB table name used for the client-side
   // editor-permission check in CrudGridPage (see deriveTableName()).
   tableName?: string;
+  // Overrides the standard canWrite-gated Add button visibility: when set,
+  // the Add button shows for exactly these roles regardless of the table's
+  // per-editor permission grants. For pages like CMS Users where write
+  // access isn't governed by cms_editor_table_permissions.
+  allowAddForRoles?: CmsRole[];
 }
 
 export function defaultItemPath(item: any): string {

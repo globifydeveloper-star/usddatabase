@@ -1,21 +1,16 @@
 'use client'
-import Dashboard from '@/app/(admin)/dashboard/page'
-import VerticalLayout from '@/components/layouts/VerticalLayout'
 import { useLayoutContext } from '@/context/useLayoutContext'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const FullScreenView = () => {
+  const router = useRouter()
   const { changeMenu } = useLayoutContext()
   useEffect(() => {
     changeMenu.size('fullscreen')
+    router.push('/dashboard')
   }, [])
-  return (
-    <>
-      <VerticalLayout>
-        <Dashboard />
-      </VerticalLayout>
-    </>
-  )
+  return <></>
 }
 
 export default FullScreenView

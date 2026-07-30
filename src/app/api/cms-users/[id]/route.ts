@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
 import { getAuthContext } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 // A superadmin account can only be disabled, demoted, or deleted while at
 // least one *other* superadmin row still exists — otherwise nobody could
@@ -24,7 +25,7 @@ async function blockedByLastSuperadminRule(
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
@@ -83,6 +84,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
     }
 
+    await logAudit(auth, {
+      table_name: 'cms_users',
+      action: 'update',
+      record_id: result.rows[0].id,
+    });
+
     return NextResponse.json({ success: true, message: 'Updated successfully', data: result.rows[0] });
   } catch (error: any) {
     console.error('Update cms_user Error:', error);
@@ -94,7 +101,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const auth = getAuthContext(request);
+  const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
@@ -127,6 +134,12 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       [targetId]
     );
     await client.query('COMMIT');
+
+    await logAudit(auth, {
+      table_name: 'cms_users',
+      action: 'delete',
+      record_id: result.rows[0].id,
+    });
 
     return NextResponse.json({ success: true, message: 'Deleted successfully', data: result.rows[0] });
   } catch (error: any) {

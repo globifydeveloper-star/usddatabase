@@ -14,6 +14,7 @@ const config: any = {
   buildItemPath,
   showActions: true,
   showDeleteAction: true,
+  allowAddForRoles: ['superadmin', 'editor'],
   labels: {
     title: 'CMS Users',
     deleteConfirm: 'This will permanently delete the user account. This cannot be undone.',

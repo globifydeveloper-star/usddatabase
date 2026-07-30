@@ -31,7 +31,9 @@ export function CrudGridPage<T extends { id: any }>({
             ? false
             : (user.permittedTables?.includes(tableName) ?? false);
 
-  const showAddButton = (config.showAddButton ?? true) && canWrite;
+  const showAddButton = config.allowAddForRoles
+    ? user != null && config.allowAddForRoles.includes(user.role)
+    : (config.showAddButton ?? true) && canWrite;
   const showActions = config.showActions ?? true;
   const showEditAction = (config.showEditAction ?? true) && canWrite;
   const showDeleteAction = (config.showDeleteAction ?? true) && canWrite;

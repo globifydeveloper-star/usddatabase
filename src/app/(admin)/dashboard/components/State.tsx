@@ -56,7 +56,7 @@ const StateCard = ({
 
 const State = ({ data }: Props) => {
   return (
-    <Row className="row-cols-xxl-4 row-cols-md-2 row-cols-1">
+    <Row className="row-cols-2">
       {data.map((item, idx) => (
         <Col key={idx}>
           <StateCard {...item} />

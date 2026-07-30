@@ -3,13 +3,17 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
 import { getAuthContext } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 
 // Bespoke (not the generic crud.ts factory) — must never select/return
-// password_hash, and must gate to superadmin only.
+// password_hash. Superadmins have full access; editors can list (GET) and
+// create viewer-only accounts (POST) — see the role check below. Editing,
+// deleting, permission grants, and force-logout stay superadmin-only,
+// enforced both here and in middleware.ts.
 
 export async function GET(request: Request) {
-  const auth = getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  const auth = await getAuthContext(request);
+  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -44,8 +48,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  const auth = await getAuthContext(request);
+  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
@@ -61,6 +65,12 @@ export async function POST(request: Request) {
     }
     if (!['superadmin', 'editor', 'viewer'].includes(role)) {
       return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
+    }
+    if (auth.role === 'editor' && role !== 'viewer') {
+      return NextResponse.json(
+        { success: false, message: 'Admins can only create viewer accounts' },
+        { status: 403 }
+      );
     }
 
     const existing = await pool.query('SELECT id FROM cms_users WHERE email = $1', [email]);
@@ -78,6 +88,12 @@ export async function POST(request: Request) {
        RETURNING id, email, role, is_active, created_at, updated_at`,
       [email, passwordHash, role, is_active ?? true]
     );
+
+    await logAudit(auth, {
+      table_name: 'cms_users',
+      action: 'create',
+      record_id: result.rows[0].id,
+    });
 
     return NextResponse.json({ success: true, data: result.rows[0] });
   } catch (error: any) {
