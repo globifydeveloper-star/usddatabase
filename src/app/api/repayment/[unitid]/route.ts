@@ -2,7 +2,7 @@ import { pool } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
-export async function PUT(request: NextRequest, { params }: { params: { unitid: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ unitid: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -12,6 +12,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
   }
 
     try {
+        const { unitid } = await params;
         const body = await request.json();
 
         const result = await pool.query(
@@ -42,7 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
                 body.non_completers_3yr,
                 body.repayment_success,
                 body.yr3_overall,
-                params.unitid, 
+                unitid, 
             ]
         );
 
@@ -64,7 +65,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
 }
-export async function DELETE(request: NextRequest, { params }: { params: { unitid: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ unitid: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -74,7 +75,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { uniti
   }
 
     try {
-        const { unitid } = params;
+        const { unitid } = await params;
 
         const result = await pool.query(`DELETE FROM repayment WHERE unitid = $1 RETURNING *`, [
             unitid,

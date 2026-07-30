@@ -7,13 +7,14 @@ import { logAudit } from '@/lib/audit';
 // Sets cms_users.force_logout_after = now(), which getAuthContext() checks
 // on every subsequent API call — any token issued before this moment is
 // rejected. Doesn't require knowing whether the user is currently "online".
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
-  const targetId = Number(params.id);
+  const { id } = await params;
+  const targetId = Number(id);
   const result = await pool.query(
     `UPDATE cms_users SET force_logout_after = now() WHERE id = $1
      RETURNING id, email, role`,

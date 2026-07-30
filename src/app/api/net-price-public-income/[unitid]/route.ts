@@ -4,7 +4,7 @@ import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { unitid: string } }
+    { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -15,6 +15,7 @@ export async function PUT(
   }
 
     try {
+        const { unitid } = await params;
         const body = await request.json();
 
         const result = await pool.query(
@@ -41,7 +42,7 @@ export async function PUT(
                 body.income_75001_110000,
                 body.income_75000_plus,
                 body.income_110001_plus,
-                params.unitid,
+                unitid,
             ]
         );
 
@@ -68,7 +69,7 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { unitid: string } }
+    { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -79,7 +80,7 @@ export async function DELETE(
   }
 
     try {
-        const { unitid } = params;
+        const { unitid } = await params;
 
         const result = await pool.query(
             `DELETE FROM net_price_public_income WHERE unitid = $1 RETURNING *`,

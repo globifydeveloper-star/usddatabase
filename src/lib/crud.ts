@@ -145,7 +145,7 @@ function recordIdFrom(cfg: CrudTableConfig, row: any): string {
 }
 
 export function makeUpdate(cfg: CrudTableConfig) {
-  return async function PUT(request: NextRequest, { params }: { params: { key: string } }) {
+  return async function PUT(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     const auth = await getAuthContext(request);
     if (!auth) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -156,7 +156,8 @@ export function makeUpdate(cfg: CrudTableConfig) {
 
     try {
       const body = await request.json();
-      const keyValues = decodeKey(params.key);
+      const { key } = await params;
+      const keyValues = decodeKey(key);
 
       const cols = cfg.columns.filter((c) => body[c] !== undefined && !cfg.pk.includes(c));
       if (cols.length === 0) {
@@ -203,7 +204,7 @@ export function makeUpdate(cfg: CrudTableConfig) {
 }
 
 export function makeRemove(cfg: CrudTableConfig) {
-  return async function DELETE(request: NextRequest, { params }: { params: { key: string } }) {
+  return async function DELETE(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     const auth = await getAuthContext(request);
     if (!auth) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -213,7 +214,8 @@ export function makeRemove(cfg: CrudTableConfig) {
     }
 
     try {
-      const keyValues = decodeKey(params.key);
+      const { key } = await params;
+      const keyValues = decodeKey(key);
       const whereParts = cfg.pk.map((c, i) => `${c} = $${i + 1}`);
 
       const result = await pool.query(

@@ -70,7 +70,7 @@ export async function PUT(
 /*  DELETE Academics  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { unitid: string } }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -81,7 +81,7 @@ export async function DELETE(
   }
 
   try {
-    const { unitid } = params;
+    const { unitid } = await params;
 
     const result = await pool.query(
       `DELETE FROM academics WHERE unitid = $1 RETURNING *`,

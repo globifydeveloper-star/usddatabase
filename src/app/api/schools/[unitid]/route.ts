@@ -5,7 +5,7 @@ import { getAuthContext, assertTableWritable } from '@/lib/auth';
 /* UPDATE SCHOOL  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { unitid: string } }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -16,6 +16,7 @@ export async function PUT(
   }
 
   try {
+    const { unitid } = await params;
     const body = await request.json();
 
     const result = await pool.query(
@@ -48,7 +49,7 @@ export async function PUT(
         body.has_pseo,
         body.ope8_id,
         body.program_count,
-        params.unitid,
+        unitid,
       ]
     );
 
@@ -79,7 +80,7 @@ export async function PUT(
 /* DELETE SCHOOL */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { unitid: string } }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -90,9 +91,10 @@ export async function DELETE(
   }
 
   try {
+    const { unitid } = await params;
     const result = await pool.query(
       `DELETE FROM schools WHERE unitid = $1 RETURNING *`,
-      [params.unitid]
+      [unitid]
     );
 
     if (result.rowCount === 0) {

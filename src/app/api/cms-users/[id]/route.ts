@@ -24,7 +24,7 @@ async function blockedByLastSuperadminRule(
     : null;
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
@@ -38,7 +38,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
     }
 
-    const targetId = Number(params.id);
+    const { id } = await params;
+    const targetId = Number(id);
     const wouldDemote = role !== undefined && role !== 'superadmin';
     const wouldDisable = is_active === false;
     if (wouldDemote || wouldDisable) {
@@ -73,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
     setParts.push('updated_at = now()');
 
-    values.push(params.id);
+    values.push(id);
     const result = await pool.query(
       `UPDATE cms_users SET ${setParts.join(', ')} WHERE id = $${values.length}
        RETURNING id, email, role, is_active, created_at, updated_at`,
@@ -100,13 +101,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
-  const targetId = Number(params.id);
+  const { id } = await params;
+  const targetId = Number(id);
 
   const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
   if (existing.rowCount === 0) {

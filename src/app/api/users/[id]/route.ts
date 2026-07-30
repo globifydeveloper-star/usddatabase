@@ -4,7 +4,7 @@ import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -14,7 +14,8 @@ export async function PUT(
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
-  const userId = Number(params.id);
+  const { id } = await params;
+  const userId = Number(id);
 
   try {
     const body = await request.json();
@@ -73,7 +74,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await getAuthContext(req);
   if (!auth) {
@@ -84,9 +85,10 @@ export async function DELETE(
   }
 
   try {
+    const { id } = await params;
     await pool.query(
       "DELETE FROM users WHERE id = $1",
-      [params.id]
+      [id]
     );
 
     return NextResponse.json({ message: "Deleted successfully" });

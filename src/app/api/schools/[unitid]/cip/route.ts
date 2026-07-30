@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db";
 
-export async function GET(req: NextRequest, { params }: { params: { unitid: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ unitid: string }> }) {
     try {
         const { unitid } = await params;
 

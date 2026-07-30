@@ -2,7 +2,7 @@ import { pool } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
-export async function PUT(request: NextRequest, { params }: { params: { unitid: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ unitid: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -12,6 +12,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
   }
 
     try {
+        const { unitid } = await params;
         const body = await request.json();
 
         const result = await pool.query(
@@ -38,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
                 body.income_75001_110000,
                 body.income_75000_plus,
                 body.income_110001_plus,
-                params.unitid,
+                unitid,
             ]
         );
 
@@ -60,7 +61,7 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
     }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { unitid: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ unitid: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -70,7 +71,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { uniti
   }
 
     try {
-        const { unitid } = params;
+        const { unitid } = await params;
 
         const result = await pool.query(
             `DELETE FROM net_price_private_income WHERE unitid = $1 RETURNING *`,

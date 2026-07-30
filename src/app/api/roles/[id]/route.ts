@@ -4,7 +4,7 @@ import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -15,7 +15,8 @@ export async function DELETE(
   }
 
   try {
-    await pool.query("DELETE FROM roles WHERE id=$1", [params.id]);
+    const { id } = await params;
+    await pool.query("DELETE FROM roles WHERE id=$1", [id]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -27,7 +28,7 @@ export async function DELETE(
 }
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -38,11 +39,12 @@ export async function PUT(
   }
 
   try {
+    const { id } = await params;
     const { role_name } = await request.json();
 
     await pool.query(
       `UPDATE roles SET role_name=$1 WHERE id=$2`,
-      [role_name, params.id]
+      [role_name, id]
     );
 
     return NextResponse.json({ success: true });

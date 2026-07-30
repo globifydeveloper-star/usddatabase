@@ -2,9 +2,10 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
-export async function GET(_request: NextRequest, { params }: { params: { key: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
   try {
-    const id = decodeURIComponent(params.key);
+    const { key } = await params;
+    const id = decodeURIComponent(key);
 
     const result = await pool.query(
       `SELECT pdf_data, mime_type, report_reference_id FROM usdreports WHERE id = $1`,

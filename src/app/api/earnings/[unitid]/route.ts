@@ -4,7 +4,7 @@ import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { unitid: string } }
+  { params }: { params: Promise<{ unitid: string }> }
 ) {
   const auth = await getAuthContext(request);
   if (!auth) {
@@ -15,6 +15,7 @@ export async function PUT(
   }
 
   try {
+    const { unitid } = await params;
     const body = await request.json();
 
     const result = await pool.query(
@@ -35,7 +36,7 @@ export async function PUT(
         body.median_4yr || null,
         body.median_5yr || null,
         body.students_count || null,
-        params?.unitid,
+        unitid,
       ]
     );
 
