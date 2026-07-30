@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import bcrypt from 'bcrypt';
+import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -50,6 +51,14 @@ export async function GET(request: Request) {
     }
 }
 export async function POST(request: Request) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'users' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
     try {
         const body = await request.json();
 

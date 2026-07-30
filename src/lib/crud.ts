@@ -1,6 +1,7 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from './db';
+import { getAuthContext, assertTableWritable } from './auth';
 
 /**
  * Reusable, config-driven CRUD route factory.
@@ -43,6 +44,13 @@ function buildSearchClause(cfg: CrudTableConfig, paramIndex: number) {
 
 export function makeList(cfg: CrudTableConfig) {
   return async function GET(request: Request) {
+    // Belt-and-suspenders alongside middleware.ts, which already blocks
+    // unauthenticated requests to /api/* — reads are open to any
+    // authenticated role (superadmin/editor/viewer).
+    if (!getAuthContext(request)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') || 1);
     const limit = Number(searchParams.get('limit') || 20);
@@ -80,6 +88,14 @@ export function makeList(cfg: CrudTableConfig) {
 
 export function makeCreate(cfg: CrudTableConfig) {
   return async function POST(request: Request) {
+    const auth = getAuthContext(request);
+    if (!auth) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+    if (!(await assertTableWritable(cfg, auth))) {
+      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
+
     try {
       const body = await request.json();
       const cols = cfg.columns.filter((c) => body[c] !== undefined);
@@ -119,6 +135,14 @@ function decodeKey(key: string): string[] {
 
 export function makeUpdate(cfg: CrudTableConfig) {
   return async function PUT(request: NextRequest, { params }: { params: { key: string } }) {
+    const auth = getAuthContext(request);
+    if (!auth) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+    if (!(await assertTableWritable(cfg, auth))) {
+      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
+
     try {
       const body = await request.json();
       const keyValues = decodeKey(params.key);
@@ -162,7 +186,15 @@ export function makeUpdate(cfg: CrudTableConfig) {
 }
 
 export function makeRemove(cfg: CrudTableConfig) {
-  return async function DELETE(_request: NextRequest, { params }: { params: { key: string } }) {
+  return async function DELETE(request: NextRequest, { params }: { params: { key: string } }) {
+    const auth = getAuthContext(request);
+    if (!auth) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+    if (!(await assertTableWritable(cfg, auth))) {
+      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
+
     try {
       const keyValues = decodeKey(params.key);
       const whereParts = cfg.pk.map((c, i) => `${c} = $${i + 1}`);

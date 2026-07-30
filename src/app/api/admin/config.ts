@@ -8,4 +8,5 @@ export const cfg: CrudTableConfig = {
   joins: "",
   selectExtra: "",
   autoUpdatedAt: true,
+  listColumns: ["id","full_name","email","role","is_active"],
 };

@@ -1,12 +1,21 @@
+'use client'
+
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import Image from 'next/image'
 import avatar1 from '@/assets/images/users/avatar-1.jpg'
 import { Dropdown, DropdownHeader, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
-import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { currency } from '@/context/constants'
-import Link from 'next/link'
 
 const ProfileDropdown = () => {
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+    router.refresh()
+  }
+
   return (
     <div className="topbar-item nav-user">
       <Dropdown align={'end'}>
@@ -51,7 +60,7 @@ const ProfileDropdown = () => {
             <IconifyIcon icon="ri:lock-line" className="me-1 fs-17 align-middle" />&nbsp;
             <span className="align-middle">Lock Screen</span>
           </DropdownItem>
-          <DropdownItem as={Link} href="/auth/logout" onClick={() => signOut({ redirect: false })} className="active fw-semibold text-danger">
+          <DropdownItem onClick={handleLogout} className="active fw-semibold text-danger">
             <IconifyIcon icon="ri:logout-box-line" className="me-1 fs-17 align-middle" />&nbsp;
             <span className="align-middle">Sign Out</span>
           </DropdownItem>

@@ -33,6 +33,11 @@ export const MENU_ITEMS: MenuItemType[] = [
         label: "Permissions",
         url: "/administration/permissions",
       },
+      {
+        key: "cms-users",
+        label: "CMS Users",
+        url: "/cms-users",
+      },
     ],
   },
   {

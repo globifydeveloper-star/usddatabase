@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/db";
+import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'users' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
   const userId = Number(params.id);
 
   try {
@@ -66,6 +75,14 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  const auth = getAuthContext(req);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'users' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
   try {
     await pool.query(
       "DELETE FROM users WHERE id = $1",

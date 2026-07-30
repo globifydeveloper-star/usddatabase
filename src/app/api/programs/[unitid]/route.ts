@@ -1,11 +1,20 @@
 import { pool } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 /* UPDATE PROGRAM */
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ unitid: string }> }
 ) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'programs' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
   try {
     const { unitid } = await params;
     const body = await request.json();
@@ -74,6 +83,14 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ unitid: string }> }
 ) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'programs' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
   try {
     const { unitid } = await params;
 

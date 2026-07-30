@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import { Grid } from 'gridjs-react';
 import { h } from 'gridjs';
 import { useCrudGrid, CrudConfig } from '@/hooks/useCrudGrid';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { deriveTableName } from '@/lib/table-name';
 import ComponentContainerCard from './ComponentContainerCard';
 
 interface CrudGridPageProps<T> {
@@ -13,10 +15,26 @@ interface CrudGridPageProps<T> {
 export function CrudGridPage<T extends { id: any }>({
   config,
 }: CrudGridPageProps<T>) {
-  const showAddButton = config.showAddButton ?? true;
+  const user = useCurrentUser();
+  const tableName = config.tableName ?? deriveTableName(config.apiEndpoint);
+  // UX nicety only — real enforcement is server-side in crud.ts. Defaults to
+  // hidden while `user` is still loading, to avoid a flash of buttons that
+  // then disappear once /api/auth/me resolves.
+  const canWrite =
+    user === undefined
+      ? false
+      : user === null
+        ? false
+        : user.role === 'superadmin'
+          ? true
+          : user.role === 'viewer'
+            ? false
+            : (user.permittedTables?.includes(tableName) ?? false);
+
+  const showAddButton = (config.showAddButton ?? true) && canWrite;
   const showActions = config.showActions ?? true;
-  const showEditAction = config.showEditAction ?? true;
-  const showDeleteAction = config.showDeleteAction ?? true;
+  const showEditAction = (config.showEditAction ?? true) && canWrite;
+  const showDeleteAction = (config.showDeleteAction ?? true) && canWrite;
 
   const {
     modalOpen,

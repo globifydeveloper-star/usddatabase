@@ -1,0 +1,212 @@
+'use client';
+
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
+export interface CmsUser {
+  id: number;
+  email: string;
+  role: 'superadmin' | 'editor' | 'viewer';
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Props {
+  show: boolean;
+  onClose: () => void;
+  data: CmsUser | null;
+  onSuccess: () => void;
+}
+
+const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
+  const isEdit = !!data;
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'superadmin' | 'editor' | 'viewer'>('viewer');
+  const [isActive, setIsActive] = useState(true);
+  const [availableTables, setAvailableTables] = useState<string[]>([]);
+  const [grantedTables, setGrantedTables] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!show) return;
+    setEmail(data?.email ?? '');
+    setPassword('');
+    setRole(data?.role ?? 'viewer');
+    setIsActive(data?.is_active ?? true);
+    setGrantedTables([]);
+
+    fetch('/api/cms-users/available-tables')
+      .then((r) => r.json())
+      .then((res) => setAvailableTables(res.tables ?? []))
+      .catch(() => setAvailableTables([]));
+
+    if (data && data.role === 'editor') {
+      fetch(`/api/cms-users/permissions?editor_user_id=${data.id}`)
+        .then((r) => r.json())
+        .then((res) => setGrantedTables(res.tableNames ?? []))
+        .catch(() => setGrantedTables([]));
+    }
+  }, [show, data]);
+
+  const toggleTable = (table: string) => {
+    setGrantedTables((prev) =>
+      prev.includes(table) ? prev.filter((t) => t !== table) : [...prev, table]
+    );
+  };
+
+  const handleSave = async () => {
+    if (!email) {
+      toast.error('Email is required');
+      return;
+    }
+    if (!isEdit && !password) {
+      toast.error('Password is required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const url = isEdit ? `/api/cms-users/${data!.id}` : '/api/cms-users';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body: Record<string, any> = isEdit
+        ? { role, is_active: isActive, ...(password ? { password } : {}) }
+        : { email, password, role, is_active: isActive };
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+
+      if (!result.success) {
+        toast.error(result.message || 'Save failed');
+        return;
+      }
+
+      const editorUserId = isEdit ? data!.id : result.data.id;
+      if (role === 'editor') {
+        const permRes = await fetch('/api/cms-users/permissions', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ editor_user_id: editorUserId, tableNames: grantedTables }),
+        });
+        const permResult = await permRes.json();
+        if (!permResult.success) {
+          toast.error(permResult.message || 'Failed to save table permissions');
+          return;
+        }
+      }
+
+      toast.success(isEdit ? 'Updated successfully' : 'Created successfully');
+      onSuccess();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      toast.error('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal show={show} onHide={onClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>{isEdit ? 'Edit' : 'Add'} CMS User</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        <Form>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  Email <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="email"
+                  value={email}
+                  disabled={isEdit}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  Password {!isEdit && <span className="text-danger">*</span>}
+                </Form.Label>
+                <Form.Control
+                  type="password"
+                  value={password}
+                  placeholder={isEdit ? 'Leave blank to keep unchanged' : ''}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Role</Form.Label>
+                <Form.Select value={role} onChange={(e) => setRole(e.target.value as any)}>
+                  <option value="superadmin">Superadmin</option>
+                  <option value="editor">Editor</option>
+                  <option value="viewer">Viewer</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Is Active</Form.Label>
+                <Form.Check
+                  type="switch"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                  label={isActive ? 'Yes' : 'No'}
+                />
+              </Form.Group>
+            </Col>
+
+            {role === 'editor' && (
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Editable Tables</Form.Label>
+                  <div className="border rounded p-2" style={{ maxHeight: 260, overflowY: 'auto' }}>
+                    <Row>
+                      {availableTables.map((table) => (
+                        <Col md={4} key={table}>
+                          <Form.Check
+                            type="checkbox"
+                            id={`table-${table}`}
+                            label={table}
+                            checked={grantedTables.includes(table)}
+                            onChange={() => toggleTable(table)}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  </div>
+                </Form.Group>
+              </Col>
+            )}
+          </Row>
+        </Form>
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose} disabled={loading}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handleSave} disabled={loading}>
+          {loading ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+export default CmsUserFormModal;

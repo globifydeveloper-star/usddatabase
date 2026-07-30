@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import { getAuthContext, assertTableWritable } from '@/lib/auth';
 
 export async function PUT(request: NextRequest, { params }: { params: { unitid: string } }) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'roi' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
     try {
         const body = await request.json();
 
@@ -35,6 +44,14 @@ export async function PUT(request: NextRequest, { params }: { params: { unitid: 
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { unitid: string } }) {
+  const auth = getAuthContext(request);
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  if (!(await assertTableWritable({ table: 'roi' }, auth))) {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
     try {
         const result = await pool.query(`DELETE FROM roi WHERE unitid = $1 RETURNING *`, [
             params.unitid,

@@ -34,6 +34,9 @@ export interface CrudConfig<T> {
   downloadAction?: {
     getUrl: (item: T) => string;
   };
+  // Overrides the derived DB table name used for the client-side
+  // editor-permission check in CrudGridPage (see deriveTableName()).
+  tableName?: string;
 }
 
 export function defaultItemPath(item: any): string {
