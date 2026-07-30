@@ -13,10 +13,10 @@ const config: any = {
   modalComponent: CmsUserFormModal,
   buildItemPath,
   showActions: true,
-  showDeleteAction: false,
+  showDeleteAction: true,
   labels: {
     title: 'CMS Users',
-    deleteConfirm: '',
+    deleteConfirm: 'This will permanently delete the user account. This cannot be undone.',
   },
 };
 

@@ -31,6 +31,14 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
   const [grantedTables, setGrantedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // UI-only for now — not persisted or enforced anywhere yet.
+  const [userManagementPerms, setUserManagementPerms] = useState<string[]>([]);
+  const [securityPerms, setSecurityPerms] = useState<string[]>([]);
+
+  const toggleIn = (list: string[], setList: (v: string[]) => void, value: string) => {
+    setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+  };
+
   useEffect(() => {
     if (!show) return;
     setEmail(data?.email ?? '');
@@ -38,6 +46,8 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     setRole(data?.role ?? 'viewer');
     setIsActive(data?.is_active ?? true);
     setGrantedTables([]);
+    setUserManagementPerms([]);
+    setSecurityPerms([]);
 
     fetch('/api/cms-users/available-tables')
       .then((r) => r.json())
@@ -154,7 +164,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                 <Form.Label>Role</Form.Label>
                 <Form.Select value={role} onChange={(e) => setRole(e.target.value as any)}>
                   <option value="superadmin">Superadmin</option>
-                  <option value="editor">Editor</option>
+                  <option value="editor">Admin</option>
                   <option value="viewer">Viewer</option>
                 </Form.Select>
               </Form.Group>
@@ -173,9 +183,33 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
 
             {role === 'editor' && (
               <Col md={12}>
+                <hr className="mt-1 mb-3" />
+
+                {/* 1. Content Management */}
                 <Form.Group className="mb-3">
-                  <Form.Label>Editable Tables</Form.Label>
+                  <Form.Label className="fw-semibold">1. Content Management</Form.Label>
+                  <div className="text-muted small mb-2">
+                    Enables all action buttons (add / edit / delete) for the selected tables.
+                  </div>
                   <div className="border rounded p-2" style={{ maxHeight: 260, overflowY: 'auto' }}>
+                    <Row>
+                      <Col md={4}>
+                        <Form.Check
+                          type="checkbox"
+                          id="table-select-all"
+                          label="Select All"
+                          className="fw-semibold"
+                          checked={
+                            availableTables.length > 0 &&
+                            grantedTables.length === availableTables.length
+                          }
+                          onChange={(e) =>
+                            setGrantedTables(e.target.checked ? [...availableTables] : [])
+                          }
+                        />
+                      </Col>
+                    </Row>
+                    <hr className="my-2" />
                     <Row>
                       {availableTables.map((table) => (
                         <Col md={4} key={table}>
@@ -189,6 +223,65 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                         </Col>
                       ))}
                     </Row>
+                  </div>
+                </Form.Group>
+
+                {/* 2. User Management */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-semibold">2. User Management</Form.Label>
+                  <div className="text-muted small mb-2">
+                    Not yet enforced — coming soon.
+                  </div>
+                  <div className="border rounded p-2">
+                    <Form.Check
+                      type="checkbox"
+                      id="perm-disable-accounts"
+                      label="Disable user accounts"
+                      checked={userManagementPerms.includes('disable_accounts')}
+                      onChange={() =>
+                        toggleIn(userManagementPerms, setUserManagementPerms, 'disable_accounts')
+                      }
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      id="perm-reset-passwords"
+                      label="Reset passwords"
+                      checked={userManagementPerms.includes('reset_passwords')}
+                      onChange={() =>
+                        toggleIn(userManagementPerms, setUserManagementPerms, 'reset_passwords')
+                      }
+                    />
+                  </div>
+                </Form.Group>
+
+                {/* 3. Security */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-semibold">3. Security</Form.Label>
+                  <div className="text-muted small mb-2">
+                    Not yet enforced — coming soon.
+                  </div>
+                  <div className="border rounded p-2">
+                    <Form.Check
+                      type="checkbox"
+                      id="perm-login-history"
+                      label="View login history"
+                      checked={securityPerms.includes('login_history')}
+                      onChange={() => toggleIn(securityPerms, setSecurityPerms, 'login_history')}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      id="perm-audit-logs"
+                      label="Audit logs"
+                      checked={securityPerms.includes('audit_logs')}
+                      onChange={() => toggleIn(securityPerms, setSecurityPerms, 'audit_logs')}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      id="perm-force-logout"
+                      label="Force logout users"
+                      checked={securityPerms.includes('force_logout')}
+                      onChange={() => toggleIn(securityPerms, setSecurityPerms, 'force_logout')}
+                    />
                   </div>
                 </Form.Group>
               </Col>

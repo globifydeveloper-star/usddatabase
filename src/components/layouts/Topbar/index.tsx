@@ -36,7 +36,7 @@ const TopBar = () => {
               {subTitle && (
                 <ol className="breadcrumb m-0 mt-1 py-0">
                   <li className="breadcrumb-item">
-                    <a href="">US Degree</a>
+                    <a href="">US Degrees</a>
                   </li>
                   &nbsp;
                   <IconifyIcon icon="ri:arrow-right-s-line" width={14} height={14} />

@@ -73,13 +73,29 @@ export function useCrudGrid<T extends { unitid: any; id: any }>(config: CrudConf
       const res = await fetch(`${config.apiEndpoint}/${path}`, {
         method: "DELETE",
       });
+      const body = await res.json().catch(() => null);
 
-      if (!res.ok) throw new Error();
+      if (!res.ok || (body && body.success === false)) {
+        await Swal.fire({
+          title: "Cannot Delete",
+          text: body?.message || "Something went wrong",
+          icon: "warning",
+          confirmButtonColor: "#f59e0b",
+          confirmButtonText: "Ok, got it!",
+        });
+        return;
+      }
 
-      toast.success("Deleted successfully");
+      toast.success(body?.message || "Deleted successfully");
       setKey((prev) => prev + 1);
     } catch {
-      toast.error("Something went wrong");
+      await Swal.fire({
+        title: "Cannot Delete",
+        text: "Something went wrong",
+        icon: "warning",
+        confirmButtonColor: "#f59e0b",
+        confirmButtonText: "Ok, got it!",
+      });
     }
   }, [config]);
 

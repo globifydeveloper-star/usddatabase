@@ -2,13 +2,14 @@ import AppProvidersWrapper from '@/components/wrappers/AppProvidersWrapper'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 
+// Suppress missing type declarations for side-effect SCSS import
+// @ts-ignore: Cannot find module or type declarations for SCSS
 import '@/assets/scss/app.scss'
-import 'jsvectormap/dist/css/jsvectormap.min.css'
 import { DEFAULT_PAGE_TITLE } from '@/context/constants'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | US Degree',
+    template: '%s | US Degrees',
     default: DEFAULT_PAGE_TITLE,
   },
   description: 'A fully featured admin theme which can be used to build CRM, CMS, etc.',

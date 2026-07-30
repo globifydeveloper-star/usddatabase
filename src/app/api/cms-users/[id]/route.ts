@@ -4,9 +4,25 @@ import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
 import { getAuthContext } from '@/lib/auth';
 
-// No DELETE — users are deactivated (is_active: false), never hard-deleted,
-// since cms_editor_table_permissions.granted_by references cms_users
-// ON DELETE RESTRICT.
+// A superadmin account can only be disabled, demoted, or deleted while at
+// least one *other* superadmin row still exists — otherwise nobody could
+// manage the CMS anymore. Returns an error message when the change would
+// leave zero other superadmins, or null when it's safe to proceed.
+async function blockedByLastSuperadminRule(
+  targetId: number,
+  currentRole: string
+): Promise<string | null> {
+  if (currentRole !== 'superadmin') return null;
+  const { rows } = await pool.query(
+    `SELECT COUNT(*) FROM cms_users WHERE role = 'superadmin' AND id <> $1`,
+    [targetId]
+  );
+  const otherSuperadmins = Number(rows[0].count);
+  return otherSuperadmins === 0
+    ? 'Add another superadmin with full access before disabling, demoting, or deleting the only superadmin'
+    : null;
+}
+
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const auth = getAuthContext(request);
   if (!auth || auth.role !== 'superadmin') {
@@ -19,6 +35,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     if (role !== undefined && !['superadmin', 'editor', 'viewer'].includes(role)) {
       return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
+    }
+
+    const targetId = Number(params.id);
+    const wouldDemote = role !== undefined && role !== 'superadmin';
+    const wouldDisable = is_active === false;
+    if (wouldDemote || wouldDisable) {
+      const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
+      if (existing.rowCount === 0) {
+        return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+      }
+      const blockedMessage = await blockedByLastSuperadminRule(targetId, existing.rows[0].role);
+      if (blockedMessage) {
+        return NextResponse.json({ success: false, message: blockedMessage }, { status: 400 });
+      }
     }
 
     const setParts: string[] = [];
@@ -60,5 +90,53 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       { success: false, message: error?.detail || 'Server error' },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  const auth = getAuthContext(request);
+  if (!auth || auth.role !== 'superadmin') {
+    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  }
+
+  const targetId = Number(params.id);
+
+  const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
+  if (existing.rowCount === 0) {
+    return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+  }
+  const blockedMessage = await blockedByLastSuperadminRule(targetId, existing.rows[0].role);
+  if (blockedMessage) {
+    return NextResponse.json({ success: false, message: blockedMessage }, { status: 400 });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    // cms_editor_table_permissions.granted_by is ON DELETE RESTRICT, so
+    // hand off any grants this user made to the superadmin doing the delete
+    // before removing the row. editor_user_id is ON DELETE CASCADE, so
+    // permissions granted TO this user (if they were an editor) clean up
+    // automatically.
+    await client.query(
+      'UPDATE cms_editor_table_permissions SET granted_by = $1 WHERE granted_by = $2',
+      [auth.userId, targetId]
+    );
+    const result = await client.query(
+      'DELETE FROM cms_users WHERE id = $1 RETURNING id, email, role',
+      [targetId]
+    );
+    await client.query('COMMIT');
+
+    return NextResponse.json({ success: true, message: 'Deleted successfully', data: result.rows[0] });
+  } catch (error: any) {
+    await client.query('ROLLBACK');
+    console.error('Delete cms_user Error:', error);
+    return NextResponse.json(
+      { success: false, message: error?.detail || 'Delete failed' },
+      { status: 500 }
+    );
+  } finally {
+    client.release();
   }
 }

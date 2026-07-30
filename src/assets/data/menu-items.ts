@@ -19,11 +19,6 @@ export const MENU_ITEMS: MenuItemType[] = [
     icon: "ri:settings-3-line",
     children: [
       {
-        key: "users",
-        label: "Users",
-        url: "/administration/users",
-      },
-      {
         key: "roles",
         label: "Roles",
         url: "/administration/roles",
