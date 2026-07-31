@@ -26,28 +26,62 @@ async function blockedByLastSuperadminRule(
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
-    return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  if (!auth) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const body = await request.json();
     const { role, is_active, password } = body;
 
-    if (role !== undefined && !['superadmin', 'editor', 'viewer'].includes(role)) {
-      return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
+    if (role !== undefined) {
+      const defaultRoles = ['superadmin', 'editor', 'viewer'];
+      const { rows: dbRoles } = await pool.query('SELECT role_name FROM roles');
+      const validRoles = new Set([
+        ...defaultRoles,
+        ...dbRoles.map((r) => r.role_name.trim().toLowerCase().replace(/\s+/g, '_')),
+        ...dbRoles.map((r) => r.role_name.trim().toLowerCase()),
+      ]);
+
+      if (!validRoles.has(role.toLowerCase())) {
+        return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
+      }
     }
 
     const { id } = await params;
     const targetId = Number(id);
-    const wouldDemote = role !== undefined && role !== 'superadmin';
+    const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
+    if (existing.rowCount === 0) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
+
+    const targetRole = existing.rows[0].role as string;
+
+    if (auth.role !== 'superadmin') {
+      if (targetRole !== 'viewer') {
+        return NextResponse.json(
+          { success: false, message: 'Admins can only disable viewer accounts' },
+          { status: 403 }
+        );
+      }
+      if (role !== undefined && role !== 'viewer') {
+        return NextResponse.json(
+          { success: false, message: 'Admins can only disable viewer accounts' },
+          { status: 403 }
+        );
+      }
+      if (password !== undefined) {
+        return NextResponse.json(
+          { success: false, message: 'Admins can only disable viewer accounts' },
+          { status: 403 }
+        );
+      }
+    }
+
+    const wouldDemote = auth.role === 'superadmin' && role !== undefined && role !== 'superadmin';
     const wouldDisable = is_active === false;
     if (wouldDemote || wouldDisable) {
-      const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
-      if (existing.rowCount === 0) {
-        return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
-      }
-      const blockedMessage = await blockedByLastSuperadminRule(targetId, existing.rows[0].role);
+      const blockedMessage = await blockedByLastSuperadminRule(targetId, targetRole);
       if (blockedMessage) {
         return NextResponse.json({ success: false, message: blockedMessage }, { status: 400 });
       }
@@ -63,6 +97,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (is_active !== undefined) {
       values.push(is_active);
       setParts.push(`is_active = $${values.length}`);
+      if (is_active === false) {
+        setParts.push('force_logout_after = now()');
+      }
     }
     if (password) {
       values.push(await bcrypt.hash(password, 10));

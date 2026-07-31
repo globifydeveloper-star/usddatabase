@@ -1,10 +1,7 @@
+import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 import { getAuthContext, assertTableWritable } from '@/lib/auth';
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+import { pool } from '@/lib/db';
 
 const ALLOWED_SORT_COLUMNS = [
   'unitid',

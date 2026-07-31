@@ -5,7 +5,20 @@ import { getAuthContext } from '@/lib/auth';
 
 export async function GET(request: Request) {
   const auth = await getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  if (!auth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (auth.role === 'editor') {
+    const { rows } = await pool.query(
+      'SELECT 1 FROM cms_editor_table_permissions WHERE editor_user_id = $1 AND table_name = $2 LIMIT 1',
+      [auth.userId, 'audit_logs']
+    );
+
+    if (rows.length === 0) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+  } else if (auth.role !== 'superadmin') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

@@ -28,7 +28,12 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'superadmin' | 'editor' | 'viewer'>('viewer');
+  const [role, setRole] = useState<string>('viewer');
+  const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([
+    { value: 'superadmin', label: 'Superadmin' },
+    { value: 'editor', label: 'Admin' },
+    { value: 'viewer', label: 'Viewer' },
+  ]);
   const [isActive, setIsActive] = useState(true);
   const [availableTables, setAvailableTables] = useState<string[]>([]);
   const [grantedTables, setGrantedTables] = useState<string[]>([]);
@@ -36,8 +41,10 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
   const [forceLogoutLoading, setForceLogoutLoading] = useState(false);
 
   // Non-superadmins (i.e. editors/"Admins") reach this modal only via the
-  // Add button, and may only ever create viewer accounts.
+  // Add button, and may only ever create viewer accounts. When editing an
+  // existing user, they can only change the active state for viewer accounts.
   const isRestrictedActor = currentUser != null && currentUser.role !== 'superadmin';
+  const canManageActiveStatus = !isRestrictedActor || !data || data.role === 'viewer';
 
   // UI-only for now — not persisted or enforced anywhere yet.
   const [userManagementPerms, setUserManagementPerms] = useState<string[]>([]);
@@ -57,16 +64,62 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     setUserManagementPerms([]);
     setSecurityPerms([]);
 
+    const defaultOptions = [
+      { value: 'superadmin', label: 'Superadmin' },
+      { value: 'editor', label: 'Admin' },
+      { value: 'viewer', label: 'Viewer' },
+    ];
+
+    fetch('/api/roles/all')
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) {
+          const list: { id?: number; role_name: string }[] = res.data;
+          const merged: { value: string; label: string }[] = [...defaultOptions];
+
+          list.forEach((r) => {
+            const rawName = r.role_name ? r.role_name.trim() : '';
+            if (!rawName) return;
+            const norm = rawName.toLowerCase();
+            if (
+              norm !== 'superadmin' &&
+              norm !== 'editor' &&
+              norm !== 'admin' &&
+              norm !== 'viewer'
+            ) {
+              const val = norm.replace(/\s+/g, '_');
+              if (!merged.some((item) => item.value === val)) {
+                merged.push({ value: val, label: rawName });
+              }
+            }
+          });
+          setRoleOptions(merged);
+        } else {
+          setRoleOptions(defaultOptions);
+        }
+      })
+      .catch(() => setRoleOptions(defaultOptions));
+
     fetch('/api/cms-users/available-tables')
       .then((r) => r.json())
-      .then((res) => setAvailableTables(res.tables ?? []))
+      .then((res) => {
+        const tables: string[] = res.tables ?? [];
+        setAvailableTables(tables.filter((t) => t !== 'audit_logs'));
+      })
       .catch(() => setAvailableTables([]));
 
     if (data && data.role === 'editor') {
       fetch(`/api/cms-users/permissions?editor_user_id=${data.id}`)
         .then((r) => r.json())
-        .then((res) => setGrantedTables(res.tableNames ?? []))
-        .catch(() => setGrantedTables([]));
+        .then((res) => {
+          const permissionTables: string[] = res.tableNames ?? [];
+          setGrantedTables(permissionTables.filter((t) => t !== 'audit_logs'));
+          setSecurityPerms(permissionTables.includes('audit_logs') ? ['audit_logs'] : []);
+        })
+        .catch(() => {
+          setGrantedTables([]);
+          setSecurityPerms([]);
+        });
     }
   }, [show, data, isRestrictedActor]);
 
@@ -146,11 +199,18 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       }
 
       const editorUserId = isEdit ? data!.id : result.data.id;
-      if (role === 'editor') {
+      if (role === 'editor' && currentUser?.role === 'superadmin') {
+        const effectiveTableNames = [
+          ...new Set([
+            ...grantedTables.filter((t) => t !== 'audit_logs'),
+            ...(securityPerms.includes('audit_logs') ? ['audit_logs'] : []),
+          ]),
+        ];
+
         const permRes = await fetch('/api/cms-users/permissions', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ editor_user_id: editorUserId, tableNames: grantedTables }),
+          body: JSON.stringify({ editor_user_id: editorUserId, tableNames: effectiveTableNames }),
         });
         const permResult = await permRes.json();
         if (!permResult.success) {
@@ -214,10 +274,12 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                     <div className="text-muted small mt-1">Admins can only create viewer accounts.</div>
                   </>
                 ) : (
-                  <Form.Select value={role} onChange={(e) => setRole(e.target.value as any)}>
-                    <option value="superadmin">Superadmin</option>
-                    <option value="editor">Admin</option>
-                    <option value="viewer">Viewer</option>
+                  <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
+                    {roleOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 )}
               </Form.Group>
@@ -230,7 +292,13 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
                   label={isActive ? 'Yes' : 'No'}
+                  disabled={!canManageActiveStatus}
                 />
+                {!canManageActiveStatus && (
+                  <div className="text-muted small mt-1">
+                    Admins can only change the active status for viewer accounts.
+                  </div>
+                )}
               </Form.Group>
             </Col>
 
@@ -344,16 +412,18 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       </Modal.Body>
 
       <Modal.Footer>
-        {isEdit && currentUser?.role === 'superadmin' && (
-          <Button
-            variant="outline-warning"
-            className="me-auto"
-            onClick={handleForceLogout}
-            disabled={forceLogoutLoading}
-          >
-            {forceLogoutLoading ? 'Logging out...' : 'Force Logout'}
-          </Button>
-        )}
+        {isEdit &&
+          (currentUser?.role === 'superadmin' ||
+            (currentUser?.role === 'editor' && data?.role === 'viewer')) && (
+            <Button
+              variant="outline-warning"
+              className="me-auto"
+              onClick={handleForceLogout}
+              disabled={forceLogoutLoading}
+            >
+              {forceLogoutLoading ? 'Logging out...' : 'Force Logout'}
+            </Button>
+          )}
         <Button variant="secondary" onClick={onClose} disabled={loading}>
           Close
         </Button>

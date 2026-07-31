@@ -9,21 +9,31 @@ import { logAudit } from '@/lib/audit';
 // rejected. Doesn't require knowing whether the user is currently "online".
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
   const { id } = await params;
   const targetId = Number(id);
+
+  const existing = await pool.query('SELECT id, email, role FROM cms_users WHERE id = $1', [targetId]);
+  if (existing.rowCount === 0) {
+    return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+  }
+
+  const targetUser = existing.rows[0];
+  if (auth.role === 'editor' && targetUser.role !== 'viewer') {
+    return NextResponse.json(
+      { success: false, message: 'Admins can only force logout viewer accounts' },
+      { status: 403 }
+    );
+  }
+
   const result = await pool.query(
     `UPDATE cms_users SET force_logout_after = now() WHERE id = $1
      RETURNING id, email, role`,
     [targetId]
   );
-
-  if (result.rowCount === 0) {
-    return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
-  }
 
   await logAudit(auth, {
     table_name: 'cms_users',

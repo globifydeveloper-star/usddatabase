@@ -20,6 +20,8 @@ export function CrudGridPage<T extends { id: any }>({
   // UX nicety only — real enforcement is server-side in crud.ts. Defaults to
   // hidden while `user` is still loading, to avoid a flash of buttons that
   // then disappear once /api/auth/me resolves.
+  const isCmsUsers = config.apiEndpoint === '/api/cms-users';
+
   const canWrite =
     user === undefined
       ? false
@@ -27,9 +29,11 @@ export function CrudGridPage<T extends { id: any }>({
         ? false
         : user.role === 'superadmin'
           ? true
-          : user.role === 'viewer'
-            ? false
-            : (user.permittedTables?.includes(tableName) ?? false);
+          : isCmsUsers
+            ? user.role === 'editor'
+            : user.role === 'viewer'
+              ? false
+              : (user.permittedTables?.includes(tableName) ?? false);
 
   const showAddButton = config.allowAddForRoles
     ? user != null && config.allowAddForRoles.includes(user.role)
@@ -76,6 +80,11 @@ export function CrudGridPage<T extends { id: any }>({
     width: downloadAction && showEditAction && showDeleteAction ? '130px' : '100px',
     formatter: (cell: any) => {
       const rowData = cell;
+      const isRestrictedRow =
+        isCmsUsers && user?.role === 'editor' && rowData?.role !== 'viewer';
+      const canEditThisRow = showEditAction && !isRestrictedRow;
+      const canDeleteThisRow =
+        showDeleteAction && (!isCmsUsers ? true : user?.role === 'superadmin');
 
       return h(
         'div',
@@ -125,15 +134,22 @@ export function CrudGridPage<T extends { id: any }>({
                     height: '18',
                     viewBox: '0 0 24 24',
                     fill: 'none',
-                    stroke: '#3b82f6',
+                    stroke: canEditThisRow ? '#3b82f6' : '#9ca3af',
                     strokeWidth: '2',
                     strokeLinecap: 'round',
                     strokeLinejoin: 'round',
-                    style: { cursor: 'pointer' },
-                    onClick: () =>
-                      window.dispatchEvent(
-                        new CustomEvent('gridEdit', { detail: rowData })
-                      ),
+                    style: {
+                      cursor: canEditThisRow ? 'pointer' : 'not-allowed',
+                      opacity: canEditThisRow ? '1' : '0.4',
+                    },
+                    title: canEditThisRow ? 'Edit' : 'Admins can only edit viewer accounts',
+                    onClick: () => {
+                      if (canEditThisRow) {
+                        window.dispatchEvent(
+                          new CustomEvent('gridEdit', { detail: rowData })
+                        );
+                      }
+                    },
                   },
                   [
                     h('path', { d: 'M12 20h9' }),
@@ -156,15 +172,22 @@ export function CrudGridPage<T extends { id: any }>({
                     height: '18',
                     viewBox: '0 0 24 24',
                     fill: 'none',
-                    stroke: '#ef4444',
+                    stroke: canDeleteThisRow ? '#ef4444' : '#9ca3af',
                     strokeWidth: '2',
                     strokeLinecap: 'round',
                     strokeLinejoin: 'round',
-                    style: { cursor: 'pointer' },
-                    onClick: () =>
-                      window.dispatchEvent(
-                        new CustomEvent('gridDelete', { detail: rowData })
-                      ),
+                    style: {
+                      cursor: canDeleteThisRow ? 'pointer' : 'not-allowed',
+                      opacity: canDeleteThisRow ? '1' : '0.4',
+                    },
+                    title: canDeleteThisRow ? 'Delete' : 'Admins cannot delete non-viewer accounts',
+                    onClick: () => {
+                      if (canDeleteThisRow) {
+                        window.dispatchEvent(
+                          new CustomEvent('gridDelete', { detail: rowData })
+                        );
+                      }
+                    },
                   },
                   [
                     h('polyline', { points: '3 6 5 6 21 6' }),

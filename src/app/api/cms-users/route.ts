@@ -63,7 +63,15 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!['superadmin', 'editor', 'viewer'].includes(role)) {
+    const defaultRoles = ['superadmin', 'editor', 'viewer'];
+    const { rows: dbRoles } = await pool.query('SELECT role_name FROM roles');
+    const validRoles = new Set([
+      ...defaultRoles,
+      ...dbRoles.map((r) => r.role_name.trim().toLowerCase().replace(/\s+/g, '_')),
+      ...dbRoles.map((r) => r.role_name.trim().toLowerCase()),
+    ]);
+
+    if (!validRoles.has(role.toLowerCase())) {
       return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
     }
     if (auth.role === 'editor' && role !== 'viewer') {

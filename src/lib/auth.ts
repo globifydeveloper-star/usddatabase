@@ -23,14 +23,25 @@ export async function getAuthContext(request: Request): Promise<AuthContext | nu
   const issuedAt = request.headers.get('x-cms-issued-at');
   if (!userId || !email || !role) return null;
 
-  if (issuedAt) {
-    const { rows } = await pool.query('SELECT force_logout_after FROM cms_users WHERE id = $1', [
-      Number(userId),
-    ]);
-    const forceLogoutAfter = rows[0]?.force_logout_after as string | null | undefined;
-    if (forceLogoutAfter && new Date(Number(issuedAt) * 1000) < new Date(forceLogoutAfter)) {
-      return null;
+  try {
+    const { rows } = await pool.query(
+      'SELECT force_logout_after, is_active FROM cms_users WHERE id = $1',
+      [Number(userId)]
+    );
+    if (rows.length === 0) return null;
+    const user = rows[0];
+    if (user.is_active === false) return null;
+
+    if (issuedAt && user.force_logout_after) {
+      const issuedAtMs = Number(issuedAt) * 1000;
+      const forceLogoutMs = new Date(user.force_logout_after).getTime();
+      if (issuedAtMs <= forceLogoutMs) {
+        return null;
+      }
     }
+  } catch (error) {
+    console.error('getAuthContext DB check failed:', error);
+    return null;
   }
 
   return { userId: Number(userId), email, role };

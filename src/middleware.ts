@@ -5,6 +5,25 @@ export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|login|api/auth/login|api/auth/logout).*)'],
 };
 
+function canAccessRole(role: string | undefined, required: 'editor' | 'superadmin') {
+  if (required === 'superadmin') {
+    return role === 'superadmin';
+  }
+
+  return role === 'superadmin' || role === 'editor';
+}
+
+function clearAuthCookie(response: NextResponse) {
+  response.cookies.set(AUTH_COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApi = pathname.startsWith('/api/');
@@ -21,47 +40,58 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Extra path-specific gates for user/permission management and the
-  // security pages, on top of the per-handler checks in those API routes
-  // themselves.
-  //
-  // /cms-users and /api/cms-users (exact — list + create) allow editors in
-  // too, since editors can view the table and create viewer-only accounts;
-  // the route handlers enforce the "viewer only" part. Everything else
-  // under /api/cms-users/* (edit/delete/force-logout/permissions/
-  // available-tables) plus login-history/audit-logs stay superadmin-only.
-  const editorAllowedPaths = ['/cms-users', '/api/cms-users'];
-  const superadminOnlyPages = ['/login-history', '/cms-audit-logs'];
-  const superadminOnlyApiPrefixes = ['/api/cms-login-history', '/api/cms-audit-logs'];
+  // Middleware performs route gating based on the verified JWT payload.
+  // Database-backed checks such as force logout and table permissions remain
+  // in the API handlers (via getAuthContext) where Node runtime access is available.
+  const editorAllowedPaths = ['/cms-users', '/api/cms-users', '/login-history', '/api/cms-login-history'];
+  const auditLogsPages = ['/cms-audit-logs'];
+  const auditLogsApiPrefixes = ['/api/cms-audit-logs'];
+  const loginHistoryPages = ['/login-history'];
+  const loginHistoryApiPrefixes = ['/api/cms-login-history'];
 
   let requiresSuperadmin = false;
   let requiresEditorOrAbove = false;
+  let requiresAuditLogsAccess = false;
+  let requiresLoginHistoryAccess = false;
 
-  if (editorAllowedPaths.includes(pathname)) {
+  const isSuperadminOnlyCmsUsersApi =
+    pathname === '/api/cms-users/permissions' ||
+    pathname === '/api/cms-users/available-tables';
+  const isCmsUsersApi = pathname.startsWith('/api/cms-users');
+
+  if (isSuperadminOnlyCmsUsersApi) {
+    requiresSuperadmin = true;
+  } else if (editorAllowedPaths.includes(pathname) || isCmsUsersApi) {
     requiresEditorOrAbove = true;
-  } else if (pathname.startsWith('/api/cms-users/')) {
-    requiresSuperadmin = true;
   } else if (
-    superadminOnlyPages.includes(pathname) ||
-    superadminOnlyApiPrefixes.some((p) => pathname.startsWith(p))
+    auditLogsPages.includes(pathname) ||
+    auditLogsApiPrefixes.some((p) => pathname.startsWith(p))
   ) {
-    requiresSuperadmin = true;
+    requiresAuditLogsAccess = true;
+  } else if (
+    loginHistoryPages.includes(pathname) ||
+    loginHistoryApiPrefixes.some((p) => pathname.startsWith(p))
+  ) {
+    requiresLoginHistoryAccess = true;
   }
 
-  if (requiresSuperadmin && auth.role !== 'superadmin') {
+  if (requiresAuditLogsAccess && !canAccessRole(auth.role, 'editor')) {
     return isApi
       ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       : NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  if (requiresEditorOrAbove && auth.role !== 'superadmin' && auth.role !== 'editor') {
+
+  if (requiresSuperadmin && !canAccessRole(auth.role, 'superadmin')) {
+    return isApi
+      ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      : NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  if (requiresEditorOrAbove && !canAccessRole(auth.role, 'editor')) {
     return isApi
       ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       : NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Forward the verified identity to downstream route handlers via request
-  // headers so they don't need to re-verify the JWT themselves. These are
-  // always overwritten here, so a client cannot spoof them.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-cms-user-id', String(auth.userId));
   requestHeaders.set('x-cms-email', auth.email);
