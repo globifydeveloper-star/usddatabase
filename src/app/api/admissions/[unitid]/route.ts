@@ -28,8 +28,9 @@ export async function PUT(
         sat_rw_min = $12,
         sat_rw_max = $13,
         sat_math_min = $14,
-        sat_math_max = $15
-      WHERE unitid = $16
+        sat_math_max = $15,
+        sat_min_and_max_value = $16
+      WHERE unitid = $17
       RETURNING *;
       `,
       [
@@ -48,6 +49,7 @@ export async function PUT(
         body.sat_rw_max,
         body.sat_math_min,
         body.sat_math_max,
+        body.sat_min_and_max_value,
         unitid
       ]
     );

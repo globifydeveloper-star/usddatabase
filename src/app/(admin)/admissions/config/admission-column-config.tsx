@@ -15,4 +15,5 @@ export const admissionColumns = [
   { id: 'sat_rw_max',        name: 'SAT RW Max',        sort: true, width: '160px' },
   { id: 'sat_math_min',      name: 'SAT Math Min',      sort: true, width: '160px' },
   { id: 'sat_math_max',      name: 'SAT Math Max',      sort: true, width: '160px' },
+  { id: 'sat_min_and_max_value', name: 'SAT Min and Max Value', sort: true, width: '200px' },
 ];

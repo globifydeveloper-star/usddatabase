@@ -15,4 +15,5 @@ export interface Admissions {
     sat_rw_max: number | null;
     sat_math_min: number | null;
     sat_math_max: number | null;
+    sat_min_and_max_value: Record<string, any> | null;
 }

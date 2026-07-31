@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     try {
         const dataQuery = `
-      SELECT unitid, test_requirements, admission_rate , sat_avg_overall, sat_mid_math, sat_mid_reading, sat_p25_reading, sat_p25_math, sat_p25_writing, sat_p75_reading, sat_p75_math, sat_p75_writing, sat_rw_min, sat_rw_max, sat_math_min, sat_math_max
+      SELECT unitid, test_requirements, admission_rate , sat_avg_overall, sat_mid_math, sat_mid_reading, sat_p25_reading, sat_p25_math, sat_p25_writing, sat_p75_reading, sat_p75_math, sat_p75_writing, sat_rw_min, sat_rw_max, sat_math_min, sat_math_max, sat_min_and_max_value
       FROM admissions
       WHERE unitid::text ILIKE $1
       LIMIT $2 OFFSET $3
@@ -59,6 +59,7 @@ export async function POST(request: Request) {
             sat_rw_max,
             sat_math_min,
             sat_math_max,
+            sat_min_and_max_value,
         } = body;
 
         //Check if school exists
@@ -109,9 +110,10 @@ export async function POST(request: Request) {
         sat_rw_min,
         sat_rw_max,
         sat_math_min,
-        sat_math_max
+        sat_math_max,
+        sat_min_and_max_value
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
       RETURNING *
     `;
 
@@ -132,6 +134,7 @@ export async function POST(request: Request) {
             sat_rw_max,
             sat_math_min,
             sat_math_max,
+            sat_min_and_max_value,
         ]);
 
         return NextResponse.json({

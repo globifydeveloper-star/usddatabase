@@ -29,6 +29,7 @@ const emptyAdmission: Admissions = {
     sat_rw_max: null,
     sat_math_min: null,
     sat_math_max: null,
+    sat_min_and_max_value: null,
 };
 
 const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
@@ -57,6 +58,7 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                 sat_rw_max: data.sat_rw_max,
                 sat_math_min: data.sat_math_min,
                 sat_math_max: data.sat_math_max,
+                sat_min_and_max_value: data.sat_min_and_max_value,
             });
         } else {
             setFormData({ ...emptyAdmission });
@@ -451,6 +453,34 @@ const EditAdmissionsModal = ({ show, onClose, data, onSuccess }: Props) => {
                                     e.target.value === '' ? null : Number(e.target.value)
                                 )
                             }
+                        />
+                    </Form.Group>
+                    {/* SAT MIN AND MAX VALUE - JSONB */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            SAT Min and Max Value (JSON)
+                        </Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={4}
+                            value={
+                                formData.sat_min_and_max_value
+                                    ? JSON.stringify(formData.sat_min_and_max_value, null, 2)
+                                    : ''
+                            }
+                            onChange={(e) => {
+                                try {
+                                    const value = e.target.value.trim();
+                                    if (value === '') {
+                                        handleChange('sat_min_and_max_value', null);
+                                    } else {
+                                        handleChange('sat_min_and_max_value', JSON.parse(value));
+                                    }
+                                } catch (err) {
+                                    console.warn('Invalid JSON');
+                                }
+                            }}
+                            placeholder='{"key": "value"}'
                         />
                     </Form.Group>
                 </Form>
