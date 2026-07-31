@@ -2,7 +2,7 @@ import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
-import { getAuthContext } from '@/lib/auth';
+import { getAuthContext, sessionExpiredResponse } from '@/lib/auth';
 import { logAudit } from '@/lib/audit';
 
 // A superadmin account can only be disabled, demoted, or deleted while at
@@ -27,7 +27,7 @@ async function blockedByLastSuperadminRule(
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
   if (!auth) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return sessionExpiredResponse();
   }
 
   try {
@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       values.push(is_active);
       setParts.push(`is_active = $${values.length}`);
       if (is_active === false) {
-        setParts.push('force_logout_after = now()');
+        setParts.push('session_version = session_version + 1');
       }
     }
     if (password) {
@@ -140,7 +140,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  if (!auth) {
+    return sessionExpiredResponse();
+  }
+  if (auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 

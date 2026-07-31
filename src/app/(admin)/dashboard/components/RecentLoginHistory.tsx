@@ -61,7 +61,7 @@ const RecentLoginHistory = () => {
 
   const canViewLoginHistory =
     effectiveUser?.role === 'superadmin' ||
-    (effectiveUser?.role === 'editor' && effectiveUser?.permittedTables?.includes('login_history'));
+    (effectiveUser?.role !== 'viewer' && effectiveUser?.permittedTables?.includes('login_history'));
 
   useEffect(() => {
     if (!canViewLoginHistory) {

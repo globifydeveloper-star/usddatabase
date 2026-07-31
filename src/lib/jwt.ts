@@ -5,12 +5,17 @@ import { SignJWT, jwtVerify } from 'jose';
 
 export const AUTH_COOKIE_NAME = 'cms_session';
 
-export type CmsRole = 'superadmin' | 'editor' | 'viewer';
+// 'superadmin' | 'editor' | 'viewer' are the three built-in roles with
+// special-cased behavior throughout the app; any other value is a custom
+// role (see the `roles` table) whose access is governed entirely by
+// cms_editor_table_permissions, same as 'editor'.
+export type CmsRole = string;
 
 export interface AuthTokenPayload {
   userId: number;
   email: string;
   role: CmsRole;
+  sessionVersion: number;
   /** Seconds-since-epoch the token was issued — only present on verified tokens. */
   iat?: number;
 }
@@ -21,23 +26,36 @@ function secretKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function signAuthToken(payload: AuthTokenPayload): Promise<string> {
-  return new SignJWT({ userId: payload.userId, email: payload.email, role: payload.role })
+export async function signAuthToken(
+  payload: AuthTokenPayload,
+  expiresIn: string = '8h'
+): Promise<string> {
+  return new SignJWT({
+    userId: payload.userId,
+    email: payload.email,
+    role: payload.role,
+    sessionVersion: payload.sessionVersion,
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('8h')
+    .setExpirationTime(expiresIn)
     .sign(secretKey());
 }
 
 export async function verifyAuthToken(token: string): Promise<AuthTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey(), { algorithms: ['HS256'] });
-    const { userId, email, role, iat } = payload as Record<string, unknown>;
-    if (typeof userId !== 'number' || typeof email !== 'string' || typeof role !== 'string') {
+    const { userId, email, role, sessionVersion, iat } = payload as Record<string, unknown>;
+    if (
+      typeof userId !== 'number' ||
+      typeof email !== 'string' ||
+      typeof role !== 'string' ||
+      !role ||
+      typeof sessionVersion !== 'number'
+    ) {
       return null;
     }
-    if (role !== 'superadmin' && role !== 'editor' && role !== 'viewer') return null;
-    return { userId, email, role, iat: typeof iat === 'number' ? iat : undefined };
+    return { userId, email, role, sessionVersion, iat: typeof iat === 'number' ? iat : undefined };
   } catch {
     return null;
   }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Dropdown, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 
@@ -47,6 +48,18 @@ const ActiveUsersPanel = () => {
   }, [canView]);
 
   const handleForceLogout = async (userId: number, email: string) => {
+    const confirmResult = await Swal.fire({
+      title: 'Force Logout User?',
+      text: 'This user will be signed out immediately and must log in again.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f59e0b',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Force Logout',
+      cancelButtonText: 'Cancel',
+    });
+    if (!confirmResult.isConfirmed) return;
+
     setBusyUserId(userId);
     try {
       const res = await fetch(`/api/cms-users/${userId}/force-logout`, { method: 'POST' });
@@ -55,7 +68,7 @@ const ActiveUsersPanel = () => {
         toast.error(result.message || 'Unable to force logout');
         return;
       }
-      toast.success(`${email} was signed out`);
+      toast.success('User has been logged out successfully.');
       await fetchUsers();
     } catch (error) {
       console.error(error);
@@ -66,6 +79,25 @@ const ActiveUsersPanel = () => {
   };
 
   if (!canView) return null;
+
+  const roleBadgeVariant: Record<string, string> = {
+    superadmin: 'danger',
+    editor: 'primary',
+    viewer: 'secondary',
+  };
+
+  const timeAgo = (iso: string) => {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const minutes = Math.floor(diffMs / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  };
+
+  const initials = (email: string) => email.slice(0, 2).toUpperCase();
 
   return (
     <Dropdown align="end">
@@ -82,11 +114,17 @@ const ActiveUsersPanel = () => {
         </span>
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className="dropdown-menu-end" style={{ minWidth: 320 }}>
+      <Dropdown.Menu className="dropdown-menu-end p-0" style={{ width: 340 }}>
         <div className="px-3 py-2 border-bottom d-flex align-items-center justify-content-between">
-          <strong>Active users</strong>
-          <Button variant="link" size="sm" className="p-0" onClick={() => fetchUsers()}>
-            Refresh
+          <strong className="fs-14">Active sessions ({users.length})</strong>
+          <Button
+            variant="link"
+            size="sm"
+            className="p-0 text-decoration-none"
+            onClick={() => fetchUsers()}
+            title="Refresh"
+          >
+            <IconifyIcon icon="ri:refresh-line" className={loading ? 'spin-icon' : ''} />
           </Button>
         </div>
 
@@ -98,33 +136,48 @@ const ActiveUsersPanel = () => {
         ) : users.length === 0 ? (
           <div className="px-3 py-4 text-center text-muted">No active users right now.</div>
         ) : (
-          <div className="px-2 py-2">
+          <div style={{ maxHeight: 360, overflowY: 'auto' }}>
             {users.map((user) => (
               <div
                 key={`${user.user_id}-${user.login_at}`}
-                className="d-flex align-items-start justify-content-between gap-2 rounded px-2 py-2"
-                style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}
+                className="d-flex align-items-center gap-2 px-3 py-2 border-bottom"
               >
-                <div>
-                  <div className="fw-semibold">{user.email}</div>
-                  <div className="small text-muted">
-                    {user.role} • {new Date(user.login_at).toLocaleString()}
-                  </div>
-                  {(user.device || user.ip_address) && (
-                    <div className="small text-muted">
-                      {user.device || 'Unknown device'}
-                      {user.ip_address ? ` • ${user.ip_address}` : ''}
-                    </div>
-                  )}
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => handleForceLogout(user.user_id, user.email)}
-                  disabled={busyUserId === user.user_id}
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle bg-light text-muted fw-semibold flex-shrink-0"
+                  style={{ width: 36, height: 36, fontSize: 13 }}
                 >
-                  {busyUserId === user.user_id ? <Spinner animation="border" size="sm" /> : 'Logout'}
-                </Button>
+                  {initials(user.email)}
+                </div>
+
+                <div className="flex-grow-1 min-w-0">
+                  <div className="d-flex align-items-center gap-1">
+                    <span className="fw-semibold text-truncate" style={{ maxWidth: 160 }} title={user.email}>
+                      {user.email}
+                    </span>
+                    <span className={`badge bg-${roleBadgeVariant[user.role] ?? 'secondary'} bg-opacity-10 text-${roleBadgeVariant[user.role] ?? 'secondary'} fs-11`}>
+                      {user.role}
+                    </span>
+                  </div>
+                  <div className="small text-muted text-truncate" title={`${user.device || 'Unknown device'}${user.ip_address ? ` • ${user.ip_address}` : ''}`}>
+                    {timeAgo(user.login_at)}
+                    {user.ip_address ? ` • ${user.ip_address}` : ''}
+                  </div>
+                </div>
+
+                {user.role !== 'superadmin' && user.user_id !== currentUser?.userId ? (
+                  <Button
+                    size="sm"
+                    variant="outline-danger"
+                    className="flex-shrink-0"
+                    onClick={() => handleForceLogout(user.user_id, user.email)}
+                    disabled={busyUserId === user.user_id}
+                    title="Force logout"
+                  >
+                    {busyUserId === user.user_id ? <Spinner animation="border" size="sm" /> : <IconifyIcon icon="ri:logout-box-line" />}
+                  </Button>
+                ) : (
+                  <span style={{ width: 32 }} />
+                )}
               </div>
             ))}
           </div>

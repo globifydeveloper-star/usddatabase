@@ -1,11 +1,14 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
-import { getAuthContext } from '@/lib/auth';
+import { getAuthContext, sessionExpiredResponse } from '@/lib/auth';
 
 export async function GET(request: Request) {
   const auth = await getAuthContext(request);
-  if (!auth || auth.role !== 'superadmin') {
+  if (!auth) {
+    return sessionExpiredResponse();
+  }
+  if (auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
@@ -21,7 +24,7 @@ export async function GET(request: Request) {
        FROM cms_login_history l
        LEFT JOIN cms_users u ON u.id = l.user_id
        WHERE l.logout_at IS NULL
-         AND (u.id IS NULL OR u.force_logout_after IS NULL OR l.login_at >= u.force_logout_after)
+         AND (u.id IS NULL OR l.session_version IS NULL OR l.session_version = u.session_version)
        ORDER BY l.login_at DESC`
     );
 

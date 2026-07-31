@@ -1,20 +1,31 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
-import { getAuthContext } from '@/lib/auth';
+import { getAuthContext, sessionExpiredResponse } from '@/lib/auth';
 import { logAudit } from '@/lib/audit';
 
-// Sets cms_users.force_logout_after = now(), which getAuthContext() checks
-// on every subsequent API call — any token issued before this moment is
-// rejected. Doesn't require knowing whether the user is currently "online".
+// Bumps cms_users.session_version, which getAuthContext() compares against
+// the session_version embedded in each user's JWT on every subsequent API
+// call — any token issued under the old version is rejected. Doesn't
+// require knowing whether the user is currently "online".
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getAuthContext(request);
-  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
+  if (!auth) {
+    return sessionExpiredResponse();
+  }
+  if (auth.role !== 'superadmin') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 
   const { id } = await params;
   const targetId = Number(id);
+
+  if (targetId === auth.userId) {
+    return NextResponse.json(
+      { success: false, message: 'You cannot force logout yourself' },
+      { status: 400 }
+    );
+  }
 
   const existing = await pool.query('SELECT id, email, role FROM cms_users WHERE id = $1', [targetId]);
   if (existing.rowCount === 0) {
@@ -22,15 +33,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   const targetUser = existing.rows[0];
-  if (auth.role === 'editor' && targetUser.role !== 'viewer') {
+  if (targetUser.role === 'superadmin') {
     return NextResponse.json(
-      { success: false, message: 'Admins can only force logout viewer accounts' },
+      { success: false, message: 'Cannot force logout another Superadmin' },
       { status: 403 }
     );
   }
 
   const result = await pool.query(
-    `UPDATE cms_users SET force_logout_after = now() WHERE id = $1
+    `UPDATE cms_users SET session_version = session_version + 1, updated_at = now() WHERE id = $1
      RETURNING id, email, role`,
     [targetId]
   );

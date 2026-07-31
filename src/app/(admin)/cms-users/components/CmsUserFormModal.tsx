@@ -9,7 +9,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 export interface CmsUser {
   id: number;
   email: string;
-  role: 'superadmin' | 'editor' | 'viewer';
+  role: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -46,6 +46,11 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
   const isRestrictedActor = currentUser != null && currentUser.role !== 'superadmin';
   const canManageActiveStatus = !isRestrictedActor || !data || data.role === 'viewer';
 
+  // Any role beyond superadmin/viewer — the built-in "editor" role as well
+  // as any custom role added via Administration > Roles — gets table-level
+  // permissions, assignable in this same form at creation time.
+  const isPermissionableRole = role !== 'superadmin' && role !== 'viewer';
+
   // UI-only for now — not persisted or enforced anywhere yet.
   const [userManagementPerms, setUserManagementPerms] = useState<string[]>([]);
   const [securityPerms, setSecurityPerms] = useState<string[]>([]);
@@ -80,14 +85,14 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
           list.forEach((r) => {
             const rawName = r.role_name ? r.role_name.trim() : '';
             if (!rawName) return;
-            const norm = rawName.toLowerCase();
+            const norm = rawName.toLowerCase().replace(/[\s_]+/g, '');
             if (
               norm !== 'superadmin' &&
               norm !== 'editor' &&
               norm !== 'admin' &&
               norm !== 'viewer'
             ) {
-              const val = norm.replace(/\s+/g, '_');
+              const val = rawName.toLowerCase().replace(/\s+/g, '_');
               if (!merged.some((item) => item.value === val)) {
                 merged.push({ value: val, label: rawName });
               }
@@ -108,7 +113,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       })
       .catch(() => setAvailableTables([]));
 
-    if (data && data.role === 'editor') {
+    if (data && data.role !== 'superadmin' && data.role !== 'viewer') {
       fetch(`/api/cms-users/permissions?editor_user_id=${data.id}`)
         .then((r) => r.json())
         .then((res) => {
@@ -133,13 +138,14 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     if (!data) return;
 
     const confirmResult = await Swal.fire({
-      title: 'Force logout this user?',
-      text: `${data.email} will be signed out and must log in again. This doesn't affect their account or data.`,
+      title: 'Force Logout User?',
+      text: 'This user will be signed out immediately and must log in again.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#f59e0b',
       cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, force logout',
+      confirmButtonText: 'Force Logout',
+      cancelButtonText: 'Cancel',
     });
     if (!confirmResult.isConfirmed) return;
 
@@ -158,7 +164,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
         });
         return;
       }
-      toast.success(result.message || 'User has been logged out');
+      toast.success('User has been logged out successfully.');
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong');
@@ -199,7 +205,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       }
 
       const editorUserId = isEdit ? data!.id : result.data.id;
-      if (role === 'editor' && currentUser?.role === 'superadmin') {
+      if (isPermissionableRole && currentUser?.role === 'superadmin') {
         const effectiveTableNames = [
           ...new Set([
             ...grantedTables.filter((t) => t !== 'audit_logs'),
@@ -302,7 +308,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
               </Form.Group>
             </Col>
 
-            {role === 'editor' && (
+            {isPermissionableRole && (
               <Col md={12}>
                 <hr className="mt-1 mb-3" />
 
@@ -413,8 +419,9 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
 
       <Modal.Footer>
         {isEdit &&
-          (currentUser?.role === 'superadmin' ||
-            (currentUser?.role === 'editor' && data?.role === 'viewer')) && (
+          currentUser?.role === 'superadmin' &&
+          data?.role !== 'superadmin' &&
+          data?.id !== currentUser.userId && (
             <Button
               variant="outline-warning"
               className="me-auto"

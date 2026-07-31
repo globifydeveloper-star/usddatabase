@@ -43,6 +43,13 @@ export async function middleware(request: NextRequest) {
   // Middleware performs route gating based on the verified JWT payload.
   // Database-backed checks such as force logout and table permissions remain
   // in the API handlers (via getAuthContext) where Node runtime access is available.
+  //
+  // The three *page* routes below are "soft-gated": a viewer who is denied
+  // still gets the page shell (which renders an access-denied alert) instead
+  // of a silent redirect to /dashboard. Their API counterparts are still
+  // hard-gated below — a soft-gated page with no data is harmless, a 403
+  // being bypassed is not.
+  const softGatedPages = ['/cms-users', '/login-history', '/cms-audit-logs'];
   const editorAllowedPaths = ['/cms-users', '/api/cms-users', '/login-history', '/api/cms-login-history'];
   const auditLogsPages = ['/cms-audit-logs'];
   const auditLogsApiPrefixes = ['/api/cms-audit-logs'];
@@ -75,30 +82,27 @@ export async function middleware(request: NextRequest) {
     requiresLoginHistoryAccess = true;
   }
 
+  const isSoftGatedPage = !isApi && softGatedPages.includes(pathname);
+
   if (requiresAuditLogsAccess && !canAccessRole(auth.role, 'editor')) {
-    return isApi
-      ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-      : NextResponse.redirect(new URL('/dashboard', request.url));
+    if (isApi) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!isSoftGatedPage) return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (requiresSuperadmin && !canAccessRole(auth.role, 'superadmin')) {
-    return isApi
-      ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-      : NextResponse.redirect(new URL('/dashboard', request.url));
+    if (isApi) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!isSoftGatedPage) return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   if (requiresEditorOrAbove && !canAccessRole(auth.role, 'editor')) {
-    return isApi
-      ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-      : NextResponse.redirect(new URL('/dashboard', request.url));
+    if (isApi) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!isSoftGatedPage) return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-cms-user-id', String(auth.userId));
   requestHeaders.set('x-cms-email', auth.email);
   requestHeaders.set('x-cms-role', auth.role);
-  if (auth.iat !== undefined) {
-    requestHeaders.set('x-cms-issued-at', String(auth.iat));
-  }
+  requestHeaders.set('x-cms-session-version', String(auth.sessionVersion));
 
   return NextResponse.next({ request: { headers: requestHeaders } });
 }

@@ -60,7 +60,7 @@ const RecentAuditLogs = () => {
 
   const canViewAuditLogs =
     effectiveUser?.role === 'superadmin' ||
-    (effectiveUser?.role === 'editor' && effectiveUser?.permittedTables?.includes('audit_logs'));
+    (effectiveUser?.role !== 'viewer' && effectiveUser?.permittedTables?.includes('audit_logs'));
 
   useEffect(() => {
     if (!canViewAuditLogs) {

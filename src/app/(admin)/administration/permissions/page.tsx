@@ -11,7 +11,7 @@ const permissionMatrix = [
     content: [
       'Create, edit and delete data across the platform',
       'Create superadmin, admin and viewer accounts',
-      'Download reports and review system data',
+      'Download Comparison reports and review system data',
     ],
     user: [
       'Disable user accounts',
@@ -31,7 +31,7 @@ const permissionMatrix = [
     color: 'info',
     content: [
       'Create, edit and delete data',
-      'Download reports',
+      'Download Comparison reports',
       'Review shared content updates',
     ],
     user: [
@@ -49,6 +49,7 @@ const permissionMatrix = [
     content: [
       'Read all available data',
       'Review content without editing',
+      'Download Comparison Reports'
     ],
     user: [],
     security: [],
@@ -59,10 +60,10 @@ const PermissionsPage = () => {
   return (
     <ComponentContainerCard
       title="Role Permissions"
-      description="A simple overview of what each role can do across content, user management and security."
+      description="View the permissions and access levels assigned to each role."
     >
       <div className="border rounded-3 p-3 bg-light-subtle">
-        <div className="d-flex flex-wrap gap-2 mb-3">
+        {/* <div className="d-flex flex-wrap gap-2 mb-3">
           <Badge bg="primary" className="px-3 py-2">
             Content Management
           </Badge>
@@ -72,7 +73,7 @@ const PermissionsPage = () => {
           <Badge bg="secondary" className="px-3 py-2">
             Security
           </Badge>
-        </div>
+        </div> */}
 
         <div className="table-responsive">
           <Table bordered hover className="align-middle mb-0">

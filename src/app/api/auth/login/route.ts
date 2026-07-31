@@ -12,7 +12,7 @@ function clientIp(request: Request): string {
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, rememberMe } = await request.json();
     if (!email || !password) {
       return NextResponse.json(
         { success: false, message: 'Email and password are required' },
@@ -21,25 +21,48 @@ export async function POST(request: Request) {
     }
 
     const result = await pool.query(
-      'SELECT id, email, password_hash, role, is_active FROM cms_users WHERE email = $1',
+      'SELECT id, email, password_hash, role, is_active, session_version FROM cms_users WHERE email = $1',
       [email]
     );
     const user = result.rows[0];
 
-    // Same generic message for "no such user" / "inactive" / "wrong password"
-    // to avoid leaking which emails are registered.
+    // Generic message for "no such user" / "wrong password" to avoid leaking
+    // which emails are registered. Only once the password is confirmed
+    // correct do we reveal the account-disabled state.
     const invalid = () =>
       NextResponse.json({ success: false, message: 'Invalid email or password' }, { status: 401 });
 
-    if (!user || !user.is_active) return invalid();
+    if (!user) return invalid();
     if (!(await bcrypt.compare(password, user.password_hash))) return invalid();
+    if (!user.is_active) {
+      return NextResponse.json(
+        { success: false, message: 'Your account is inactive. Please contact the SuperAdmin.' },
+        { status: 403 }
+      );
+    }
 
-    const token = await signAuthToken({ userId: Number(user.id), email: user.email, role: user.role });
+    const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60; // 30 days vs 8 hours
+    const token = await signAuthToken(
+      {
+        userId: Number(user.id),
+        email: user.email,
+        role: user.role,
+        sessionVersion: Number(user.session_version),
+      },
+      rememberMe ? '30d' : '8h'
+    );
 
     await pool.query(
-      `INSERT INTO cms_login_history (user_id, email, role, device, ip_address)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [user.id, user.email, user.role, request.headers.get('user-agent') || 'unknown', clientIp(request)]
+      `INSERT INTO cms_login_history (user_id, email, role, device, ip_address, session_version)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        user.id,
+        user.email,
+        user.role,
+        request.headers.get('user-agent') || 'unknown',
+        clientIp(request),
+        Number(user.session_version),
+      ]
     ).catch((error) => console.error('Insert cms_login_history Error:', error));
 
     const res = NextResponse.json({ success: true, role: user.role });
@@ -48,7 +71,7 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 8 * 60 * 60,
+      maxAge,
     });
     return res;
   } catch (error) {

@@ -6,6 +6,19 @@
 Topbar CSS
 ===================== */
 
+.spin-icon {
+    animation: spin-icon-rotate 1s linear infinite;
+}
+
+@keyframes spin-icon-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .app-topbar {
     position: sticky;
     top: 5px;

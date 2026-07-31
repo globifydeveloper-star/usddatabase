@@ -1,7 +1,7 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from './db';
-import { getAuthContext, assertTableWritable } from './auth';
+import { getAuthContext, assertTableWritable, sessionExpiredResponse } from './auth';
 import { logAudit } from './audit';
 
 /**
@@ -49,7 +49,7 @@ export function makeList(cfg: CrudTableConfig) {
     // unauthenticated requests to /api/* — reads are open to any
     // authenticated role (superadmin/editor/viewer).
     if (!(await getAuthContext(request))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sessionExpiredResponse();
     }
 
     const { searchParams } = new URL(request.url);
@@ -91,7 +91,7 @@ export function makeCreate(cfg: CrudTableConfig) {
   return async function POST(request: Request) {
     const auth = await getAuthContext(request);
     if (!auth) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      return sessionExpiredResponse();
     }
     if (!(await assertTableWritable(cfg, auth))) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
@@ -148,7 +148,7 @@ export function makeUpdate(cfg: CrudTableConfig) {
   return async function PUT(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     const auth = await getAuthContext(request);
     if (!auth) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      return sessionExpiredResponse();
     }
     if (!(await assertTableWritable(cfg, auth))) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
@@ -207,7 +207,7 @@ export function makeRemove(cfg: CrudTableConfig) {
   return async function DELETE(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     const auth = await getAuthContext(request);
     if (!auth) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      return sessionExpiredResponse();
     }
     if (!(await assertTableWritable(cfg, auth))) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });

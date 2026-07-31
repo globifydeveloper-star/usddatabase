@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { CrudGridPage } from '@/components/CrudGridPage';
+import AccessDeniedAlert from '@/components/AccessDeniedAlert';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import CmsUserFormModal from './components/CmsUserFormModal';
 import { cmsUsersColumns } from './config/cms-users-column-config';
 
@@ -22,5 +24,7 @@ const config: any = {
 };
 
 export default function CmsUsersPage() {
+  const currentUser = useCurrentUser();
+  if (currentUser?.role === 'viewer') return <AccessDeniedAlert />;
   return <CrudGridPage config={config} />;
 }

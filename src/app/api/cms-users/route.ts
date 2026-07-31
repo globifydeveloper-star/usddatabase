@@ -2,7 +2,7 @@ import 'server-only';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
-import { getAuthContext } from '@/lib/auth';
+import { getAuthContext, sessionExpiredResponse } from '@/lib/auth';
 import { logAudit } from '@/lib/audit';
 
 // Bespoke (not the generic crud.ts factory) — must never select/return
@@ -13,7 +13,10 @@ import { logAudit } from '@/lib/audit';
 
 export async function GET(request: Request) {
   const auth = await getAuthContext(request);
-  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
+  if (!auth) {
+    return sessionExpiredResponse();
+  }
+  if (auth.role !== 'superadmin' && auth.role !== 'editor') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -49,7 +52,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const auth = await getAuthContext(request);
-  if (!auth || (auth.role !== 'superadmin' && auth.role !== 'editor')) {
+  if (!auth) {
+    return sessionExpiredResponse();
+  }
+  if (auth.role !== 'superadmin' && auth.role !== 'editor') {
     return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
   }
 

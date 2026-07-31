@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
-export type CmsRole = 'superadmin' | 'editor' | 'viewer';
+// 'superadmin' | 'editor' | 'viewer' are the built-in roles; any other
+// string is a custom role from the `roles` table, permissioned the same way
+// as 'editor' via cms_editor_table_permissions.
+export type CmsRole = string;
 
 export interface CurrentUser {
   userId: number;
