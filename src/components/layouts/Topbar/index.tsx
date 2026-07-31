@@ -9,6 +9,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import ThemeModeToggle from './components/ThemeModeToggle'
 import ProfileDropdown from './components/ProfileDropdown'
 import LeftSideBarToggle from './components/LeftSideBarToggle'
+import ActiveUsersPanel from './components/ActiveUsersPanel'
 import { usePathname } from 'next/navigation'
 
 const TopBar = () => {
@@ -54,6 +55,7 @@ const TopBar = () => {
           <Apps /> */}
           <ThemeCustomizeToggle />
           <ThemeModeToggle />
+          <ActiveUsersPanel />
           <ProfileDropdown />
         </div>
       </div>
