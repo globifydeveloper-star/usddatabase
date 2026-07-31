@@ -1,18 +1,25 @@
 import { pool } from "@/lib/db";
 
-export async function getDashboardStats() {
-  const totalSchools = await pool.query(
-    `SELECT COUNT(*) FROM schools`
-  );
+async function getTableCount(tableName: string) {
+  try {
+    const result = await pool.query(`SELECT COUNT(*)::int AS count FROM ${tableName}`);
+    return Number(result.rows[0]?.count ?? 0);
+  } catch (error) {
+    console.error(`Failed to fetch count for ${tableName}:`, error);
+    return 0;
+  }
+}
 
-  const totalPrograms = await pool.query(
-    `SELECT COUNT(*) FROM programs`
-  );
+export async function getDashboardStats() {
+  const [totalSchools, totalPrograms] = await Promise.all([
+    getTableCount("schools"),
+    getTableCount("programs"),
+  ]);
 
   return [
     {
       title: "Total Schools",
-      value: Number(totalSchools.rows[0].count).toLocaleString(),
+      value: totalSchools.toLocaleString(),
       type: "number",
       change: 0,
       icon: "solar:bill-list-bold-duotone",
@@ -23,7 +30,7 @@ export async function getDashboardStats() {
     },
     {
       title: "Total Programs",
-      value: Number(totalPrograms.rows[0].count).toLocaleString(),
+      value: totalPrograms.toLocaleString(),
       type: "number",
       change: 0,
       icon: "solar:wad-of-money-bold-duotone",
