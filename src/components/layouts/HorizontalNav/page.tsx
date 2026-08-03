@@ -25,8 +25,6 @@ const MenuItemWithChildren = ({ item, className, activeMenuItems, toggleMenu, le
     setOpen(!open)
   };
 
-  console.log(open)
-
   return (
     <Tag className={`${className} dropdown ${activeMenuItems!.includes(item.key) ? 'active' : ''}`}>
       <Link
@@ -78,7 +76,10 @@ const MenuItemWithChildren = ({ item, className, activeMenuItems, toggleMenu, le
 }
 
 
-const MenuItem = ({ item, linkClassName, className, level }: SubMenus) => {
+const MenuItem = ({ item, linkClassName, className, level, tag }: SubMenus) => {
+  if (tag === 'div' || level > 1) {
+    return <MenuItemLink level={level + 1} item={item} className={linkClassName} />
+  }
   return (
     <li className={className}>
       <MenuItemLink level={level + 1} item={item} className={linkClassName} />

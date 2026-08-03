@@ -21,22 +21,6 @@ const Dashboard = async () => {
 
     return (
         <>
-            <Alert className="alert-info d-flex align-items-center d-none d-md-flex" role="alert">
-                <IconifyIcon icon="solar:help-bold-duotone" className="fs-24 me-1" />
-                <div>
-                    <strong>US Degree Analytics - </strong>
-                    Statistics Data from the{' '}
-                    <a
-                        href="https://collegescorecard.ed.gov"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-decoration-underline fw-semibold"
-                    >
-                        US Education Database
-                    </a>
-                    .
-                </div>
-            </Alert>
 
             <Row className="mb-3">
                 <Col md={12} xl={12}>
