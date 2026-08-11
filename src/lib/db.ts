@@ -5,6 +5,10 @@ declare global {
   var pgPool: Pool | undefined
 }
 
+const sslConfig = {
+  rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true',
+}
+
 // Prefer a single connection string (e.g. Supabase pooler) when provided,
 // otherwise fall back to discrete DB_* env vars.
 export const pool =
@@ -12,7 +16,7 @@ export const pool =
   (process.env.DATABASE_URL
     ? new Pool({
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
+        ssl: sslConfig,
       })
     : new Pool({
         host: process.env.DB_HOST,
@@ -20,7 +24,7 @@ export const pool =
         database: process.env.DB_NAME,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        ssl: { rejectUnauthorized: false },
+        ssl: sslConfig,
       }))
 
 if (process.env.NODE_ENV !== 'production') {

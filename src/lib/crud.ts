@@ -126,7 +126,7 @@ export function makeCreate(cfg: CrudTableConfig) {
     } catch (error: any) {
       console.error(`Create ${cfg.table} Error:`, error);
       return NextResponse.json(
-        { success: false, message: error?.detail || 'Insert failed' },
+        { success: false, message: 'Insert failed' },
         { status: 500 }
       );
     }
@@ -196,7 +196,7 @@ export function makeUpdate(cfg: CrudTableConfig) {
     } catch (error: any) {
       console.error(`Update ${cfg.table} Error:`, error);
       return NextResponse.json(
-        { success: false, message: error?.detail || 'Server error' },
+        { success: false, message: 'Update failed' },
         { status: 500 }
       );
     }
@@ -241,7 +241,7 @@ export function makeRemove(cfg: CrudTableConfig) {
     } catch (error: any) {
       console.error(`Delete ${cfg.table} Error:`, error);
       return NextResponse.json(
-        { success: false, message: error?.detail || 'Delete failed' },
+        { success: false, message: 'Delete failed' },
         { status: 500 }
       );
     }
