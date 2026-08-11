@@ -1,10 +1,11 @@
 'use client';
 
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, InputGroup } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import IconifyIcon from '@/components/wrappers/IconifyIcon';
 
 export interface CmsUser {
   id: number;
@@ -13,6 +14,7 @@ export interface CmsUser {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  justForceLoggedOut?: boolean;
 }
 
 interface Props {
@@ -28,6 +30,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<string>('viewer');
   const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([
     { value: 'superadmin', label: 'Superadmin' },
@@ -35,6 +38,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     { value: 'viewer', label: 'Viewer' },
   ]);
   const [isActive, setIsActive] = useState(true);
+  const [justForceLoggedOut, setJustForceLoggedOut] = useState(false);
   const [availableTables, setAvailableTables] = useState<string[]>([]);
   const [grantedTables, setGrantedTables] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,8 +67,10 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
     if (!show) return;
     setEmail(data?.email ?? '');
     setPassword('');
+    setShowPassword(false);
     setRole(isRestrictedActor ? 'viewer' : (data?.role ?? 'viewer'));
     setIsActive(data?.is_active ?? true);
+    setJustForceLoggedOut(!!data?.justForceLoggedOut);
     setGrantedTables([]);
     setUserManagementPerms([]);
     setSecurityPerms([]);
@@ -165,6 +171,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
         return;
       }
       toast.success('User has been logged out successfully.');
+      setJustForceLoggedOut(true);
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong');
@@ -263,12 +270,35 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                 <Form.Label>
                   Password {!isEdit && <span className="text-danger">*</span>}
                 </Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  placeholder={isEdit ? 'Leave blank to keep unchanged' : ''}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="position-relative">
+                  <Form.Control
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    placeholder={isEdit ? 'Leave blank to keep unchanged' : ''}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      fontSize: '20px',
+                      color: '#6c757d',
+                      display: 'flex',
+                      alignItems: 'center',
+                      zIndex: 5,
+                    }}
+                  >
+                    <IconifyIcon
+                      icon={showPassword ? 'ri:eye-off-line' : 'ri:eye-line'}
+                      width="20"
+                      height="20"
+                    />
+                  </span>
+                </div>
               </Form.Group>
             </Col>
             <Col md={6}>
@@ -300,6 +330,11 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
                   label={isActive ? 'Yes' : 'No'}
                   disabled={!canManageActiveStatus}
                 />
+                {justForceLoggedOut && (
+                  <div className="text-warning fw-semibold small mt-1 d-flex align-items-center gap-1">
+                    <span>⚠️</span> <strong>Warning:</strong> Disable this account and change the PASSWORD. Otherwise, the user may be able to log in again.
+                  </div>
+                )}
                 {!canManageActiveStatus && (
                   <div className="text-muted small mt-1">
                     Admins can only change the active status for viewer accounts.

@@ -90,6 +90,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const setParts: string[] = [];
     const values: any[] = [];
 
+    let shouldIncrementSession = false;
+
     if (role !== undefined) {
       values.push(role);
       setParts.push(`role = $${values.length}`);
@@ -98,12 +100,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       values.push(is_active);
       setParts.push(`is_active = $${values.length}`);
       if (is_active === false) {
-        setParts.push('session_version = session_version + 1');
+        shouldIncrementSession = true;
       }
     }
     if (password) {
       values.push(await bcrypt.hash(password, 10));
       setParts.push(`password_hash = $${values.length}`);
+      shouldIncrementSession = true;
+    }
+    if (shouldIncrementSession) {
+      setParts.push('session_version = session_version + 1');
     }
 
     if (setParts.length === 0) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Dropdown, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -17,6 +18,7 @@ interface ActiveUserRow {
 }
 
 const ActiveUsersPanel = () => {
+  const router = useRouter();
   const currentUser = useCurrentUser();
   const [users, setUsers] = useState<ActiveUserRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,6 +72,7 @@ const ActiveUsersPanel = () => {
       }
       toast.success('User has been logged out successfully.');
       await fetchUsers();
+      router.push(`/cms-users?editUserId=${userId}&forceLoggedOut=true`);
     } catch (error) {
       console.error(error);
       toast.error('Unable to force logout');

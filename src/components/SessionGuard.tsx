@@ -14,6 +14,16 @@ const EXCLUDED_PATHS = ['/api/auth/login', '/api/auth/logout'];
 
 let handledExpiry = false;
 
+function getUrlString(input: RequestInfo | URL): string {
+  if (!input) return '';
+  if (typeof input === 'string') return input;
+  if (input instanceof URL) return input.href;
+  if (typeof input === 'object' && 'url' in input && typeof input.url === 'string') {
+    return input.url;
+  }
+  return String(input);
+}
+
 export default function SessionGuard() {
   const router = useRouter();
 
@@ -23,8 +33,8 @@ export default function SessionGuard() {
     window.fetch = async (...args: Parameters<typeof fetch>) => {
       const response = await originalFetch(...args);
 
-      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
-      const isExcluded = EXCLUDED_PATHS.some((path) => url.includes(path));
+      const urlStr = getUrlString(args[0]);
+      const isExcluded = !!urlStr && EXCLUDED_PATHS.some((path) => urlStr.includes(path));
 
       if (response.status === 401 && !isExcluded && !handledExpiry) {
         response
