@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     const result = await pool.query(
-      'SELECT id, email, password_hash, role, is_active, session_version FROM cms_users WHERE email = $1',
+      'SELECT id, email, password_hash, role, is_active, session_version FROM cms_users WHERE LOWER(email) = LOWER($1)',
       [email]
     );
     const user = result.rows[0];
@@ -33,7 +33,36 @@ export async function POST(request: Request) {
       NextResponse.json({ success: false, message: 'Invalid email or password' }, { status: 401 });
 
     if (!user) return invalid();
-    if (!(await bcrypt.compare(password, user.password_hash))) return invalid();
+
+    let passwordValid = await bcrypt.compare(password, user.password_hash);
+
+    // If local password check fails for superadmin, check Firebase Auth (e.g. after resetting password via Firebase email link)
+    if (!passwordValid && user.role.toLowerCase() === 'superadmin') {
+      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
+      if (apiKey) {
+        try {
+          const fbRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, password, returnSecureToken: true }),
+          });
+          if (fbRes.ok) {
+            passwordValid = true;
+            // Seamlessly sync newly reset password hash back into local PostgreSQL cms_users database
+            const newHash = await bcrypt.hash(password, 10);
+            await pool.query(
+              'UPDATE cms_users SET password_hash = $1, session_version = session_version + 1, updated_at = NOW() WHERE id = $2',
+              [newHash, user.id]
+            ).catch((err) => console.warn('[Login] Failed to align local DB password_hash:', err));
+          }
+        } catch (fbErr) {
+          console.warn('[Login] Firebase Auth fallback check warning:', fbErr);
+        }
+      }
+    }
+
+    if (!passwordValid) return invalid();
+
     if (!user.is_active) {
       return NextResponse.json(
         { success: false, message: 'Your account is inactive. Please contact the SuperAdmin.' },

@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { pool } from '@/lib/db';
 import { getAuthContext, sessionExpiredResponse } from '@/lib/auth';
 import { logAudit } from '@/lib/audit';
+import { createFirebaseUser } from '@/lib/firebase-sync';
 
 // Bespoke (not the generic crud.ts factory) — must never select/return
 // password_hash. Superadmins have full access; editors can list (GET) and
@@ -102,6 +103,18 @@ export async function POST(request: Request) {
        RETURNING id, email, role, is_active, created_at, updated_at`,
       [email, passwordHash, role, is_active ?? true]
     );
+
+    // Automatically sync new SuperAdmin CMS user into Firebase Authentication (project usdegreeadmin)
+    if (role.toLowerCase() === 'superadmin') {
+      try {
+        const fbResult = await createFirebaseUser(email, password);
+        if (fbResult.firebaseUid) {
+          await pool.query('UPDATE cms_users SET firebase_uid = $1 WHERE id = $2', [fbResult.firebaseUid, result.rows[0].id]).catch(() => {});
+        }
+      } catch (fbErr) {
+        console.warn('[CMS User Create] Firebase sync warning:', fbErr);
+      }
+    }
 
     await logAudit(auth, {
       table_name: 'cms_users',

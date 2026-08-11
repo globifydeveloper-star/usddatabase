@@ -134,6 +134,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       record_id: result.rows[0].id,
     });
 
+    // If password was updated by SuperAdmin for a superadmin account, sync the new password to Firebase Auth
+    const updatedRole = (result.rows[0]?.role || '').toLowerCase();
+    if (password && result.rows[0]?.email && updatedRole === 'superadmin') {
+      try {
+        const { createFirebaseUser } = await import('@/lib/firebase-sync');
+        await createFirebaseUser(result.rows[0].email, password);
+      } catch (fbErr) {
+        console.warn('[CMS User Update] Firebase password sync warning:', fbErr);
+      }
+    }
+
     return NextResponse.json({ success: true, message: 'Updated successfully', data: result.rows[0] });
   } catch (error: any) {
     console.error('Update cms_user Error:', error);
@@ -155,6 +166,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
   const { id } = await params;
   const targetId = Number(id);
+
+  if (targetId === auth.userId) {
+    return NextResponse.json(
+      { success: false, message: 'Superadmin cannot delete their own account.' },
+      { status: 400 }
+    );
+  }
 
   const existing = await pool.query('SELECT role FROM cms_users WHERE id = $1', [targetId]);
   if (existing.rowCount === 0) {

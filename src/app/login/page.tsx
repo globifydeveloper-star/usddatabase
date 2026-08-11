@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import logo from '@/assets/images/logo2.png';
 import { Alert, Card, Col, Row } from 'react-bootstrap';
@@ -120,17 +121,22 @@ const LoginForm = () => {
                         </span>
                     </div>
                 </div>
-                <div className="mb-3 form-check">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="login-remember-me"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor="login-remember-me">
-                        Remember me
-                    </label>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div className="form-check mb-0">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="login-remember-me"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                        />
+                        <label className="form-check-label" htmlFor="login-remember-me">
+                            Remember me
+                        </label>
+                    </div>
+                    <Link href="/forgot-password" className="text-muted text-decoration-none fs-14">
+                        Forgot password?
+                    </Link>
                 </div>
                 <div className="d-grid">
                     <button

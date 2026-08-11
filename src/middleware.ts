@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuthToken, AUTH_COOKIE_NAME } from '@/lib/jwt';
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|login|api/auth/login|api/auth/logout).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|login|forgot-password|auth/recover-password|api/auth/login|api/auth/logout|api/auth/forgot-password).*)'],
 };
 
 function canAccessRole(role: string | undefined, required: 'editor' | 'superadmin') {
