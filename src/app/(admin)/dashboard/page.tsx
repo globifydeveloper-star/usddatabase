@@ -15,12 +15,18 @@ import ProgramOverallChart from './components/ProgramOverallChart';
 import CollegeAndProgramChart from './components/CollegeAndprogramChart';
 import RecentAuditLogs from './components/RecentAuditLogs';
 import RecentLoginHistory from './components/RecentLoginHistory';
+import DataFlowModal from './components/DataFlowModal';
 
 const Dashboard = async () => {
     const stateData = await getDashboardStats(); //fetch from server-only file
 
     return (
         <>
+            <Row className="mb-3">
+                <Col md={12} xl={12}>
+                    <DataFlowModal />
+                </Col>
+            </Row>
 
             <Row className="mb-3">
                 <Col md={12} xl={12}>
@@ -47,10 +53,6 @@ const Dashboard = async () => {
                 <Col xl={6}>
                     <StatisticsChart />
                 </Col>
-
-                {/* <Col xl={6}>
-                    <CostPieChart />
-                </Col> */}
                 <Col xl={6}>
                     <RepaymentOverallChart />
                 </Col>

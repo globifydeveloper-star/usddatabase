@@ -62,6 +62,7 @@
     "react-sortablejs": "^6.1.4",
     "react-step-wizard": "^5.3.11",
     "react-toastify": "^11.0.3",
+    "reactflow": "^11.11.4",
     "server-only": "^0.0.1",
     "simplebar-react": "^3.3.0",
     "sortablejs": "^1.15.6",

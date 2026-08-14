@@ -1,0 +1,879 @@
+/**
+ * domainData.ts
+ * -----------------------------------------------------------------------
+ * Database tables list for USDegrees ERD map (~65 tables across 8 domains).
+ * Derived from SCHEMA_DOCUMENTATION.md and US_Degrees_ER_Diagram.png.
+ * -----------------------------------------------------------------------
+ */
+
+import { SchemaTable, SchemaEdge } from './types';
+
+// ===========================================================================
+// TABLES DEFINITION
+// ===========================================================================
+export const tables: SchemaTable[] = [
+  // -------------------------------------------------------------------------
+  // DOMAIN 1: CORE SCHOOL DATA (Hub: 'schools')
+  // -------------------------------------------------------------------------
+  {
+    id: 'schools',
+    domain: 'core_school',
+    note: 'Master Hub table. Almost all school-related tables link to this via unitid.',
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'name', kind: 'column' },
+      { name: 'city', kind: 'column' },
+      { name: 'state', kind: 'column' },
+      { name: 'zip', kind: 'column' },
+      { name: 'address', kind: 'column' },
+      { name: 'accreditor', kind: 'column' },
+      { name: 'school_url', kind: 'column' },
+      { name: 'degrees_awarded', kind: 'column' },
+      { name: 'has_pseo', kind: 'column' },
+      { name: 'ope8_id', kind: 'column' },
+      { name: 'program_count', kind: 'column' },
+      { name: 'state_id', kind: 'fk', refTable: 'states', refColumn: 'id', soft: true },
+      { name: 'is_active', kind: 'column' },
+    ],
+  },
+  {
+    id: 'admissions',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'test_requirements', kind: 'column' },
+      { name: 'admission_rate', kind: 'column' },
+      { name: 'sat_avg_overall', kind: 'column' },
+      { name: 'sat_mid_math', kind: 'column' },
+      { name: 'sat_mid_reading', kind: 'column' },
+      { name: 'sat_p25_reading', kind: 'column' },
+      { name: 'sat_p25_math', kind: 'column' },
+      { name: 'sat_p25_writing', kind: 'column' },
+      { name: 'sat_p75_reading', kind: 'column' },
+      { name: 'sat_p75_math', kind: 'column' },
+      { name: 'sat_p75_writing', kind: 'column' },
+      { name: 'sat_rw_min', kind: 'column' },
+      { name: 'sat_rw_max', kind: 'column' },
+      { name: 'sat_math_min', kind: 'column' },
+      { name: 'sat_math_max', kind: 'column' },
+      { name: 'school_min_range', kind: 'column' },
+      { name: 'school_max_range', kind: 'column' },
+      { name: 'sat_disclosure_category', kind: 'fk', refTable: 'admission_disclosure_categories', refColumn: 'category' },
+      { name: 'publish_publicly', kind: 'column' },
+      { name: 'review_status', kind: 'column' },
+    ],
+  },
+  {
+    id: 'academics',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'assoc', kind: 'column' },
+      { name: 'degree', kind: 'column' },
+      { name: 'bachelors', kind: 'column' },
+      { name: 'certificate_lt_1yr', kind: 'column' },
+      { name: 'certificate_lt_2yr', kind: 'column' },
+      { name: 'certificate_lt_4yr', kind: 'column' },
+      { name: 'degree_or_certificate', kind: 'column' },
+    ],
+  },
+  {
+    id: 'aid',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'loan_principal', kind: 'column' },
+      { name: 'pell_grant_rate', kind: 'column' },
+      { name: 'federal_loan_rate', kind: 'column' },
+      { name: 'students_with_any_loan', kind: 'column' },
+      { name: 'aid_percentage', kind: 'column' },
+    ],
+  },
+  {
+    id: 'athletic_sports',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'sport', kind: 'pk' },
+      { name: 'gender', kind: 'pk' },
+      { name: 'division', kind: 'pk' },
+      { name: 'survey_year', kind: 'pk' },
+      { name: 'roster_size', kind: 'column' },
+    ],
+  },
+  {
+    id: 'athletic_summary',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'survey_year', kind: 'pk' },
+      { name: 'division', kind: 'pk' },
+      { name: 'athletic_aid_total', kind: 'column' },
+      { name: 'athletes_total', kind: 'column' },
+      { name: 'avg_aid_per_athlete', kind: 'column' },
+      { name: 'recruiting_expense', kind: 'column' },
+      { name: 'athletic_revenue', kind: 'column' },
+      { name: 'athletic_expense', kind: 'column' },
+    ],
+  },
+  {
+    id: 'completion',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'completed_2yrs', kind: 'column' },
+      { name: 'completed_3yrs', kind: 'column' },
+      { name: 'completed_4yrs', kind: 'column' },
+      { name: 'completed_6yrs', kind: 'column' },
+      { name: 'transfer_rate_4yr_full_time', kind: 'column' },
+      { name: 'emp_factor', kind: 'column' },
+      { name: 'completion_rate', kind: 'column' },
+    ],
+  },
+  {
+    id: 'costs',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'booksupply', kind: 'column' },
+      { name: 'tuition_in_state', kind: 'column' },
+      { name: 'tuition_out_state', kind: 'column' },
+      { name: 'tuition_program_year', kind: 'column' },
+      { name: 'roomboard_oncampus', kind: 'column' },
+      { name: 'roomboard_offcampus', kind: 'column' },
+      { name: 'avg_net_price_public', kind: 'column' },
+      { name: 'avg_net_price_private', kind: 'column' },
+      { name: 'avg_net_price_overall', kind: 'column' },
+      { name: 'otherexpense_oncampus', kind: 'column' },
+      { name: 'otherexpense_offcampus', kind: 'column' },
+      { name: 'otherexpense_withfamily', kind: 'column' },
+      { name: 'for_roi_data', kind: 'column' },
+      { name: 'sticker_price_by_api', kind: 'column' },
+    ],
+  },
+  {
+    id: 'earnings',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'median_1yr', kind: 'column' },
+      { name: 'median_3yr', kind: 'column' },
+      { name: 'median_4yr', kind: 'column' },
+      { name: 'median_5yr', kind: 'column' },
+      { name: 'students_count', kind: 'column' },
+    ],
+  },
+  {
+    id: 'repayment',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'yr1_overall', kind: 'column' },
+      { name: 'yr1_completers', kind: 'column' },
+      { name: 'yr1_noncompleters', kind: 'column' },
+      { name: 'yr3_noncompleters', kind: 'column' },
+      { name: 'yr3_completers', kind: 'column' },
+      { name: 'yr3_overall', kind: 'column' },
+      { name: 'all_borrowers_3yr', kind: 'column' },
+      { name: 'graduates_3yr', kind: 'column' },
+      { name: 'non_completers_3yr', kind: 'column' },
+      { name: 'repayment_success', kind: 'column' },
+    ],
+  },
+  {
+    id: 'students',
+    domain: 'core_school',
+    columns: [
+      { name: 'unitid', kind: 'pk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'size', kind: 'column' },
+      { name: 'grad_students', kind: 'column' },
+      { name: 'fafsa_applications', kind: 'column' },
+      { name: 'grad_12_month', kind: 'column' },
+      { name: 'undergrad_12_month', kind: 'column' },
+      { name: 'demographics_men', kind: 'column' },
+      { name: 'demographics_women', kind: 'column' },
+      { name: 'size_category', kind: 'column' },
+      { name: 'graduation_rate', kind: 'column' },
+      { name: 'student_faculty_ratio', kind: 'column' },
+      { name: 'retention_rate', kind: 'column' },
+      { name: 'faculty_men', kind: 'column' },
+      { name: 'faculty_women', kind: 'column' },
+    ],
+  },
+  {
+    id: 'school_descriptions',
+    domain: 'core_school',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'column', refTable: 'schools', refColumn: 'unitid', soft: true },
+      { name: 'name', kind: 'column' },
+      { name: 'city', kind: 'column' },
+      { name: 'state', kind: 'column' },
+      { name: 'school_url', kind: 'column' },
+      { name: 'school_descriptions', kind: 'column' },
+    ],
+  },
+  {
+    id: 'program_distribution',
+    domain: 'core_school',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'field_name', kind: 'pk' },
+      { name: 'percentage', kind: 'column' },
+      { name: 'program_count', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 2: PROGRAMS & OUTCOMES (Hub: 'programs')
+  // -------------------------------------------------------------------------
+  {
+    id: 'programs',
+    domain: 'programs_outcomes',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'unitid', kind: 'fk', refTable: 'schools', refColumn: 'unitid' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'title', kind: 'column' },
+      { name: 'credential_level', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'school_name', kind: 'column' },
+      { name: 'school_type', kind: 'column' },
+      { name: 'search_vector', kind: 'column' },
+      { name: 'degree_level_category', kind: 'column' },
+    ],
+  },
+  {
+    id: 'program_earnings',
+    domain: 'programs_outcomes',
+    note: 'Earnings-waterfall table (year_1/5/10 + fill-method badges)',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'program_id', kind: 'fk', refTable: 'programs', refColumn: 'id' },
+      { name: 'years_after_completion', kind: 'column' },
+      { name: 'median_earnings', kind: 'column' },
+      { name: 'mean_earnings', kind: 'column' },
+      { name: 'working_count', kind: 'column' },
+      { name: 'not_working_count', kind: 'column' },
+      { name: 'overall_median_earnings', kind: 'column' },
+      { name: 'male_median_earnings', kind: 'column' },
+      { name: 'nonmale_median_earnings', kind: 'column' },
+      { name: 'pell_median_earnings', kind: 'column' },
+      { name: 'nonpell_median_earnings', kind: 'column' },
+      { name: 'working_overall_count', kind: 'column' },
+      { name: 'awarded_higher_credential_count', kind: 'column' },
+      { name: 'working_in_state_count', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'program_debt',
+    domain: 'programs_outcomes',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'program_id', kind: 'fk', refTable: 'programs', refColumn: 'id' },
+      { name: 'loan_type', kind: 'column' },
+      { name: 'group_type', kind: 'column' },
+      { name: 'institution_scope', kind: 'column' },
+      { name: 'borrower_count', kind: 'column' },
+      { name: 'median_debt', kind: 'column' },
+      { name: 'average_debt', kind: 'column' },
+      { name: 'median_payment', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'program_descriptions',
+    domain: 'programs_outcomes',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'unitid', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'title', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'school_name', kind: 'column' },
+      { name: 'program_description', kind: 'column' },
+    ],
+  },
+  {
+    id: 'prompt',
+    domain: 'programs_outcomes',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'title', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'school_name', kind: 'column' },
+    ],
+  },
+  {
+    id: 'debt_income_ratio',
+    domain: 'programs_outcomes',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'avg_debt', kind: 'column' },
+      { name: 'avg_income', kind: 'column' },
+      { name: 'debt_income_ratio', kind: 'column' },
+      { name: 'ratio_text', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'roi',
+    domain: 'programs_outcomes',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'credential_level', kind: 'pk' },
+      { name: 'avg_salary', kind: 'column' },
+      { name: 'total_cost', kind: 'column' },
+      { name: 'roi_20yr', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 3: PSEO (Hub: 'pseo_entities')
+  // -------------------------------------------------------------------------
+  {
+    id: 'pseo_entities',
+    domain: 'pseo',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'entity_type', kind: 'column' },
+      { name: 'entity_code', kind: 'column' },
+      { name: 'entity_name', kind: 'column' },
+    ],
+  },
+  {
+    id: 'pseo_institute_level',
+    domain: 'pseo',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'pseo_entity_id', kind: 'fk', refTable: 'pseo_entities', refColumn: 'id' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'cip_title', kind: 'column' },
+      { name: 'grad_cohort', kind: 'column' },
+      { name: 'year_after_completion', kind: 'column' },
+      { name: 'median_earnings', kind: 'column' },
+      { name: 'cip_code_clean', kind: 'column' },
+    ],
+  },
+  {
+    id: 'pseo_state_level',
+    domain: 'pseo',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'pseo_entity_id', kind: 'fk', refTable: 'pseo_entities', refColumn: 'id' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'cip_title', kind: 'column' },
+      { name: 'grad_cohort', kind: 'column' },
+      { name: 'year_after_completion', kind: 'column' },
+      { name: 'median_earnings', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 4: USDEGREES END USERS (Hub: 'usdusers')
+  // -------------------------------------------------------------------------
+  {
+    id: 'usdusers',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'display_name', kind: 'column' },
+      { name: 'email', kind: 'column' },
+      { name: 'profile_image', kind: 'column' },
+      { name: 'auth_provider', kind: 'column' },
+      { name: 'role', kind: 'column' },
+      { name: 'email_verified', kind: 'column' },
+      { name: 'provider_user_id', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'last_login', kind: 'column' },
+      { name: 'password_hash', kind: 'column' },
+      { name: 'is_active', kind: 'column' },
+      { name: 'deactivated_at', kind: 'column' },
+      { name: 'firebase_uid', kind: 'column' },
+      { name: 'phone', kind: 'column' },
+      { name: 'address', kind: 'column' },
+      { name: 'gpa', kind: 'column' },
+      { name: 'sat_math', kind: 'column' },
+      { name: 'sat_reading_writing', kind: 'column' },
+      { name: 'act_score', kind: 'column' },
+      { name: 'graduation_year', kind: 'column' },
+      { name: 'high_school_name', kind: 'column' },
+      { name: 'preferred_degree_level', kind: 'column' },
+      { name: 'preferred_college_type', kind: 'column' },
+      { name: 'sat_score', kind: 'column' },
+      { name: 'age_consent', kind: 'column' },
+    ],
+  },
+  {
+    id: 'usduser_deactivations',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'reason_code', kind: 'column' },
+      { name: 'reason_label', kind: 'column' },
+      { name: 'other_reason', kind: 'column' },
+      { name: 'improvement_feedback', kind: 'column' },
+      { name: 'acknowledged', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'usdreports',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'report_reference_id', kind: 'column' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'pdf_storage_path', kind: 'column' },
+      { name: 'pdf_data', kind: 'column' },
+      { name: 'pdf_size', kind: 'column' },
+      { name: 'mime_type', kind: 'column' },
+    ],
+  },
+  {
+    id: 'usdreport_colleges',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'report_id', kind: 'fk', refTable: 'usdreports', refColumn: 'id' },
+      { name: 'unitid', kind: 'fk', refTable: 'schools', refColumn: 'unitid', soft: true },
+      { name: 'display_order', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'program_name', kind: 'column' },
+    ],
+  },
+  {
+    id: 'usdusers_preferred_programs',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'program', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'usdusers_preferred_states',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'state_code', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'user_compare_history',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'compared_colleges', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'user_saved_colleges',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'unitid', kind: 'fk', refTable: 'schools', refColumn: 'unitid', soft: true },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'compare_matrix_entries',
+    domain: 'end_users',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'column' },
+      { name: 'unitid', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'credential_level', kind: 'column' },
+      { name: 'program_name', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 5: CMS ADMIN (Hub: 'cms_users')
+  // -------------------------------------------------------------------------
+  {
+    id: 'cms_users',
+    domain: 'cms_admin',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'email', kind: 'column' },
+      { name: 'password_hash', kind: 'column' },
+      { name: 'role', kind: 'column' },
+      { name: 'is_active', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+      { name: 'session_version', kind: 'column' },
+    ],
+  },
+  {
+    id: 'cms_editor_table_permissions',
+    domain: 'cms_admin',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'editor_user_id', kind: 'fk', refTable: 'cms_users', refColumn: 'id' },
+      { name: 'table_name', kind: 'column' },
+      { name: 'granted_by', kind: 'fk', refTable: 'cms_users', refColumn: 'id' },
+      { name: 'granted_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'cms_audit_logs',
+    domain: 'cms_admin',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'cms_users', refColumn: 'id' },
+      { name: 'email', kind: 'column' },
+      { name: 'table_name', kind: 'column' },
+      { name: 'action', kind: 'column' },
+      { name: 'record_id', kind: 'column' },
+      { name: 'changed_permissions', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'cms_login_history',
+    domain: 'cms_admin',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'cms_users', refColumn: 'id' },
+      { name: 'email', kind: 'column' },
+      { name: 'role', kind: 'column' },
+      { name: 'login_at', kind: 'column' },
+      { name: 'logout_at', kind: 'column' },
+      { name: 'session_duration_seconds', kind: 'column' },
+      { name: 'device', kind: 'column' },
+      { name: 'ip_address', kind: 'column' },
+      { name: 'session_version', kind: 'column' },
+      { name: 'last_seen_at', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 6: LEGACY AUTH SYSTEM
+  // -------------------------------------------------------------------------
+  {
+    id: 'users',
+    domain: 'legacy_auth',
+    note: 'Legacy auth system — parallel to cms_users.',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'full_name', kind: 'column' },
+      { name: 'email', kind: 'column' },
+      { name: 'password_hash', kind: 'column' },
+      { name: 'role_id', kind: 'fk', refTable: 'roles', refColumn: 'id' },
+      { name: 'is_active', kind: 'column' },
+      { name: 'last_login', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+    ],
+  },
+  {
+    id: 'roles',
+    domain: 'legacy_auth',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'role_name', kind: 'column' },
+    ],
+  },
+  {
+    id: 'permissions',
+    domain: 'legacy_auth',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'users', refColumn: 'id' },
+      { name: 'table_name', kind: 'column' },
+      { name: 'can_read', kind: 'column' },
+      { name: 'can_edit', kind: 'column' },
+      { name: 'can_delete', kind: 'column' },
+    ],
+  },
+  {
+    id: 'authentication',
+    domain: 'legacy_auth',
+    standalone: true,
+    note: 'Flat legacy table.',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'full_name', kind: 'column' },
+      { name: 'email', kind: 'column' },
+      { name: 'password_hash', kind: 'column' },
+      { name: 'role_name', kind: 'column' },
+      { name: 'is_active', kind: 'column' },
+      { name: 'last_login', kind: 'column' },
+      { name: 'table_name', kind: 'column' },
+      { name: 'can_read', kind: 'column' },
+      { name: 'can_edit', kind: 'column' },
+      { name: 'can_delete', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 7: REFERENCE & LOOKUPS
+  // -------------------------------------------------------------------------
+  {
+    id: 'states',
+    domain: 'reference',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'state_code', kind: 'column' },
+      { name: 'state_title', kind: 'column' },
+    ],
+  },
+  {
+    id: 'cip_mapping',
+    domain: 'reference',
+    standalone: true,
+    columns: [
+      { name: 'cip_prefix', kind: 'pk' },
+      { name: 'field_name', kind: 'column' },
+    ],
+  },
+  {
+    id: 'faculty_import',
+    domain: 'reference',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'faculty_men', kind: 'column' },
+      { name: 'faculty_women', kind: 'column' },
+    ],
+  },
+  {
+    id: 'athletic_content_blocks',
+    domain: 'reference',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'key', kind: 'column' },
+      { name: 'title', kind: 'column' },
+      { name: 'content', kind: 'column' },
+    ],
+  },
+  {
+    id: 'admission_disclosure_categories',
+    domain: 'reference',
+    columns: [
+      { name: 'category', kind: 'pk' },
+      { name: 'badge_label', kind: 'column' },
+      { name: 'badge_color', kind: 'column' },
+      { name: 'supporting_copy', kind: 'column' },
+      { name: 'disclaimer_tier', kind: 'column' },
+      { name: 'disclaimer_text', kind: 'column' },
+      { name: 'show_admission_rate_required', kind: 'column' },
+    ],
+  },
+  {
+    id: 'athletic_division_benchmarks',
+    domain: 'reference',
+    standalone: true,
+    columns: [
+      { name: 'division', kind: 'pk' },
+      { name: 'survey_year', kind: 'pk' },
+      { name: 'avg_athletes_total', kind: 'column' },
+      { name: 'avg_aid_per_athlete', kind: 'column' },
+      { name: 'avg_recruiting_expense', kind: 'column' },
+      { name: 'avg_revenue', kind: 'column' },
+      { name: 'avg_expense', kind: 'column' },
+      { name: 'updated_at', kind: 'column' },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // DOMAIN 8: STAGING & CACHE ETL
+  // -------------------------------------------------------------------------
+  {
+    id: 'staging_admissions_categories',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'sat_disclosure_category', kind: 'column' },
+      { name: 'publish_publicly', kind: 'column' },
+      { name: 'review_status', kind: 'column' },
+    ],
+  },
+  {
+    id: 'costs_fetched',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'booksupply', kind: 'column' },
+      { name: 'tuition_in_state', kind: 'column' },
+      { name: 'tuition_out_state', kind: 'column' },
+      { name: 'tuition_program_year', kind: 'column' },
+      { name: 'roomboard_oncampus', kind: 'column' },
+      { name: 'roomboard_offcampus', kind: 'column' },
+      { name: 'avg_net_price_public', kind: 'column' },
+      { name: 'avg_net_price_private', kind: 'column' },
+      { name: 'avg_net_price_overall', kind: 'column' },
+      { name: 'otherexpense_oncampus', kind: 'column' },
+      { name: 'otherexpense_offcampus', kind: 'column' },
+      { name: 'otherexpense_withfamily', kind: 'column' },
+      { name: 'sticker_price', kind: 'column' },
+    ],
+  },
+  {
+    id: 'temp_sat',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'sat_avg_overall', kind: 'column' },
+      { name: 'sat_mid_math', kind: 'column' },
+      { name: 'sat_mid_reading', kind: 'column' },
+      { name: 'sat_p25_reading', kind: 'column' },
+      { name: 'sat_p25_math', kind: 'column' },
+      { name: 'sat_p25_writing', kind: 'column' },
+      { name: 'sat_p75_reading', kind: 'column' },
+      { name: 'sat_p75_math', kind: 'column' },
+      { name: 'sat_p75_writing', kind: 'column' },
+    ],
+  },
+  {
+    id: 'net_price_private_income',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'income_0_30000', kind: 'column' },
+      { name: 'income_0_48000', kind: 'column' },
+      { name: 'income_30001_48000', kind: 'column' },
+      { name: 'income_30001_75000', kind: 'column' },
+      { name: 'income_48001_75000', kind: 'column' },
+      { name: 'income_75001_110000', kind: 'column' },
+      { name: 'income_75000_plus', kind: 'column' },
+      { name: 'income_110001_plus', kind: 'column' },
+    ],
+  },
+  {
+    id: 'net_price_public_income',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'pk' },
+      { name: 'income_0_30000', kind: 'column' },
+      { name: 'income_0_48000', kind: 'column' },
+      { name: 'income_30001_48000', kind: 'column' },
+      { name: 'income_30001_75000', kind: 'column' },
+      { name: 'income_48001_75000', kind: 'column' },
+      { name: 'income_75001_110000', kind: 'column' },
+      { name: 'income_75000_plus', kind: 'column' },
+      { name: 'income_110001_plus', kind: 'column' },
+    ],
+  },
+  {
+    id: 'earnings_against_courses',
+    domain: 'staging_cache',
+    standalone: true,
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'unitid', kind: 'column' },
+      { name: 'ope8_id', kind: 'column' },
+      { name: 'school_name', kind: 'column' },
+      { name: 'cip_title', kind: 'column' },
+      { name: 'grad_cohort', kind: 'column' },
+      { name: 'year_1', kind: 'column' },
+      { name: 'year_5', kind: 'column' },
+      { name: 'year_10', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'credential_level', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'avg_salary', kind: 'column' },
+      { name: 'growth_rate', kind: 'column' },
+      { name: 'year_1_method', kind: 'column' },
+      { name: 'year_5_method', kind: 'column' },
+      { name: 'year_10_method', kind: 'column' },
+    ],
+  },
+  {
+    id: 'earnings_against_courses_merged',
+    domain: 'staging_cache',
+    standalone: true,
+    note: 'De-duplicated/aggregated version of earnings_against_courses.',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'unitid', kind: 'column' },
+      { name: 'ope8_id', kind: 'column' },
+      { name: 'school_name', kind: 'column' },
+      { name: 'cip_title', kind: 'column' },
+      { name: 'grad_cohort', kind: 'column' },
+      { name: 'year_1', kind: 'column' },
+      { name: 'year_5', kind: 'column' },
+      { name: 'year_10', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'credential_level', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'avg_salary', kind: 'column' },
+      { name: 'growth_rate', kind: 'column' },
+      { name: 'year_1_method', kind: 'column' },
+      { name: 'year_5_method', kind: 'column' },
+      { name: 'year_10_method', kind: 'column' },
+    ],
+  },
+  {
+    id: 'admissions_sat_ui',
+    domain: 'staging_cache',
+    isView: true,
+    standalone: true,
+    columns: [
+      { name: 'unitid', kind: 'column' },
+      { name: 'sat_rw_min', kind: 'column' },
+      { name: 'sat_rw_max', kind: 'column' },
+      { name: 'sat_math_min', kind: 'column' },
+      { name: 'sat_math_max', kind: 'column' },
+    ],
+  },
+];
+
+// ===========================================================================
+// DYNAMIC EDGES GENERATION (FK & Shared PK Connections)
+// ===========================================================================
+export const edges: SchemaEdge[] = (() => {
+  const seen = new Set<string>();
+  const result: SchemaEdge[] = [];
+
+  for (const t of tables) {
+    for (const c of t.columns) {
+      if (!c.refTable) continue;
+      const key = `${t.id}.${c.name}->${c.refTable}.${c.refColumn}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      result.push({
+        id: key,
+        source: t.id,
+        target: c.refTable,
+        sourceColumn: c.name,
+        targetColumn: c.refColumn as string,
+        soft: c.soft,
+      });
+    }
+  }
+  return result;
+})();
