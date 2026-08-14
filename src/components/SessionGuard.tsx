@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 // shows a one-time toast, and redirects to /login. Excludes the auth
 // endpoints themselves to avoid intercepting login failures or the logout
 // call this handler triggers.
-const EXCLUDED_PATHS = ['/api/auth/login', '/api/auth/logout'];
+const EXCLUDED_PATHS = ['/api/auth/login', '/api/auth/logout', '/api/auth/heartbeat'];
 
 let handledExpiry = false;
 
@@ -26,6 +26,20 @@ function getUrlString(input: RequestInfo | URL): string {
 
 export default function SessionGuard() {
   const router = useRouter();
+
+  useEffect(() => {
+    const sendHeartbeat = () => {
+      window.fetch('/api/auth/heartbeat', { method: 'POST' }).catch(() => {});
+    };
+
+    // Send immediate heartbeat on mount, then repeat every 45 seconds
+    sendHeartbeat();
+    const interval = window.setInterval(sendHeartbeat, 45000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const originalFetch = window.fetch.bind(window);

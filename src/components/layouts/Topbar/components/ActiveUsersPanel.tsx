@@ -13,6 +13,7 @@ interface ActiveUserRow {
   email: string;
   role: string;
   login_at: string;
+  last_seen_at?: string;
   device: string | null;
   ip_address: string | null;
 }
@@ -89,15 +90,16 @@ const ActiveUsersPanel = () => {
     viewer: 'secondary',
   };
 
-  const timeAgo = (iso: string) => {
+  const timeAgo = (iso?: string) => {
+    if (!iso) return 'just now';
     const diffMs = Date.now() - new Date(iso).getTime();
     const minutes = Math.floor(diffMs / 60000);
-    if (minutes < 1) return 'just now';
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 1) return 'active now';
+    if (minutes < 60) return `active ${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return `active ${hours}h ago`;
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return `active ${days}d ago`;
   };
 
   const initials = (email: string) => email.slice(0, 2).toUpperCase();
@@ -145,11 +147,18 @@ const ActiveUsersPanel = () => {
                 key={`${user.user_id}-${user.login_at}`}
                 className="d-flex align-items-center gap-2 px-3 py-2 border-bottom"
               >
-                <div
-                  className="d-flex align-items-center justify-content-center rounded-circle bg-light text-muted fw-semibold flex-shrink-0"
-                  style={{ width: 36, height: 36, fontSize: 13 }}
-                >
-                  {initials(user.email)}
+                <div className="position-relative flex-shrink-0">
+                  <div
+                    className="d-flex align-items-center justify-content-center rounded-circle bg-light text-muted fw-semibold"
+                    style={{ width: 36, height: 36, fontSize: 13 }}
+                  >
+                    {initials(user.email)}
+                  </div>
+                  <span
+                    className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
+                    style={{ width: 10, height: 10 }}
+                    title="Online"
+                  />
                 </div>
 
                 <div className="flex-grow-1 min-w-0">
@@ -162,7 +171,7 @@ const ActiveUsersPanel = () => {
                     </span>
                   </div>
                   <div className="small text-muted text-truncate" title={`${user.device || 'Unknown device'}${user.ip_address ? ` • ${user.ip_address}` : ''}`}>
-                    {timeAgo(user.login_at)}
+                    {timeAgo(user.last_seen_at || user.login_at)}
                     {user.ip_address ? ` • ${user.ip_address}` : ''}
                   </div>
                 </div>

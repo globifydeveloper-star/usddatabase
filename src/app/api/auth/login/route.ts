@@ -1,7 +1,7 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
-import { pool } from '@/lib/db';
+import { pool, ensureSessionSchema } from '@/lib/db';
 import { signAuthToken, AUTH_COOKIE_NAME } from '@/lib/jwt';
 
 function clientIp(request: Request): string {
@@ -81,9 +81,20 @@ export async function POST(request: Request) {
       rememberMe ? '30d' : '8h'
     );
 
+    await ensureSessionSchema();
+
+    // Close any previous open sessions for this user before creating a new one
     await pool.query(
-      `INSERT INTO cms_login_history (user_id, email, role, device, ip_address, session_version)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
+      `UPDATE cms_login_history
+       SET logout_at = NOW(),
+           session_duration_seconds = EXTRACT(EPOCH FROM (NOW() - login_at))::int
+       WHERE user_id = $1 AND logout_at IS NULL`,
+      [user.id]
+    ).catch((err) => console.warn('[Login] Failed to close previous sessions:', err));
+
+    await pool.query(
+      `INSERT INTO cms_login_history (user_id, email, role, device, ip_address, session_version, last_seen_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
       [
         user.id,
         user.email,

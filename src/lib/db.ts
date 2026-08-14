@@ -30,3 +30,17 @@ export const pool =
 if (process.env.NODE_ENV !== 'production') {
   global.pgPool = pool
 }
+
+let schemaEnsured = false
+export async function ensureSessionSchema() {
+  if (schemaEnsured) return
+  try {
+    await pool.query(
+      'ALTER TABLE cms_login_history ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT now()'
+    )
+    schemaEnsured = true
+  } catch (err) {
+    console.warn('[DB] Schema check warning:', err)
+  }
+}
+
