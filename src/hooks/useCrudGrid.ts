@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
 import { toast } from "@/utils/toast";
 import type { CmsRole } from "./useCurrentUser";
+import { confirmDbStructureWarning } from "@/utils/dbWarningModal";
+import { deriveTableName } from "@/lib/table-name";
 
 export type ColumnConfig<T> = {
   id: keyof T;
@@ -56,10 +58,13 @@ export function useCrudGrid<T extends { unitid: any; id: any }>(config: CrudConf
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
   const [key, setKey] = useState(0);
 
-  const handleEdit = useCallback((item: T) => {
+  const handleEdit = useCallback(async (item: T) => {
+    const tableName = config.tableName ?? deriveTableName(config.apiEndpoint);
+    const confirmed = await confirmDbStructureWarning(tableName);
+    if (!confirmed) return;
     setSelectedItem(item);
     setModalOpen(true);
-  }, []);
+  }, [config]);
 
   const handleDelete = useCallback(async (item: T) => {
     const result = await Swal.fire({

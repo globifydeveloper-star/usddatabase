@@ -29,6 +29,9 @@ const ProfileDropdown = () => {
     const roleLabel = user ? formatRoleLabel(user.role) : '';
 
     const handleLogout = async () => {
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('has_acknowledged_db_structure_warning');
+        }
         await fetch('/api/auth/logout', { method: 'POST' });
         router.push('/login');
         router.refresh();
