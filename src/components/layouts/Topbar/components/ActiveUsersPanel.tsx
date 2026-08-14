@@ -119,7 +119,7 @@ const ActiveUsersPanel = () => {
         </span>
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className="dropdown-menu-end p-0" style={{ width: 340 }}>
+      <Dropdown.Menu className="dropdown-menu-end p-0" style={{ width: 340, maxWidth: 'calc(100vw - 32px)' }}>
         <div className="px-3 py-2 border-bottom d-flex align-items-center justify-content-between">
           <strong className="fs-14">Active sessions ({users.length})</strong>
           <Button

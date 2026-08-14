@@ -159,6 +159,7 @@ export default function SchemaERD() {
 
   return (
     <div
+      className="schema-erd-container"
       style={{
         display: 'flex',
         width: '100%',

@@ -13,47 +13,30 @@
     border: 1px solid $table-border-color;
     border-radius: 0px;
     scrollbar-width: thin;
-}
-
-.gridjs-footer {
-    border: none !important;
-    padding: 12px 0 0;
-}
-
-.gridjs-table {
+    overflow-x: auto;
     width: 100%;
-}
-
-.gridjs-tbody,
-td.gridjs-td {
-    background-color: $table-bg;
-}
-
-th.gridjs-th,
-td.gridjs-td {
-    border: 1px solid $table-border-color;
-    padding: $table-cell-padding-y $table-cell-padding-x;
-}
-
-th {
-    &.gridjs-th {
-        border-top: 0;
-        color: $table-color;
-        background-color: rgba(var(--#{$prefix}light-rgb), 1);
-
-    }
-
-    &.gridjs-th-sort {
-
-        &:focus,
-        &:hover {
-            background-color: rgba(var(--#{$prefix}light-rgb), .85);
-        }
-    }
+    -webkit-overflow-scrolling: touch;
 }
 
 .gridjs-head {
     padding-top: 0;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    @media (max-width: 576px) {
+        .gridjs-search {
+            width: 100%;
+            float: none;
+
+            input.gridjs-input {
+                width: 100%;
+            }
+        }
+    }
 }
 
 .gridjs-footer {
@@ -61,6 +44,30 @@ th {
     border: 1px solid $table-border-color;
     border-top: 0;
     background-color: $table-bg;
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    @media (max-width: 576px) {
+        flex-direction: column;
+        text-align: center;
+
+        .gridjs-pagination {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+
+            .gridjs-pages {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+        }
+    }
 }
 
 .gridjs-summary {

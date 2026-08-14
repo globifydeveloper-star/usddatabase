@@ -45,8 +45,8 @@ export function SidebarControls({
 }: SidebarControlsProps) {
   return (
     <div
+      className="schema-sidebar-controls"
       style={{
-        width: 280,
         flexShrink: 0,
         borderRight: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
         background: isDark ? '#1e293b' : '#ffffff',

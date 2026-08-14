@@ -146,10 +146,16 @@ File: App Css File
 }
 
 .grid-toolbar {
-    position: absolute;
-    right: 20px;
-    top: 80px;
-    z-index: 10;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+    width: 100%;
+
+    .btn {
+        @media (max-width: 576px) {
+            width: 100%;
+        }
+    }
 }
 .autocomplete-box {
     position: absolute;
@@ -189,3 +195,48 @@ File: App Css File
     border-right: 2px solid #dcdee3;
     color: white;
 }
+
+/* ERD Diagram Responsiveness */
+.schema-erd-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(88vh - 60px);
+    min-height: 600px;
+
+    @media (max-width: 991.98px) {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 650px;
+    }
+}
+
+.schema-sidebar-controls {
+    width: 280px;
+    flex-shrink: 0;
+
+    @media (max-width: 991.98px) {
+        width: 100% !important;
+        max-height: 240px;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.2) !important;
+    }
+}
+
+/* Global Mobile & Tablet Responsiveness Enhancements */
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: 0.5rem auto;
+        max-width: calc(100vw - 1rem);
+    }
+
+    .modal-body {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}
+

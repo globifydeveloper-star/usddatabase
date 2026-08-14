@@ -43,8 +43,8 @@ const SearchBox = () => {
                 <span className="me-2">Search for tables..</span>
             </div>
 
-            <Modal show={isTrue} onHide={toggle} className="modal-lg">
-                <ModalDialog className="m-0">
+            <Modal show={isTrue} onHide={toggle} className="modal-lg" centered>
+                <ModalDialog className="mx-2 my-2 mx-sm-auto">
                     <Card className="mb-0">
                         <div className="px-3 py-2" style={{ position: 'relative' }}>
                             <div className="d-flex align-items-center">

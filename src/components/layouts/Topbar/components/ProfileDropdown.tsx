@@ -49,14 +49,18 @@ const ProfileDropdown = () => {
                     aria-haspopup="false"
                     aria-expanded="false"
                 >
-                    {/* <Image src={avatar1} width={32} className="rounded-circle me-lg-2 d-flex" alt="user-image" /> */}
-                    <span className="d-lg-flex flex-column gap-1 d-none">
-                        <h5 className="my-0">{roleLabel}</h5>
-                    </span>
-                    <IconifyIcon
-                        icon="ri:arrow-down-s-line"
-                        className="d-none d-lg-block align-middle ms-2"
-                    />
+                    <div className="d-flex align-items-center">
+                        <span className="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle me-1 me-lg-2" style={{ width: 32, height: 32 }}>
+                            <IconifyIcon icon="ri:user-3-line" className="fs-18" />
+                        </span>
+                        <span className="d-none d-lg-flex flex-column gap-1">
+                            <h5 className="my-0">{roleLabel || 'Account'}</h5>
+                        </span>
+                        <IconifyIcon
+                            icon="ri:arrow-down-s-line"
+                            className="d-none d-lg-block align-middle ms-2"
+                        />
+                    </div>
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-end">
                     <DropdownHeader className="noti-title">
