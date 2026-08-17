@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import { pool, ensureSessionSchema } from '@/lib/db';
 import { signAuthToken, AUTH_COOKIE_NAME } from '@/lib/jwt';
+import { rateLimit, tooManyRequestsResponse } from '@/lib/rate-limit';
 
 function clientIp(request: Request): string {
   const forwardedFor = request.headers.get('x-forwarded-for');
@@ -12,6 +13,12 @@ function clientIp(request: Request): string {
 
 export async function POST(request: Request) {
   try {
+    const ip = clientIp(request);
+    const limiter = rateLimit(`login:${ip}`, { limit: 10, windowMs: 15 * 60 * 1000 });
+    if (!limiter.success) {
+      return tooManyRequestsResponse(limiter.reset);
+    }
+
     const { email, password, rememberMe } = await request.json();
     if (!email || !password) {
       return NextResponse.json(

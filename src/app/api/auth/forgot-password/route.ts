@@ -1,9 +1,16 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import { rateLimit, getClientIp, tooManyRequestsResponse } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const limiter = rateLimit(`forgot-password:${ip}`, { limit: 5, windowMs: 15 * 60 * 1000 });
+    if (!limiter.success) {
+      return tooManyRequestsResponse(limiter.reset);
+    }
+
     const { email } = await request.json();
     if (!email) {
       return NextResponse.json(

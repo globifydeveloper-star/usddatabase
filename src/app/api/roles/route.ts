@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
-import { getAuthContext, assertTableWritable } from '@/lib/auth';
+import { getAuthContext, assertTableWritable, sessionExpiredResponse } from '@/lib/auth';
 
 export async function GET(request: Request) {
+    const auth = await getAuthContext(request);
+    if (!auth) {
+        return sessionExpiredResponse();
+    }
+
     const { searchParams } = new URL(request.url);
 
     const page = Number(searchParams.get('page') || 1);
