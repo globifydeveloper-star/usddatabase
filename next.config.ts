@@ -15,8 +15,50 @@ try {
       }
     });
   }
+
+  // Cleanup unneeded files & temporary setup routes & template demo sections
+  const unneededFiles = [
+    path.join(__dirname, 'src', 'components', 'LogoBox.tsx'),
+    path.join(__dirname, 'scripts', 'copy_logos.js'),
+    path.join(__dirname, 'src', 'app', 'api', 'copy-logos', 'route.ts'),
+    path.join(__dirname, 'src', 'app', 'api', 'auth', 'copy-logos', 'route.ts'),
+  ];
+  unneededFiles.forEach((file) => {
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+      console.log(`[next.config] Cleaned up unused file: ${path.basename(file)}`);
+    }
+  });
+
+  const unneededDirs = [
+    path.join(__dirname, 'src', 'app', 'api', 'copy-logos'),
+    path.join(__dirname, 'src', 'app', 'api', 'auth', 'copy-logos'),
+    // Commented-out demo template sections requested for removal
+    path.join(__dirname, 'src', 'app', '(admin)', 'apps'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'invoices'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'pages'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'ui'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'extended'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'icons'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'charts'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'forms'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'tables'),
+    path.join(__dirname, 'src', 'app', '(admin)', 'maps'),
+    path.join(__dirname, 'src', 'app', '(other)', 'auth'),
+    path.join(__dirname, 'src', 'app', '(other)', 'coming-soon'),
+    path.join(__dirname, 'src', 'app', '(other)', 'errors'),
+    path.join(__dirname, 'src', 'app', '(other)', 'layouts'),
+    path.join(__dirname, 'src', 'app', '(other)', 'maintenance'),
+    path.join(__dirname, 'src', 'app', '(other)'),
+  ];
+  unneededDirs.forEach((dir) => {
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      console.log(`[next.config] Removed unused demo folder: ${path.basename(dir)}`);
+    }
+  });
 } catch (e) {
-  console.error('[next.config] Failed copying logo files:', e);
+  console.error('[next.config] Asset check/cleanup warning:', e);
 }
 
 const nextConfig: NextConfig = {

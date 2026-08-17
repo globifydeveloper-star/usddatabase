@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import SearchBox from './components/SearchBox'
-import Flag from './components/Flag'
-import Notifications from './components/Notifications'
-import Apps from './components/Apps'
 import ThemeCustomizeToggle from './components/ThemeCustomizeToggle'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import ThemeModeToggle from './components/ThemeModeToggle'
@@ -19,7 +16,6 @@ const TopBar = () => {
 
   useEffect(() => {
     setTitle(document.title.split('|')[0])
-    // setTitle(document.)
     let metaTag = document.querySelector("meta[name='subTitle']")
     let content = metaTag ? metaTag.getAttribute('content') : null
     setSubTitle(content)
@@ -28,7 +24,6 @@ const TopBar = () => {
     <header className="app-topbar">
       <div className="page-container topbar-menu">
         <div className="d-flex align-items-center gap-2">
-          {/* <LogoBox /> */}
           <LeftSideBarToggle />
           <div className="topbar-item d-none d-md-flex">
             <div>
@@ -49,9 +44,6 @@ const TopBar = () => {
         </div>
         <div className="d-flex align-items-center gap-2">
           <SearchBox />
-          {/* <Flag />
-          <Notifications />
-          <Apps /> */}
           <ThemeCustomizeToggle />
           <ThemeModeToggle />
           <ActiveUsersPanel />
