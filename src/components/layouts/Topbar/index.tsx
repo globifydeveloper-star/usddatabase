@@ -1,4 +1,3 @@
-import LogoBox from '@/components/LogoBox'
 import React, { useEffect, useState } from 'react'
 import SearchBox from './components/SearchBox'
 import Flag from './components/Flag'

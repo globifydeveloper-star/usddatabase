@@ -93,3 +93,33 @@ export async function sendPasswordResetEmail(authObj: typeof auth, email: string
     throw err;
   }
 }
+
+/**
+ * Resets user password by sending request to backend forgot-password API
+ */
+export async function resetPassword(email: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return {
+        success: true,
+        message: data.message || 'Password reset link sent successfully! Please check your email.',
+      };
+    }
+    return {
+      success: false,
+      message: data.message || 'Failed to send password reset email.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: 'Failed to send password reset email. Please try again.',
+    };
+  }
+}
+

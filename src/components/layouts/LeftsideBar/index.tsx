@@ -1,4 +1,3 @@
-import LogoBox from '@/components/LogoBox'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient'
 import React, { Suspense } from 'react'
@@ -13,7 +12,6 @@ const LeftSideBar = () => {
   const menuItems = getMenuItems()
   return (
     <div className="sidenav-menu">
-      <LogoBox />
       <HoverMenuToggle />
       <button className="button-close-fullsidebar" onClick={toggleBackdrop}>
         <IconifyIcon icon="ri:close-line" className="align-middle" />
