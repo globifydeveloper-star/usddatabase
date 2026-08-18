@@ -2,7 +2,6 @@ import React, { Suspense, useEffect } from 'react'
 import TopBar from './Topbar'
 import FallbackLoading from '../FallbackLoading'
 import HorizontalNavBar from './HorizontalNav/page'
-import Footer from './Footer'
 import { ChildrenType } from '@/types/component-props'
 import { getHorizontalMenuItems } from '@/helpers/Menu'
 import { useLayoutContext } from '@/context/useLayoutContext'
@@ -31,7 +30,6 @@ const HorizontalLayout = ({ children }: ChildrenType) => {
       </Suspense>
       <div className="page-content">
         <div className="page-container">{children}</div>
-        {/* <Footer /> */}
       </div>
     </div>
   )

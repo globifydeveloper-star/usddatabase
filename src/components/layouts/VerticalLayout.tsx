@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import LeftSideBar from './LeftsideBar'
 import FallbackLoading from '../FallbackLoading'
 import TopBar from './Topbar'
-import Footer from './Footer'
 import { ChildrenType } from '@/types/component-props'
 
 const VerticalLayout = ({ children }: ChildrenType) => {
@@ -17,7 +16,6 @@ const VerticalLayout = ({ children }: ChildrenType) => {
       </Suspense>
       <div className="page-content">
         <div className="page-container">{children}</div>
-        {/* <Footer /> */}
       </div>
     </div>
   )

@@ -1,8 +1,6 @@
 'use client';
 
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import Image from 'next/image';
-import avatar1 from '@/assets/images/users/avatar-1.jpg';
 import {
     Dropdown,
     DropdownHeader,
@@ -11,7 +9,6 @@ import {
     DropdownToggle,
 } from 'react-bootstrap';
 import { useRouter } from 'next/navigation';
-import { currency } from '@/context/constants';
 import { useCurrentUser, CmsRole } from '@/hooks/useCurrentUser';
 
 const roleLabels: Record<string, string> = {
@@ -67,26 +64,7 @@ const ProfileDropdown = () => {
                         <h6 className="text-overflow m-0">Welcome !</h6>
                         {user?.email && <div className="text-muted small text-truncate">{user.email}</div>}
                     </DropdownHeader>
-                    {/* <DropdownItem>
-            <IconifyIcon icon="ri:wallet-3-line" className="me-1 fs-17 align-middle" />&nbsp;
-            <span className="align-middle">
-              Wallet : <span className="fw-semibold">{currency}985.25</span>
-            </span>
-          </DropdownItem>
-          <DropdownItem>
-            <IconifyIcon icon="ri:settings-2-line" className="me-1 fs-17 align-middle" />&nbsp;
-            <span className="align-middle">Settings</span>
-          </DropdownItem>
-          <DropdownItem>
-            <IconifyIcon icon="ri:question-line" className="me-1 fs-17 align-middle" />&nbsp;
-            <span className="align-middle">Support</span>
-          </DropdownItem> */}
                     <div className="dropdown-divider" />
-                    {/* <DropdownItem>
-                        <IconifyIcon icon="ri:lock-line" className="me-1 fs-17 align-middle" />
-                        &nbsp;
-                        <span className="align-middle">Lock Screen</span>
-                    </DropdownItem> */}
                     <DropdownItem onClick={handleLogout} className="active fw-semibold text-danger">
                         <IconifyIcon
                             icon="ri:logout-box-line"

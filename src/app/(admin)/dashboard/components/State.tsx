@@ -28,19 +28,6 @@ const StateCard = ({
             </h5>
 
             <h3 className="my-2 py-1 fw-bold">{value}</h3>
-
-            {/* <p className="mb-0 text-muted flex-centered">
-              <span className={`${isTrue ? 'text-danger' : 'text-success'} icons-center me-1`}>
-                {isTrue ? (
-                  <IconifyIcon icon="ri:arrow-left-down-box-line" />
-                ) : (
-                  <IconifyIcon icon="ri:arrow-left-up-box-line" />
-                )}
-                &nbsp; {change}%
-              </span>
-              &nbsp;
-              <span className="text-nowrap">{description}</span>
-            </p> */}
           </div>
 
           <div className="avatar-xl flex-shrink-0">

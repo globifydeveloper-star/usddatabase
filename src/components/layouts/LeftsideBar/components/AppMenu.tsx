@@ -120,7 +120,6 @@ const MenuItemLink = ({ item, className }: SubMenus) => {
           <IconifyIcon icon={item.icon} />
         </span>
       )}
-      {/* {!item.icon && <IconifyIcon icon="tabler:circle-filled" />} */}
       <span className="menu-text">{item.label}</span>
       {item.badge && <span className={`badge rounded-pill text-end bg-${item.badge.variant}`}>{item.badge.text}</span>}
       {item?.badgeIcon && (
