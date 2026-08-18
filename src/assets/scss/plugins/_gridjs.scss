@@ -1,21 +1,61 @@
-// 
+//
 // _gridjs.scss
-// 
+//
 
 .gridjs-container {
-    color: $table-color;
+    color: var(--#{$prefix}body-color, #{$table-color});
     padding: 0;
     display: block;
 }
 
 .gridjs-wrapper {
     box-shadow: none;
-    border: 1px solid $table-border-color;
+    border: 1px solid var(--#{$prefix}border-color, #{$table-border-color}) !important;
+    background-color: transparent !important;
     border-radius: 0px;
     scrollbar-width: thin;
     overflow-x: auto;
     width: 100%;
     -webkit-overflow-scrolling: touch;
+}
+
+.gridjs-tbody,
+tbody.gridjs-tbody,
+table.gridjs-table,
+tr.gridjs-tr,
+td.gridjs-td {
+    background-color: transparent !important;
+    color: var(--#{$prefix}body-color) !important;
+    border-color: var(--#{$prefix}border-color) !important;
+}
+
+td.gridjs-td {
+    padding: 12px 16px;
+}
+
+th.gridjs-th {
+    background-color: var(--#{$prefix}light, #f9fafb) !important;
+    color: var(--#{$prefix}body-color) !important;
+    border: 1px solid var(--#{$prefix}border-color) !important;
+    padding: 12px 16px;
+
+    .gridjs-th-content {
+        float: none;
+        display: inline-block;
+        vertical-align: middle;
+        font-weight: $font-weight-semibold;
+        color: var(--#{$prefix}body-color) !important;
+    }
+}
+
+tr.gridjs-tr {
+    &:hover {
+        background-color: rgba(var(--#{$prefix}primary-rgb), 0.08) !important;
+
+        td.gridjs-td {
+            background-color: rgba(var(--#{$prefix}primary-rgb), 0.08) !important;
+        }
+    }
 }
 
 .gridjs-head {
@@ -41,9 +81,10 @@
 
 .gridjs-footer {
     box-shadow: none;
-    border: 1px solid $table-border-color;
-    border-top: 0;
-    background-color: $table-bg;
+    border: 1px solid var(--#{$prefix}border-color) !important;
+    border-top: 0 !important;
+    background-color: transparent !important;
+    color: var(--#{$prefix}body-color) !important;
     padding: 12px 16px;
     display: flex;
     flex-wrap: wrap;
@@ -71,34 +112,34 @@
 }
 
 .gridjs-summary {
-    color: var(--#{$prefix}secondary-color);
+    color: var(--#{$prefix}secondary-color) !important;
     margin-top: 8px !important;
 }
 
 .gridjs-pagination {
-
     .gridjs-pages button {
         margin-left: 0.3rem;
         border-radius: $border-radius !important;
-        border: 1px solid $pagination-border-color;
-        background-color: $pagination-bg;
+        border: 1px solid var(--#{$prefix}border-color) !important;
+        background-color: var(--#{$prefix}secondary-bg, transparent) !important;
         padding: 5px 12px;
-        color: $pagination-color;
+        color: var(--#{$prefix}body-color) !important;
 
         &:last-child {
-            border-right: 1px solid $pagination-border-color;
+            border-right: 1px solid var(--#{$prefix}border-color) !important;
         }
 
         &:disabled,
         &:hover:disabled,
         &[disabled] {
-            color: $pagination-disabled-color;
-            background-color: $pagination-bg;
+            color: var(--#{$prefix}secondary-color) !important;
+            background-color: transparent !important;
+            opacity: 0.5;
         }
 
         &:hover {
-            background-color: $pagination-hover-bg;
-            color: $pagination-hover-color;
+            background-color: rgba(var(--#{$prefix}primary-rgb), 0.15) !important;
+            color: var(--#{$prefix}primary) !important;
         }
 
         &:focus {
@@ -106,17 +147,10 @@
             margin-right: 0;
         }
 
-        &:last-child,
-        &:first-child {
-            &:hover {
-                background-color: transparent;
-            }
-        }
-
         &.gridjs-currentPage {
-            background-color: $pagination-active-bg;
-            color: $pagination-active-color;
-            border-color: $pagination-active-border-color;
+            background-color: var(--#{$prefix}primary, #{$primary}) !important;
+            color: #ffffff !important;
+            border-color: var(--#{$prefix}primary, #{$primary}) !important;
             font-weight: $font-weight-medium;
         }
     }
@@ -125,10 +159,10 @@
 .gridjs-search {
     position: relative;
     float: left;
-    
+
     &::before {
-        font-family: tabler-icons!important;
-        content: "\eb1c";
+        font-family: tabler-icons !important;
+        content: '\eb1c';
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -139,31 +173,23 @@
 }
 
 input.gridjs-input {
-    border-color: $input-border-color;
-    background-color: $input-bg;
-    color: $input-color;
+    border-color: var(--#{$prefix}border-color, #{$input-border-color}) !important;
+    background-color: var(--#{$prefix}secondary-bg, #{$input-bg}) !important;
+    color: var(--#{$prefix}body-color, #{$input-color}) !important;
     line-height: $input-line-height;
-    padding: $input-padding-y $input-padding-x $input-padding-y $input-padding-x*2.5;
+    padding: $input-padding-y $input-padding-x $input-padding-y $input-padding-x * 2.5;
     border-radius: $input-border-radius;
     @include font-size($input-font-size);
 
     &:focus {
         box-shadow: none;
-        border-color: $input-focus-border-color;
-        background-color: $input-focus-bg;
+        border-color: var(--#{$prefix}primary) !important;
+        background-color: var(--#{$prefix}secondary-bg) !important;
+        color: var(--#{$prefix}body-color) !important;
     }
 
     &::placeholder {
-        color: $input-placeholder-color;
-    }
-}
-
-th.gridjs-th {
-    .gridjs-th-content {
-        float: none;
-        display: inline-block;
-        vertical-align: middle;
-        font-weight: $font-weight-semibold;
+        color: var(--#{$prefix}secondary-color, #{$input-placeholder-color}) !important;
     }
 }
 
@@ -180,26 +206,23 @@ th.gridjs-th-sort .gridjs-th-content {
 }
 
 button {
-
     &.gridjs-sort-asc,
     &.gridjs-sort-desc {
         background-size: 7px;
     }
 }
 
-
 // card table
 
 .table-card {
-
     .gridjs-head {
         padding: 16px 16px 5px;
     }
 
     .gridjs-wrapper {
-        border-top: 0;
+        border-top: 0 !important;
         border-radius: 0;
-        border-width: 1px 0;
+        border-width: 1px 0 !important;
     }
 
     .gridjs-footer {
@@ -210,19 +233,17 @@ button {
 // gridjs selection
 .gridjs-tr-selected {
     td {
-        background-color: $table-active-bg;
+        background-color: rgba(var(--#{$prefix}primary-rgb), 0.15) !important;
     }
 
-    .gridjs-td .gridjs-checkbox[type=checkbox] {
+    .gridjs-td .gridjs-checkbox[type='checkbox'] {
         background-color: $form-check-input-checked-bg-color;
         border-color: $form-check-input-checked-border-color;
 
         @if $enable-gradients {
             background-image: escape-svg($form-check-input-checked-bg-image),
-            var(--#{$prefix}gradient);
-        }
-
-        @else {
+                var(--#{$prefix}gradient);
+        } @else {
             background-image: escape-svg($form-check-input-checked-bg-image);
         }
     }
@@ -233,7 +254,7 @@ button {
         width: $form-check-input-width;
         height: $form-check-input-width;
         vertical-align: top;
-        background-color: $form-check-input-bg;
+        background-color: var(--#{$prefix}secondary-bg, #{$form-check-input-bg});
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
@@ -241,18 +262,17 @@ button {
         appearance: none;
         @include transition($form-check-transition);
 
-        &[type="checkbox"] {
+        &[type='checkbox'] {
             @include border-radius($form-check-input-border-radius);
         }
     }
 }
 
 .gridjs-border-none {
-
     td.gridjs-td,
     th.gridjs-th {
-        border-right-width: 0;
-        border-left-width: 0;
+        border-right-width: 0 !important;
+        border-left-width: 0 !important;
     }
 }
 
@@ -260,10 +280,42 @@ button {
     background-color: var(--#{$prefix}secondary-bg);
 }
 
-[data-bs-theme="dark"] {
+[data-bs-theme='dark'],
+html[data-bs-theme='dark'] {
     button {
         &:is(.gridjs-sort-neutral, .gridjs-sort-asc, .gridjs-sort-desc) {
             filter: $btn-close-white-filter;
         }
+    }
+
+    th.gridjs-th {
+        background-color: var(--#{$prefix}light, #252630) !important;
+        color: var(--#{$prefix}body-color) !important;
+        border-color: var(--#{$prefix}border-color, #37394d) !important;
+
+        .gridjs-th-content {
+            color: var(--#{$prefix}body-color) !important;
+        }
+    }
+
+    .gridjs-tbody,
+    tbody.gridjs-tbody,
+    tr.gridjs-tr,
+    td.gridjs-td {
+        background-color: transparent !important;
+        color: var(--#{$prefix}body-color) !important;
+        border-color: var(--#{$prefix}border-color, #37394d) !important;
+    }
+
+    .gridjs-wrapper,
+    .gridjs-footer {
+        background-color: transparent !important;
+        border-color: var(--#{$prefix}border-color, #37394d) !important;
+    }
+
+    input.gridjs-input {
+        background-color: var(--#{$prefix}secondary-bg, #1e1f27) !important;
+        color: var(--#{$prefix}body-color) !important;
+        border-color: var(--#{$prefix}border-color, #37394d) !important;
     }
 }

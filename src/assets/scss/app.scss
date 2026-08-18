@@ -109,11 +109,6 @@ File: App Css File
     justify-content: center;
 }
 
-/* Fix Grid.js white pagination button in dark mode */
-.gridjs-pagination button {
-    background: transparent !important;
-}
-
 /* GridJS row hover highlight */
 .gridjs-table tbody tr:hover {
     background-color: rgba(59, 130, 246, 0.08);
@@ -239,4 +234,3 @@ File: App Css File
         padding: 1rem;
     }
 }
-

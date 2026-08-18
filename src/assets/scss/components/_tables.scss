@@ -12,16 +12,16 @@ th {
 }
 
 .table-custom {
-    tfoot > tr > th:first-child, 
-    thead > tr > th:first-child, 
-    tr th:first-child, 
+    tfoot > tr > th:first-child,
+    thead > tr > th:first-child,
+    tr th:first-child,
     tr td:first-child {
         padding-left: calc($table-cell-padding-y * 1.5) !important;
     }
 
-    tfoot > tr > th:last-child, 
-    thead > tr > th:last-child, 
-    tr th:last-child, 
+    tfoot > tr > th:last-child,
+    thead > tr > th:last-child,
+    tr th:last-child,
     tr td:last-child {
         padding-right: calc($table-cell-padding-y * 1.5) !important;
     }
@@ -29,19 +29,46 @@ th {
 
 // Tables fluid
 .table-nowrap {
-
     th,
     td {
         white-space: nowrap;
     }
 }
 
-
 // dark mode
-[data-bs-theme="dark"] {
+[data-bs-theme='dark'] {
+    .table {
+        --#{$prefix}table-color: var(--#{$prefix}body-color);
+        --#{$prefix}table-bg: transparent;
+        --#{$prefix}table-border-color: var(--#{$prefix}border-color);
+        --#{$prefix}table-striped-bg: rgba(255, 255, 255, 0.03);
+        --#{$prefix}table-hover-bg: rgba(255, 255, 255, 0.05);
+
+        color: var(--#{$prefix}body-color);
+        border-color: var(--#{$prefix}border-color);
+
+        > :not(caption) > * > * {
+            background-color: transparent;
+            color: var(--#{$prefix}body-color);
+            border-color: var(--#{$prefix}border-color);
+        }
+
+        thead th {
+            background-color: var(--#{$prefix}light, #252630);
+            color: var(--#{$prefix}body-color);
+            border-color: var(--#{$prefix}border-color);
+        }
+    }
+
     .table-light {
         --#{$prefix}table-color: var(--#{$prefix}body-color);
         --#{$prefix}table-bg: var(--#{$prefix}light);
         --#{$prefix}table-border-color: var(--#{$prefix}border-color);
+
+        > :not(caption) > * > * {
+            background-color: var(--#{$prefix}light, #252630);
+            color: var(--#{$prefix}body-color);
+            border-color: var(--#{$prefix}border-color);
+        }
     }
 }
