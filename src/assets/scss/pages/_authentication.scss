@@ -4,28 +4,29 @@
 
 .auth-bg {
     background-image: url(../../images/bg-pattern.png);
-    background-color: #343b4a;
+    background-color: #17181e;
 }
 
 .auth-brand {
     .logo-dark {
-        display: inline-block;
+        display: none;
     }
 
     .logo-light {
-        display: none;
+        display: inline-block !important;
     }
 }
 
 // Dark mode
-html[data-bs-theme="dark"] {
+html[data-bs-theme="dark"],
+[data-bs-theme="dark"] {
     .auth-brand {
         .logo-light {
-            display: inline-block;
+            display: inline-block !important;
         }
 
         .logo-dark {
-            display: none;
+            display: none !important;
         }
     }
 }

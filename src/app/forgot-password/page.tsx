@@ -44,9 +44,9 @@ const ForgotPasswordForm = () => {
     };
 
     return (
-        <Card className="overflow-hidden text-center h-100 p-xxl-4 p-3 mb-0">
-            <a href="/" className="auth-brand mb-4">
-                <Image src={logo} alt="logo light" height={80} className="logo-light" />
+        <Card className="overflow-hidden text-center h-100 p-xxl-4 p-3 mb-0" data-bs-theme="dark">
+            <a href="/" className="auth-brand mb-4 d-inline-block">
+                <Image src={logo} alt="U.S. Degrees logo" height={80} className="logo-light" priority />
             </a>
 
             {!isSubmitted ? (
@@ -134,7 +134,7 @@ const ForgotPasswordForm = () => {
 
 const ForgotPasswordPage = () => {
     return (
-        <div className="auth-bg d-flex min-vh-100 justify-content-center align-items-center">
+        <div className="auth-bg d-flex min-vh-100 justify-content-center align-items-center" data-bs-theme="dark">
             <Row className="g-0 justify-content-center w-100 m-xxl-5 px-xxl-4 m-3">
                 <Col xl={4} lg={5} md={6}>
                     <Suspense fallback={null}>
