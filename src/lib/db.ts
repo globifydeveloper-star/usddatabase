@@ -6,7 +6,7 @@ declare global {
 }
 
 const sslConfig = {
-  rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+  rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true',
 }
 
 // Prefer a single connection string (e.g. Supabase pooler) when provided,
