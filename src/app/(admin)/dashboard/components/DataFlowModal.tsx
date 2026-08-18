@@ -43,7 +43,7 @@ function DataFlowModalContent() {
 
     return (
         <>
-            <Card className={`mb-3 border ${isHighlighted ? 'border-primary shadow-lg' : ''}`}>
+            <Card className={`mt-3 mb-3 border ${isHighlighted ? 'border-primary shadow-lg' : ''}`}>
                 <CardBody className="py-3 px-4">
                     <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div className="d-flex align-items-center gap-3">

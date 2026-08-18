@@ -22,7 +22,7 @@ const Dashboard = async () => {
 
     return (
         <>
-            <Row className="mb-3">
+            <Row className="pt-2 mt-2 mb-3">
                 <Col md={12} xl={12}>
                     <DataFlowModal />
                 </Col>
