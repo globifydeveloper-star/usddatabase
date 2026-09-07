@@ -115,7 +115,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       .then((r) => r.json())
       .then((res) => {
         const tables: string[] = res.tables ?? [];
-        setAvailableTables(tables.filter((t) => t !== 'audit_logs'));
+        setAvailableTables(tables.filter((t) => t !== 'audit_logs' && t !== 'roles'));
       })
       .catch(() => setAvailableTables([]));
 
@@ -124,7 +124,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
         .then((r) => r.json())
         .then((res) => {
           const permissionTables: string[] = res.tableNames ?? [];
-          setGrantedTables(permissionTables.filter((t) => t !== 'audit_logs'));
+          setGrantedTables(permissionTables.filter((t) => t !== 'audit_logs' && t !== 'roles'));
           setSecurityPerms(permissionTables.includes('audit_logs') ? ['audit_logs'] : []);
         })
         .catch(() => {
@@ -215,7 +215,7 @@ const CmsUserFormModal = ({ show, onClose, data, onSuccess }: Props) => {
       if (isPermissionableRole && currentUser?.role === 'superadmin') {
         const effectiveTableNames = [
           ...new Set([
-            ...grantedTables.filter((t) => t !== 'audit_logs'),
+            ...grantedTables.filter((t) => t !== 'audit_logs' && t !== 'roles'),
             ...(securityPerms.includes('audit_logs') ? ['audit_logs'] : []),
           ]),
         ];

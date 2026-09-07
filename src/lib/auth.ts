@@ -56,6 +56,7 @@ export async function assertTableWritable(
 ): Promise<boolean> {
   if (auth.role === 'superadmin') return true;
   if (auth.role === 'viewer') return false;
+  if (cfg.table === 'roles') return false;
 
   const result = await pool.query(
     'SELECT 1 FROM cms_editor_table_permissions WHERE editor_user_id = $1 AND table_name = $2',

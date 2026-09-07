@@ -49,7 +49,6 @@ export const KNOWN_CRUD_TABLES: string[] = [
   'programs',
   'repayment',
   'roi',
-  'roles',
   'schools',
   'students',
   'users',
