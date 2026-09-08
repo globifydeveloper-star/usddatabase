@@ -26,6 +26,7 @@ export const KNOWN_CRUD_TABLES: string[] = [
   'staging_admissions_categories',
   'states',
   'temp_sat',
+  'usd_apply_clicks',
   'usdreport_colleges',
   'usdreports',
   'usduser_deactivations',

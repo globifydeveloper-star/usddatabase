@@ -172,6 +172,7 @@ export const MENU_ITEMS: MenuItemType[] = [
       { key: 'usduser-deactivations', label: 'Usduser Deactivations', url: '/usduser-deactivations', parentKey: 'app-users-section' },
       { key: 'usdusers-preferred-states', label: 'Usdusers Preferred States', url: '/usdusers-preferred-states', parentKey: 'app-users-section' },
       { key: 'usdusers-preferred-programs', label: 'Usdusers Preferred Programs', url: '/usdusers-preferred-programs', parentKey: 'app-users-section' },
+      { key: 'usd-apply-clicks', label: 'Apply Clicks', url: '/usd-apply-clicks', parentKey: 'app-users-section' },
     ],
   },
   {

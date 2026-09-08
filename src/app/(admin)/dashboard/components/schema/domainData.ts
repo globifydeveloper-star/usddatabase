@@ -475,6 +475,23 @@ export const tables: SchemaTable[] = [
     ],
   },
   {
+    id: 'usd_apply_clicks',
+    domain: 'end_users',
+    columns: [
+      { name: 'id', kind: 'pk' },
+      { name: 'user_id', kind: 'fk', refTable: 'usdusers', refColumn: 'id' },
+      { name: 'university_id', kind: 'column' },
+      { name: 'university_name', kind: 'column' },
+      { name: 'cip_code', kind: 'column' },
+      { name: 'degree', kind: 'column' },
+      { name: 'credential_level', kind: 'column' },
+      { name: 'credential_title', kind: 'column' },
+      { name: 'school_url', kind: 'column' },
+      { name: 'clicked_at', kind: 'column' },
+      { name: 'created_at', kind: 'column' },
+    ],
+  },
+  {
     id: 'user_compare_history',
     domain: 'end_users',
     columns: [

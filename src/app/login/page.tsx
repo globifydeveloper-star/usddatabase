@@ -144,6 +144,13 @@ const LoginForm = () => {
                         type="submit"
                         disabled={loading}
                     >
+                        {loading && (
+                            <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                        )}
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </div>

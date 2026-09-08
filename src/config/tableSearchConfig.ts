@@ -250,6 +250,11 @@ export const TABLE_SEARCH = [
         keywords: ['usdusers preferred programs', 'preferred programs'],
         route: '/usdusers-preferred-programs',
     },
+    {
+        name: 'Apply Clicks',
+        keywords: ['apply clicks', 'usd apply clicks', 'applies', 'clicks'],
+        route: '/usd-apply-clicks',
+    },
 
     // Reports
     {
