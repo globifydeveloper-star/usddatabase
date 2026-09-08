@@ -10,6 +10,7 @@ import { TABLE_SEARCH } from '@/config/tableSearchConfig';
 const SearchBox = () => {
     const { isTrue, toggle } = useToggle();
     const [query, setQuery] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0);
     const router = useRouter();
 
     const results =
@@ -25,6 +26,27 @@ const SearchBox = () => {
         router.push(route);
         toggle();
         setQuery('');
+        setActiveIndex(0);
+    };
+
+    const handleQueryChange = (value: string) => {
+        setQuery(value);
+        setActiveIndex(0);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (results.length === 0) return;
+
+        if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
+            e.preventDefault();
+            setActiveIndex((prev) => (prev + 1) % results.length);
+        } else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
+            e.preventDefault();
+            setActiveIndex((prev) => (prev - 1 + results.length) % results.length);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            goTo(results[activeIndex].route);
+        }
     };
 
     return (
@@ -55,7 +77,8 @@ const SearchBox = () => {
                                     className="form-control border-0"
                                     placeholder="Search tables like schools, programs, students..."
                                     value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
+                                    onChange={(e) => handleQueryChange(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                     autoFocus
                                 />
 
@@ -74,11 +97,20 @@ const SearchBox = () => {
                                         zIndex: 9999,
                                     }}
                                 >
-                                    {results.map((item) => (
+                                    {results.map((item, index) => (
                                         <div
                                             key={item.route}
-                                            className="px-3 py-2 search-result-item"
-                                            style={{ cursor: 'pointer' }}
+                                            className={`px-3 py-2 search-result-item ${
+                                                index === activeIndex ? 'active' : ''
+                                            }`}
+                                            style={{
+                                                cursor: 'pointer',
+                                                backgroundColor:
+                                                    index === activeIndex
+                                                        ? 'var(--bs-secondary-bg, rgba(0,0,0,0.05))'
+                                                        : undefined,
+                                            }}
+                                            onMouseEnter={() => setActiveIndex(index)}
                                             onClick={() => goTo(item.route)}
                                         >
                                             {item.name}
